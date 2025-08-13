@@ -306,7 +306,7 @@ ganttChart.dataBound = function() {
     if (!ganttChart.isInitialLoad) {
         ganttChart.isInitialLoad = true;
         setTimeout(function() {
-            ganttChart.zoomToFit();
+            ganttChart.fitToProject();
         }, 100);
     }
 
