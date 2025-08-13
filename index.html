@@ -157,8 +157,6 @@
                    justify-content: center !important;
                    margin-right: 6px !important;
                    vertical-align: middle !important;
-                   position: relative !important;
-                   top: 0px !important;
                }
 
                .e-gantt .e-treegridexpand:hover,
@@ -166,16 +164,17 @@
                    background: rgba(255,255,255,0.25) !important;
                }
 
-               /* Ajustar container dos ícones para ficar na mesma linha do texto */
-               .e-gantt .e-treerowcell .e-treecell {
+               /* Container dos ícones e texto na mesma linha */
+               .e-treecolumn-container {
                    display: flex !important;
                    align-items: center !important;
                    height: 100% !important;
                }
 
-               .e-gantt .e-treerowcell .e-treecell .e-treecelltext {
+               .e-gantt .e-treerowcell .e-treecell {
                    display: inline !important;
                    vertical-align: middle !important;
+                   line-height: inherit !important;
                }
 
                /* TIMELINE COMPACTO */
