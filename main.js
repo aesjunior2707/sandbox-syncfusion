@@ -112,11 +112,11 @@ var ganttChart = new ej.gantt.Gantt({
         }
     },
     columns: [
-        { field: 'TaskID', headerText: 'ID', width: 60, textAlign: 'Right', allowEditing: false },
-        { field: 'TaskName', headerText: 'Nome da Tarefa', width: 280, allowEditing: true, clipMode: 'EllipsisWithTooltip' },
-        { field: 'StartDate', headerText: 'Data de Início', width: 120, format: 'dd MM yyyy', textAlign: 'Right', allowEditing: true, editType: 'datepickeredit' },
-        { field: 'Duration', headerText: 'Duração', width: 100, textAlign: 'Right', allowEditing: true, editType: 'numericedit' },
-        { field: 'Progress', headerText: 'Progresso', width: 100, textAlign: 'Right', allowEditing: true, editType: 'numericedit' }
+        { field: 'TaskID', headerText: 'ID', width: 70, textAlign: 'Center', allowEditing: false },
+        { field: 'TaskName', headerText: 'Tarefa', width: 320, allowEditing: true, clipMode: 'EllipsisWithTooltip' },
+        { field: 'StartDate', headerText: 'Início', width: 130, format: 'dd/MM/yyyy', textAlign: 'Center', allowEditing: true, editType: 'datepickeredit' },
+        { field: 'Duration', headerText: 'Duração', width: 90, textAlign: 'Center', allowEditing: true, editType: 'numericedit' },
+        { field: 'Progress', headerText: 'Progresso', width: 100, textAlign: 'Center', allowEditing: true, editType: 'numericedit' }
     ],
     labelSettings: {
         leftLabel: 'TaskName',
