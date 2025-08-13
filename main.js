@@ -105,35 +105,6 @@ var ganttChart = new ej.gantt.Gantt({
             };
             ganttChart.addRecord(newTask, null, 'Child');
         }
-    },
-    rowSelecting: function (args) {
-        // Auto-create new row when navigating to the end
-        checkAndCreateNewRow(args.rowIndex);
-    },
-    keyPressed: function (args) {
-        // Handle arrow key navigation
-        if (args.key === 'ArrowDown' || args.key === 'Tab') {
-            var currentRowIndex = ganttChart.selectedRowIndex;
-            var totalRows = ganttChart.flatData.length;
-
-            // If navigating to the last row or beyond, create a new row
-            if (currentRowIndex >= totalRows - 1) {
-                setTimeout(function() {
-                    createNewEmptyTask();
-                }, 100);
-            }
-        }
-    },
-    actionBegin: function (args) {
-        // Handle when user presses Enter on the last row
-        if (args.requestType === 'beforeEdit') {
-            var totalRows = ganttChart.flatData.length;
-            if (args.rowIndex >= totalRows - 1) {
-                setTimeout(function() {
-                    createNewEmptyTask();
-                }, 200);
-            }
-        }
     }
 });
 
