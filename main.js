@@ -300,8 +300,17 @@ document.addEventListener('keydown', function(event) {
 
 ganttChart.appendTo('#Gantt');
 
-// Configurar edição com clique simples nas células
+// Aplicar Zoom to Fit automaticamente ao carregar
 ganttChart.dataBound = function() {
+    // Aplicar zoom to fit na primeira vez que os dados são carregados
+    if (!ganttChart.isInitialLoad) {
+        ganttChart.isInitialLoad = true;
+        setTimeout(function() {
+            ganttChart.fitToProject();
+        }, 100);
+    }
+
+    // Configurar edição com clique simples nas células
     var gridElement = ganttChart.element.querySelector('.e-gridcontent');
     if (gridElement) {
         gridElement.addEventListener('click', function(e) {
