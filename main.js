@@ -125,6 +125,40 @@ function getNextTaskID() {
     return maxId + 1;
 }
 
+function getLatestTaskEndDate() {
+    var latestDate = new Date('1900-01-01'); // Very old date to start comparison
+
+    function findLatestEndDate(data) {
+        for (var i = 0; i < data.length; i++) {
+            var task = data[i];
+            var taskEndDate;
+
+            // Calculate end date based on start date and duration
+            if (task.EndDate) {
+                taskEndDate = new Date(task.EndDate);
+            } else if (task.StartDate && task.Duration) {
+                taskEndDate = new Date(task.StartDate);
+                taskEndDate.setDate(taskEndDate.getDate() + task.Duration);
+            } else if (task.StartDate) {
+                taskEndDate = new Date(task.StartDate);
+                taskEndDate.setDate(taskEndDate.getDate() + 1); // Default 1 day duration
+            }
+
+            if (taskEndDate && taskEndDate > latestDate) {
+                latestDate = taskEndDate;
+            }
+
+            // Check subtasks recursively
+            if (task.subtasks && task.subtasks.length > 0) {
+                findLatestEndDate(task.subtasks);
+            }
+        }
+    }
+
+    findLatestEndDate(ganttChart.dataSource);
+    return latestDate;
+}
+
 function createNewEmptyTask() {
     // Find the latest end date from all tasks
     var latestEndDate = getLatestTaskEndDate();
