@@ -22,25 +22,19 @@
                     width: 100%;
                 }
 
-                /* Estilos para drag & drop feedback */
-                .e-drag-hover {
-                    background-color: #e3f2fd !important;
-                    border: 2px dashed #2196f3 !important;
-                }
-
-                .e-gantt .e-row.e-drag-over {
-                    background-color: #f3e5f5 !important;
-                }
-
-                /* Indicador visual para drop zones */
-                .e-gantt .e-row:hover {
-                    background-color: #f5f5f5;
-                    transition: background-color 0.2s ease;
-                }
-
                 /* Cursor durante drag */
                 .e-gantt .e-drag-clone {
                     cursor: grabbing !important;
+                }
+
+                /* Remover hover durante drag */
+                .e-gantt.e-dragging .e-row:hover {
+                    background-color: inherit !important;
+                }
+
+                /* Estilo sutil apenas para a zona de drop válida */
+                .e-gantt .e-row.e-valid-drop-target {
+                    background-color: rgba(33, 150, 243, 0.1) !important;
                 }
             </style>
             <script src="main.js" type="text/javascript"></script>
