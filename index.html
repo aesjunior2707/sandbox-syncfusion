@@ -40,15 +40,25 @@
                    border-right: 1px solid #e5e7eb !important;
                    color: #374151 !important;
                    font-weight: 600 !important;
-                   font-size: 11px !important;
+                   font-size: 9px !important;
                    text-transform: uppercase !important;
-                   letter-spacing: 0.5px !important;
-                   padding: 8px 6px !important;
-                   height: 32px !important;
+                   letter-spacing: 0.3px !important;
+                   padding: 2px 3px !important;
+                   height: 18px !important;
+                   line-height: 14px !important;
                }
 
                .e-headercell .e-headertext {
                    color: #374151 !important;
+               }
+
+               .e-columnheader {
+                   height: 18px !important;
+               }
+
+               .e-headercell .e-headercelldiv {
+                   height: 14px !important;
+                   line-height: 14px !important;
                }
 
                /* LINHAS COMPACTAS */
@@ -62,12 +72,47 @@
                    background: #fef3e2 !important;
                }
 
+               .e-gantt .e-row:hover .e-rowcell {
+                   color: #000000 !important;
+               }
+
+               .e-gantt .e-row:hover .e-treecell {
+                   color: #000000 !important;
+               }
+
+               /* Texto preto específico para grupos pai em hover */
+               .e-gantt .e-row:hover .e-treerowcell {
+                   color: #000000 !important;
+                   background: #fef3e2 !important;
+               }
+
+               .e-gantt .e-row:hover .e-treerowcell .e-treecell {
+                   color: #000000 !important;
+               }
+
                .e-gantt .e-row.e-altrow {
                    background: #fafbfc !important;
                }
 
                .e-gantt .e-row.e-altrow:hover {
                    background: #fef3e2 !important;
+               }
+
+               .e-gantt .e-row.e-altrow:hover .e-rowcell {
+                   color: #000000 !important;
+               }
+
+               .e-gantt .e-row.e-altrow:hover .e-treecell {
+                   color: #000000 !important;
+               }
+
+               .e-gantt .e-row.e-altrow:hover .e-treerowcell {
+                   color: #000000 !important;
+                   background: #fef3e2 !important;
+               }
+
+               .e-gantt .e-row.e-altrow:hover .e-treerowcell .e-treecell {
+                   color: #000000 !important;
                }
 
                /* TAREFAS PAI - ESTILO EXECUTIVO */
@@ -123,15 +168,16 @@
                    background: #f8f9fa !important;
                    border: none !important;
                    font-weight: 500 !important;
-                   height: 60px !important;
+                   height: 36px !important;
                }
 
                .e-timeline-header-cell {
                    border-right: 1px solid #e5e7eb !important;
                    color: #374151 !important;
-                   font-size: 10px !important;
+                   font-size: 8px !important;
                    font-weight: 500 !important;
-                   padding: 4px !important;
+                   padding: 1px !important;
+                   line-height: 12px !important;
                }
 
                /* BARRAS DE TAREFA EXECUTIVAS */
