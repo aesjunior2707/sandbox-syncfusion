@@ -101,7 +101,7 @@ var ganttChart = new ej.gantt.Gantt({
     toolbar: ['Add', 'Edit', 'Update', 'Delete', 'Cancel', 'ExpandAll', 'CollapseAll', 'ExcelExport', 'PdfExport', 'Search', 'ZoomIn', 'ZoomOut', 'ZoomToFit'],
     highlightWeekends: true,
     timelineSettings: {
-        timelineUnitSize: 80,
+        timelineUnitSize: 120,
         topTier: {
             unit: 'Month',
             format: 'MMM yyyy'
@@ -134,16 +134,12 @@ var ganttChart = new ej.gantt.Gantt({
         zoomToFit: true
     },
     rowDrop: function (args) {
-        console.log('Row dropped:', args);
-
-        // Se foi um drop válido com posição definida
+    
         if (args.dropIndex !== undefined && args.dropPosition) {
             var draggedRecord = args.data[0];
             var targetRecord = args.targetRecord;
 
-            console.log('Dragged:', draggedRecord.TaskName);
-            console.log('Target:', targetRecord ? targetRecord.TaskName : 'No target');
-            console.log('Position:', args.dropPosition);
+            
 
             // Se foi solto "inside" (dentro de) outra tarefa, criar como subtask
             if (args.dropPosition === 'child' && targetRecord) {
