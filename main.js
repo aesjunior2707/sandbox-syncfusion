@@ -101,22 +101,22 @@ var ganttChart = new ej.gantt.Gantt({
     toolbar: ['Add', 'Edit', 'Update', 'Delete', 'Cancel', 'ExpandAll', 'CollapseAll', 'ExcelExport', 'PdfExport', 'Search', 'ZoomIn', 'ZoomOut', 'ZoomToFit'],
     highlightWeekends: true,
     timelineSettings: {
-        timelineUnitSize: 120,
+        timelineUnitSize: 100,
         topTier: {
             unit: 'Month',
             format: 'MMM yyyy'
         },
         bottomTier: {
             unit: 'Week',
-            format: 'dd MMM'
+            format: 'dd/MM'
         }
     },
     columns: [
-        { field: 'TaskID', headerText: 'ID', width: 60, textAlign: 'Right', allowEditing: false },
-        { field: 'TaskName', headerText: 'Nome da Tarefa', width: 280, allowEditing: true, clipMode: 'EllipsisWithTooltip' },
-        { field: 'StartDate', headerText: 'Data de Início', width: 120, format: 'dd MM yyyy', textAlign: 'Right', allowEditing: true, editType: 'datepickeredit' },
-        { field: 'Duration', headerText: 'Duração', width: 100, textAlign: 'Right', allowEditing: true, editType: 'numericedit' },
-        { field: 'Progress', headerText: 'Progresso', width: 100, textAlign: 'Right', allowEditing: true, editType: 'numericedit' }
+        { field: 'TaskID', headerText: 'ID', width: 50, textAlign: 'Center', allowEditing: false },
+        { field: 'TaskName', headerText: 'Tarefa', width: 280, allowEditing: true, clipMode: 'EllipsisWithTooltip' },
+        { field: 'StartDate', headerText: 'Início', width: 100, format: 'dd/MM/yy', textAlign: 'Center', allowEditing: true, editType: 'datepickeredit' },
+        { field: 'Duration', headerText: 'Dur.', width: 70, textAlign: 'Center', allowEditing: true, editType: 'numericedit' },
+        { field: 'Progress', headerText: 'Prog.', width: 80, textAlign: 'Center', allowEditing: true, editType: 'numericedit' }
     ],
     labelSettings: {
         leftLabel: 'TaskName',
@@ -125,6 +125,7 @@ var ganttChart = new ej.gantt.Gantt({
     splitterSettings: {
         columnIndex: 2
     },
+    rowHeight: 28,
     projectStartDate: new Date('08/01/2025'),
     projectEndDate: new Date('08/31/2025'),
     zoomSettings: {
