@@ -55,7 +55,8 @@ var ganttChart = new ej.gantt.Gantt({
         allowAdding: true,
         allowEditing: true,
         allowDeleting: true,
-        mode: 'Dialog'
+        allowTaskbarEditing: true,
+        mode: 'Auto'
     },
     toolbar: ['Add', 'Edit', 'Update', 'Delete', 'Cancel', 'ExpandAll', 'CollapseAll', 'ExcelExport', 'PdfExport', 'Search', 'ZoomIn', 'ZoomOut', 'ZoomToFit'],
     highlightWeekends: true,
@@ -71,11 +72,11 @@ var ganttChart = new ej.gantt.Gantt({
         }
     },
     columns: [
-        { field: 'TaskID', headerText: 'ID', width: 60, textAlign: 'Right' },
-        { field: 'TaskName', headerText: 'Nome da Tarefa', width: 250 },
-        { field: 'StartDate', headerText: 'Data de Início', width: 120, format: 'dd/MM/yyyy', textAlign: 'Right' },
-        { field: 'Duration', headerText: 'Duração', width: 100, textAlign: 'Right' },
-        { field: 'Progress', headerText: 'Progresso', width: 100, textAlign: 'Right' }
+        { field: 'TaskID', headerText: 'ID', width: 60, textAlign: 'Right', allowEditing: false },
+        { field: 'TaskName', headerText: 'Nome da Tarefa', width: 250, allowEditing: true },
+        { field: 'StartDate', headerText: 'Data de Início', width: 120, format: 'dd/MM/yyyy', textAlign: 'Right', allowEditing: true, editType: 'datepickeredit' },
+        { field: 'Duration', headerText: 'Duração', width: 100, textAlign: 'Right', allowEditing: true, editType: 'numericedit' },
+        { field: 'Progress', headerText: 'Progresso', width: 100, textAlign: 'Right', allowEditing: true, editType: 'numericedit' }
     ],
     labelSettings: {
         leftLabel: 'TaskName',
@@ -223,3 +224,30 @@ document.addEventListener('keydown', function(event) {
 });
 
 ganttChart.appendTo('#Gantt');
+
+// Configurar edição com clique simples nas células
+ganttChart.dataBound = function() {
+    var gridElement = ganttChart.element.querySelector('.e-gridcontent');
+    if (gridElement) {
+        gridElement.addEventListener('click', function(e) {
+            var targetCell = e.target.closest('td.e-rowcell');
+            if (targetCell && !targetCell.classList.contains('e-editedbatchcell')) {
+                var cellIndex = Array.from(targetCell.parentNode.children).indexOf(targetCell);
+
+                // Verificar se é uma coluna editável
+                var columns = ganttChart.columns;
+                if (columns[cellIndex] && columns[cellIndex].allowEditing !== false && columns[cellIndex].field !== 'TaskID') {
+                    // Simular duplo clique para ativar edição
+                    setTimeout(function() {
+                        var dblClickEvent = new MouseEvent('dblclick', {
+                            bubbles: true,
+                            cancelable: true,
+                            view: window
+                        });
+                        targetCell.dispatchEvent(dblClickEvent);
+                    }, 10);
+                }
+            }
+        });
+    }
+};
