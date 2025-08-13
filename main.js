@@ -55,7 +55,8 @@ var ganttChart = new ej.gantt.Gantt({
         allowAdding: true,
         allowEditing: true,
         allowDeleting: true,
-        mode: 'Dialog'
+        allowTaskbarEditing: true,
+        mode: 'Auto'
     },
     toolbar: ['Add', 'Edit', 'Update', 'Delete', 'Cancel', 'ExpandAll', 'CollapseAll', 'ExcelExport', 'PdfExport', 'Search', 'ZoomIn', 'ZoomOut', 'ZoomToFit'],
     highlightWeekends: true,
