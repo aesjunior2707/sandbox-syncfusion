@@ -136,21 +136,18 @@ var ganttChart = new ej.gantt.Gantt({
         }
     },
 
-    // Melhorar feedback visual durante o drag
-    rowDrag: function (args) {
-        // Adicionar classe visual durante o drag
-        if (args.target && args.target.closest('tr')) {
-            var targetRow = args.target.closest('tr');
-            targetRow.classList.add('e-drag-hover');
-        }
+    // Controle de drag sem hover excessivo
+    rowDragStart: function (args) {
+        // Adicionar classe para desabilitar hover durante drag
+        ganttChart.element.classList.add('e-dragging');
     },
 
-    // Limpar feedback visual
-    rowDragStart: function (args) {
-        // Remover classes de hover anteriores
-        var rows = ganttChart.element.querySelectorAll('.e-drag-hover');
+    rowDragEnd: function (args) {
+        // Remover classe de drag e limpar estilos
+        ganttChart.element.classList.remove('e-dragging');
+        var rows = ganttChart.element.querySelectorAll('.e-valid-drop-target');
         rows.forEach(function(row) {
-            row.classList.remove('e-drag-hover');
+            row.classList.remove('e-valid-drop-target');
         });
     }
 });
