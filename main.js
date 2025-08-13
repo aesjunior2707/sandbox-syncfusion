@@ -225,19 +225,7 @@ document.addEventListener('keydown', function(event) {
 
 ganttChart.appendTo('#Gantt');
 
-// Configurar edição com clique simples
-ganttChart.cellSelect = function(args) {
-    // Verificar se a célula é editável
-    var column = args.cellInfo.column;
-    if (column && column.allowEditing !== false && column.field !== 'TaskID') {
-        // Pequeno delay para permitir que a seleção aconteça primeiro
-        setTimeout(function() {
-            ganttChart.editCell(args.rowIndex, column.field);
-        }, 50);
-    }
-};
-
-// Adicionar listener para cliques nas células da tabela
+// Configurar edição com clique simples nas células
 ganttChart.dataBound = function() {
     var gridElement = ganttChart.element.querySelector('.e-gridcontent');
     if (gridElement) {
@@ -250,9 +238,15 @@ ganttChart.dataBound = function() {
                 // Verificar se é uma coluna editável
                 var columns = ganttChart.columns;
                 if (columns[cellIndex] && columns[cellIndex].allowEditing !== false && columns[cellIndex].field !== 'TaskID') {
+                    // Selecionar a linha primeiro
+                    ganttChart.selectRow(rowIndex);
+
+                    // Iniciar edição da linha
                     setTimeout(function() {
-                        ganttChart.editCell(rowIndex, columns[cellIndex].field);
-                    }, 10);
+                        if (ganttChart.flatData && ganttChart.flatData[rowIndex]) {
+                            ganttChart.startEdit(ganttChart.flatData[rowIndex]);
+                        }
+                    }, 100);
                 }
             }
         });
