@@ -224,3 +224,15 @@ document.addEventListener('keydown', function(event) {
 });
 
 ganttChart.appendTo('#Gantt');
+
+// Configurar edição com clique simples
+ganttChart.cellSelect = function(args) {
+    // Verificar se a célula é editável
+    var column = args.cellInfo.column;
+    if (column && column.allowEditing !== false && column.field !== 'TaskID') {
+        // Pequeno delay para permitir que a seleção aconteça primeiro
+        setTimeout(function() {
+            ganttChart.editCell(args.rowIndex, column.field);
+        }, 50);
+    }
+};
