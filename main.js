@@ -48,6 +48,11 @@ var ganttChart = new ej.gantt.Gantt({
     allowSelection: true,
     allowResizing: true,
     allowReordering: true,
+    sortSettings: {
+        columns: [
+            { field: 'TaskID', direction: 'Ascending' }
+        ]
+    },
     allowExcelExport: true,
     allowPdfExport: true,
     allowRowDragAndDrop: true,
