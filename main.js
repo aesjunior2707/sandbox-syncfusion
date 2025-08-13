@@ -48,6 +48,11 @@ var ganttChart = new ej.gantt.Gantt({
     allowSelection: true,
     allowResizing: true,
     allowReordering: true,
+    sortSettings: {
+        columns: [
+            { field: 'TaskID', direction: 'Ascending' }
+        ]
+    },
     allowExcelExport: true,
     allowPdfExport: true,
     allowRowDragAndDrop: true,
@@ -95,10 +100,33 @@ var ganttChart = new ej.gantt.Gantt({
     },
     rowDrop: function (args) {
         console.log('Row dropped:', args);
-        if (!args.dropIndex) {
-            // Create a new task if dropped in an empty area
+
+        // Se foi um drop válido com posição definida
+        if (args.dropIndex !== undefined && args.dropPosition) {
+            var draggedRecord = args.data[0];
+            var targetRecord = args.targetRecord;
+
+            console.log('Dragged:', draggedRecord.TaskName);
+            console.log('Target:', targetRecord ? targetRecord.TaskName : 'No target');
+            console.log('Position:', args.dropPosition);
+
+            // Se foi solto "inside" (dentro de) outra tarefa, criar como subtask
+            if (args.dropPosition === 'child' && targetRecord) {
+                console.log('Criando subtask de:', targetRecord.TaskName);
+
+                // Remove a tarefa da posição original
+                ganttChart.deleteRecord(draggedRecord);
+
+                // Adiciona como subtask da tarefa alvo
+                setTimeout(function() {
+                    ganttChart.addRecord(draggedRecord, targetRecord.TaskID, 'Child');
+                }, 100);
+            }
+        }
+        // Se foi solto em área vazia, criar nova tarefa
+        else if (!args.dropIndex) {
             var newTask = {
-                TaskID: ganttChart.dataSource.length + 1,
+                TaskID: getNextTaskID(),
                 TaskName: 'Nova Tarefa',
                 StartDate: new Date(),
                 Duration: 1,
@@ -106,6 +134,24 @@ var ganttChart = new ej.gantt.Gantt({
             };
             ganttChart.addRecord(newTask, null, 'Child');
         }
+    },
+
+    // Melhorar feedback visual durante o drag
+    rowDrag: function (args) {
+        // Adicionar classe visual durante o drag
+        if (args.target && args.target.closest('tr')) {
+            var targetRow = args.target.closest('tr');
+            targetRow.classList.add('e-drag-hover');
+        }
+    },
+
+    // Limpar feedback visual
+    rowDragStart: function (args) {
+        // Remover classes de hover anteriores
+        var rows = ganttChart.element.querySelectorAll('.e-drag-hover');
+        rows.forEach(function(row) {
+            row.classList.remove('e-drag-hover');
+        });
     }
 });
 
