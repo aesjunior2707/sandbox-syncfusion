@@ -136,4 +136,81 @@ var ganttChart = new ej.gantt.Gantt({
         }
     }
 });
+
+// Helper functions for auto-creating new rows
+function getNextTaskID() {
+    var maxId = 0;
+    function findMaxId(data) {
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].TaskID > maxId) {
+                maxId = data[i].TaskID;
+            }
+            if (data[i].subtasks && data[i].subtasks.length > 0) {
+                findMaxId(data[i].subtasks);
+            }
+        }
+    }
+    findMaxId(ganttChart.dataSource);
+    return maxId + 1;
+}
+
+function createNewEmptyTask() {
+    var newTask = {
+        TaskID: getNextTaskID(),
+        TaskName: 'Nova Tarefa',
+        StartDate: new Date(),
+        Duration: 1,
+        Progress: 0
+    };
+
+    // Add the new task at the end of the main data
+    ganttChart.addRecord(newTask, ganttChart.dataSource.length, 'Below');
+
+    // Auto-select the new row for immediate editing
+    setTimeout(function() {
+        var newRowIndex = ganttChart.flatData.length - 1;
+        ganttChart.selectRow(newRowIndex);
+
+        // Start editing the task name immediately
+        ganttChart.editCell(newRowIndex, 'TaskName');
+    }, 100);
+}
+
+function checkAndCreateNewRow(rowIndex) {
+    var totalRows = ganttChart.flatData.length;
+
+    // If selecting the last row, prepare to create a new one
+    if (rowIndex >= totalRows - 1) {
+        // Add a small delay to allow for navigation completion
+        setTimeout(function() {
+            var selectedIndex = ganttChart.selectedRowIndex;
+            if (selectedIndex >= totalRows - 1) {
+                createNewEmptyTask();
+            }
+        }, 300);
+    }
+}
+
+// Handle keyboard navigation for creating new rows
+document.addEventListener('keydown', function(event) {
+    if (ganttChart && ganttChart.element) {
+        var selectedRowIndex = ganttChart.selectedRowIndex;
+        var totalRows = ganttChart.flatData.length;
+
+        // Check if we're in the Gantt component
+        if (document.activeElement && ganttChart.element.contains(document.activeElement)) {
+            // Arrow Down key
+            if (event.key === 'ArrowDown' && selectedRowIndex >= totalRows - 1) {
+                event.preventDefault();
+                createNewEmptyTask();
+            }
+            // Tab key (when not in edit mode)
+            else if (event.key === 'Tab' && selectedRowIndex >= totalRows - 1 && !ganttChart.isEdit) {
+                event.preventDefault();
+                createNewEmptyTask();
+            }
+        }
+    }
+});
+
 ganttChart.appendTo('#Gantt');
