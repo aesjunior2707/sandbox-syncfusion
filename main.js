@@ -101,7 +101,7 @@ var ganttChart = new ej.gantt.Gantt({
     toolbar: ['Add', 'Edit', 'Update', 'Delete', 'Cancel', 'ExpandAll', 'CollapseAll', 'ExcelExport', 'PdfExport', 'Search', 'ZoomIn', 'ZoomOut', 'ZoomToFit'],
     highlightWeekends: true,
     timelineSettings: {
-        timelineUnitSize: 120,
+        timelineUnitSize: 140,
         topTier: {
             unit: 'Month',
             format: 'MMM yyyy'
