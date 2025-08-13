@@ -1,304 +1,355 @@
 <!DOCTYPE html>
-  <html xmlns="http://www.w3.org/1999/xhtml">
-       <head>
-            <title>Essential JS 2 Gantt</title>
-            <!-- Essential JS 2 all material theme -->
-            <link href="https://cdn.syncfusion.com/ej2/30.1.37/bootstrap5.css" rel="stylesheet" type="text/css"/>
-            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-             <!-- Essential JS 2 all script -->
-            <script src="https://cdn.syncfusion.com/ej2/dist/ej2.min.js" type="text/javascript"></script>
-       </head>
-       <body>
-           <!-- Add the HTML <div> element for Gantt  -->
-             <div id="Gantt"></div>
-            <style>
-                /* DESIGN MODERNO E PROFISSIONAL */
-                html, body {
-                    margin: 0;
-                    padding: 0;
-                    height: 100%;
-                    width: 100%;
-                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                }
+ <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+           <title>Essential JS 2 Gantt</title>
+           <!-- Essential JS 2 Bootstrap 5 theme -->
+           <link href="https://cdn.syncfusion.com/ej2/30.1.37/bootstrap5.css" rel="stylesheet" type="text/css"/>
+           <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+            <!-- Essential JS 2 all script -->
+           <script src="https://cdn.syncfusion.com/ej2/dist/ej2.min.js" type="text/javascript"></script>
+      </head>
+      <body>
+          <!-- Add the HTML <div> element for Gantt  -->
+            <div id="Gantt"></div>
+           <style>
+               /* DESIGN EXECUTIVO COMPACTO - PALETA LARANJA #F57C00 */
+               html, body {
+                   margin: 0;
+                   padding: 0;
+                   height: 100%;
+                   width: 100%;
+                   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                   background: #f8f9fa;
+               }
+               
+               #Gantt {
+                   height: 100%;
+                   width: 100%;
+                   background: #ffffff;
+                   border: 1px solid #e5e7eb;
+               }
 
-                #Gantt {
-                    height: 100%;
-                    width: 100%;
-                    border-radius: 16px;
-                    overflow: hidden;
-                    box-shadow: 0 24px 48px rgba(0,0,0,0.15), 0 8px 16px rgba(0,0,0,0.1);
-                    backdrop-filter: blur(10px);
-                    border: 1px solid rgba(255,255,255,0.1);
-                }
+               /* TOOLBAR EXECUTIVO */
+               .e-gantt-toolbar {
+                   background: linear-gradient(135deg, #F57C00 0%, #E65100 100%) !important;
+                   border: none !important;
+                   padding: 6px 16px !important;
+                   box-shadow: 0 2px 8px rgba(245, 124, 0, 0.15) !important;
+                   height: 48px !important;
+               }
 
-                /* TOOLBAR MODERNO */
-                .e-gantt-toolbar {
-                    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important;
-                    border: none !important;
-                    padding: 12px 20px !important;
-                    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
-                }
+               .e-gantt-toolbar .e-toolbar-item .e-tbar-btn {
+                   background: rgba(255,255,255,0.1) !important;
+                   border: 1px solid rgba(255,255,255,0.15) !important;
+                   border-radius: 4px !important;
+                   color: #ffffff !important;
+                   font-weight: 500 !important;
+                   font-size: 11px !important;
+                   padding: 4px 8px !important;
+                   margin: 0 2px !important;
+                   height: 28px !important;
+                   min-width: auto !important;
+                   transition: all 0.2s ease !important;
+               }
 
-                .e-gantt-toolbar .e-toolbar-item .e-tbar-btn {
-                    background: rgba(255,255,255,0.1) !important;
-                    border: 1px solid rgba(255,255,255,0.2) !important;
-                    border-radius: 8px !important;
-                    color: #ffffff !important;
-                    font-weight: 500 !important;
-                    font-size: 13px !important;
-                    padding: 8px 16px !important;
-                    margin: 0 4px !important;
-                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                    backdrop-filter: blur(10px) !important;
-                }
+               .e-gantt-toolbar .e-toolbar-item .e-tbar-btn:hover {
+                   background: rgba(255,255,255,0.2) !important;
+                   border-color: rgba(255,255,255,0.25) !important;
+               }
 
-                .e-gantt-toolbar .e-toolbar-item .e-tbar-btn:hover {
-                    background: rgba(255,255,255,0.2) !important;
-                    border-color: rgba(255,255,255,0.3) !important;
-                    transform: translateY(-1px) !important;
-                    box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
-                }
+               .e-gantt-toolbar .e-toolbar-item .e-tbar-btn .e-tbar-btn-text {
+                   font-size: 11px !important;
+                   margin-left: 4px !important;
+               }
 
-                .e-gantt-toolbar .e-toolbar-item .e-tbar-btn:active {
-                    transform: translateY(0) !important;
-                }
+               /* GRID HEADER COMPACTO */
+               .e-gridheader {
+                   background: #f8f9fa !important;
+                   border: none !important;
+                   border-bottom: 2px solid #F57C00 !important;
+               }
 
-                /* GRID HEADER MODERNO */
-                .e-gridheader {
-                    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
-                    border: none !important;
-                    border-bottom: 1px solid #e2e8f0 !important;
-                }
+               .e-headercell {
+                   background: transparent !important;
+                   border-right: 1px solid #e5e7eb !important;
+                   color: #374151 !important;
+                   font-weight: 600 !important;
+                   font-size: 11px !important;
+                   text-transform: uppercase !important;
+                   letter-spacing: 0.5px !important;
+                   padding: 8px 6px !important;
+                   height: 32px !important;
+               }
 
-                .e-headercell {
-                    background: transparent !important;
-                    border-right: 1px solid #e2e8f0 !important;
-                    color: #475569 !important;
-                    font-weight: 600 !important;
-                    font-size: 13px !important;
-                    text-transform: uppercase !important;
-                    letter-spacing: 0.5px !important;
-                    padding: 16px 12px !important;
-                }
+               .e-headercell .e-headertext {
+                   color: #374151 !important;
+               }
 
-                .e-headercell .e-headertext {
-                    color: #475569 !important;
-                }
+               /* LINHAS COMPACTAS */
+               .e-gantt .e-row {
+                   border: none !important;
+                   background: #ffffff !important;
+                   height: 28px !important;
+               }
 
-                /* LINHAS DO GRID - MODERNAS */
-                .e-gantt .e-row {
-                    border: none !important;
-                    transition: all 0.2s ease !important;
-                    background: #ffffff !important;
-                }
+               .e-gantt .e-row:hover {
+                   background: #fef3e2 !important;
+               }
 
-                .e-gantt .e-row:hover {
-                    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
-                    transform: translateX(2px) !important;
-                }
+               .e-gantt .e-row.e-altrow {
+                   background: #fafbfc !important;
+               }
 
-                .e-gantt .e-row.e-altrow {
-                    background: #fafbfc !important;
-                }
+               .e-gantt .e-row.e-altrow:hover {
+                   background: #fef3e2 !important;
+               }
 
-                .e-gantt .e-row.e-altrow:hover {
-                    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
-                }
+               /* TAREFAS PAI - ESTILO EXECUTIVO */
+               .e-gantt .e-treerowcell {
+                   background: linear-gradient(135deg, #F57C00 0%, #FF8F00 100%) !important;
+                   color: #ffffff !important;
+                   font-weight: 600 !important;
+                   border: none !important;
+                   border-radius: 3px !important;
+                   margin: 1px 2px !important;
+                   box-shadow: 0 1px 3px rgba(245, 124, 0, 0.25) !important;
+               }
 
-                /* TAREFAS PAI - DESIGN PREMIUM */
-                .e-gantt .e-treerowcell {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-                    color: #ffffff !important;
-                    font-weight: 700 !important;
-                    border: none !important;
-                    border-radius: 8px !important;
-                    margin: 2px 4px !important;
-                    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
-                }
+               .e-gantt .e-treerowcell .e-treecell {
+                   color: #ffffff !important;
+                   font-weight: 600 !important;
+                   font-size: 12px !important;
+               }
 
-                .e-gantt .e-treerowcell .e-treecell {
-                    color: #ffffff !important;
-                    font-weight: 700 !important;
-                    text-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
-                }
+               /* CÉLULAS COMPACTAS */
+               .e-rowcell {
+                   border-right: 1px solid #f3f4f6 !important;
+                   color: #374151 !important;
+                   font-weight: 400 !important;
+                   font-size: 11px !important;
+                   padding: 4px 6px !important;
+                   height: 28px !important;
+                   line-height: 20px !important;
+               }
 
-                /* CÉLULAS NORMAIS */
-                .e-rowcell {
-                    border-right: 1px solid #f1f5f9 !important;
-                    color: #334155 !important;
-                    font-weight: 500 !important;
-                    font-size: 14px !important;
-                    padding: 12px !important;
-                }
+               /* ÍCONES COMPACTOS */
+               .e-gantt .e-treegridexpand,
+               .e-gantt .e-treegridcollapse {
+                   background: rgba(255,255,255,0.15) !important;
+                   border-radius: 2px !important;
+                   color: #ffffff !important;
+                   font-size: 10px !important;
+                   width: 16px !important;
+                   height: 16px !important;
+                   display: flex !important;
+                   align-items: center !important;
+                   justify-content: center !important;
+                   margin-right: 4px !important;
+               }
 
-                /* ÍCONES DE EXPANSÃO ELEGANTES */
-                .e-gantt .e-treegridexpand,
-                .e-gantt .e-treegridcollapse {
-                    background: rgba(255,255,255,0.2) !important;
-                    border-radius: 50% !important;
-                    color: #ffffff !important;
-                    font-size: 14px !important;
-                    width: 24px !important;
-                    height: 24px !important;
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    margin-right: 8px !important;
-                    transition: all 0.3s ease !important;
-                }
+               .e-gantt .e-treegridexpand:hover,
+               .e-gantt .e-treegridcollapse:hover {
+                   background: rgba(255,255,255,0.25) !important;
+               }
 
-                .e-gantt .e-treegridexpand:hover,
-                .e-gantt .e-treegridcollapse:hover {
-                    background: rgba(255,255,255,0.3) !important;
-                    transform: scale(1.1) !important;
-                }
+               /* TIMELINE COMPACTO */
+               .e-timeline-header-container {
+                   background: #f8f9fa !important;
+                   border: none !important;
+                   font-weight: 500 !important;
+                   height: 60px !important;
+               }
 
-                /* TIMELINE HEADER MODERNO */
-                .e-timeline-header-container {
-                    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
-                    border: none !important;
-                    font-weight: 600 !important;
-                }
+               .e-timeline-header-cell {
+                   border-right: 1px solid #e5e7eb !important;
+                   color: #374151 !important;
+                   font-size: 10px !important;
+                   font-weight: 500 !important;
+                   padding: 4px !important;
+               }
 
-                .e-timeline-header-cell {
-                    border-right: 1px solid #e2e8f0 !important;
-                    color: #475569 !important;
-                    font-size: 12px !important;
-                    font-weight: 600 !important;
-                }
+               /* BARRAS DE TAREFA EXECUTIVAS */
+               .e-gantt .e-gantt-parent-taskbar {
+                   background: linear-gradient(135deg, #F57C00 0%, #FF8F00 100%) !important;
+                   border: none !important;
+                   border-radius: 3px !important;
+                   box-shadow: 0 1px 3px rgba(245, 124, 0, 0.3) !important;
+                   height: 18px !important;
+               }
 
-                /* BARRAS DE TAREFA - DESIGN PREMIUM */
-                .e-gantt .e-gantt-parent-taskbar {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-                    border: none !important;
-                    border-radius: 6px !important;
-                    box-shadow: 0 3px 8px rgba(102, 126, 234, 0.3) !important;
-                    height: 24px !important;
-                }
+               .e-gantt .e-gantt-child-taskbar {
+                   background: linear-gradient(135deg, #FB8C00 0%, #F57C00 100%) !important;
+                   border: none !important;
+                   border-radius: 2px !important;
+                   box-shadow: 0 1px 2px rgba(251, 140, 0, 0.25) !important;
+                   height: 14px !important;
+               }
 
-                .e-gantt .e-gantt-child-taskbar {
-                    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
-                    border: none !important;
-                    border-radius: 4px !important;
-                    box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25) !important;
-                    height: 20px !important;
-                }
+               /* BARRAS DE PROGRESSO */
+               .e-gantt .e-gantt-parent-progressbar,
+               .e-gantt .e-gantt-child-progressbar {
+                   background: linear-gradient(135deg, #2E7D32 0%, #388E3C 100%) !important;
+                   border-radius: 2px !important;
+                   box-shadow: inset 0 1px 1px rgba(255,255,255,0.3) !important;
+               }
 
-                /* BARRAS DE PROGRESSO ELEGANTES */
-                .e-gantt .e-gantt-parent-progressbar,
-                .e-gantt .e-gantt-child-progressbar {
-                    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-                    border-radius: 4px !important;
-                    box-shadow: inset 0 1px 2px rgba(255,255,255,0.2) !important;
-                }
+               /* MARCOS */
+               .e-gantt .e-gantt-milestone {
+                   background: linear-gradient(135deg, #F57C00 0%, #E65100 100%) !important;
+                   border: 2px solid #ffffff !important;
+                   border-radius: 50% !important;
+                   box-shadow: 0 2px 4px rgba(245, 124, 0, 0.3) !important;
+                   width: 12px !important;
+                   height: 12px !important;
+               }
 
-                /* MARCOS ELEGANTES */
-                .e-gantt .e-gantt-milestone {
-                    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
-                    border: none !important;
-                    border-radius: 50% !important;
-                    box-shadow: 0 3px 8px rgba(245, 158, 11, 0.3) !important;
-                }
+               /* LINHA DO HOJE */
+               .e-gantt .e-timeline-today-line {
+                   border-left: 2px solid #F57C00 !important;
+                   box-shadow: 0 0 4px rgba(245, 124, 0, 0.4) !important;
+               }
 
-                /* LINHA DO HOJE */
-                .e-gantt .e-timeline-today-line {
-                    border-left: 2px solid #ef4444 !important;
-                    box-shadow: 0 0 8px rgba(239, 68, 68, 0.3) !important;
-                }
+               /* BOTÕES PRIMÁRIOS */
+               .e-btn.e-primary {
+                   background: linear-gradient(135deg, #F57C00 0%, #E65100 100%) !important;
+                   border: none !important;
+                   border-radius: 4px !important;
+                   color: #ffffff !important;
+                   font-weight: 500 !important;
+                   padding: 6px 12px !important;
+                   font-size: 11px !important;
+               }
 
-                /* BOTÕES PRIMÁRIOS */
-                .e-btn.e-primary {
-                    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
-                    border: none !important;
-                    border-radius: 8px !important;
-                    color: #ffffff !important;
-                    font-weight: 600 !important;
-                    padding: 10px 20px !important;
-                    transition: all 0.3s ease !important;
-                }
+               .e-btn.e-primary:hover {
+                   background: linear-gradient(135deg, #E65100 0%, #D84315 100%) !important;
+                   box-shadow: 0 2px 8px rgba(245, 124, 0, 0.3) !important;
+               }
 
-                .e-btn.e-primary:hover {
-                    background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%) !important;
-                    transform: translateY(-1px) !important;
-                    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3) !important;
-                }
+               /* SEARCH BAR EXECUTIVO */
+               .e-search-wrapper .e-input-group {
+                   background: rgba(255,255,255,0.15) !important;
+                   border: 1px solid rgba(255,255,255,0.2) !important;
+                   border-radius: 15px !important;
+                   height: 28px !important;
+               }
 
-                /* SEARCH BAR MODERNO */
-                .e-search-wrapper .e-input-group {
-                    background: rgba(255,255,255,0.15) !important;
-                    border: 1px solid rgba(255,255,255,0.2) !important;
-                    border-radius: 20px !important;
-                    backdrop-filter: blur(10px) !important;
-                }
+               .e-search-wrapper .e-input {
+                   background: transparent !important;
+                   border: none !important;
+                   color: #ffffff !important;
+                   font-weight: 400 !important;
+                   font-size: 11px !important;
+                   height: 26px !important;
+               }
 
-                .e-search-wrapper .e-input {
-                    background: transparent !important;
-                    border: none !important;
-                    color: #ffffff !important;
-                    font-weight: 500 !important;
-                }
+               .e-search-wrapper .e-input::placeholder {
+                   color: rgba(255,255,255,0.7) !important;
+                   font-size: 11px !important;
+               }
 
-                .e-search-wrapper .e-input::placeholder {
-                    color: rgba(255,255,255,0.7) !important;
-                }
+               /* SELEÇÃO ATIVA */
+               .e-gantt .e-active,
+               .e-gantt .e-row.e-active {
+                   background: rgba(245, 124, 0, 0.08) !important;
+                   border-left: 2px solid #F57C00 !important;
+               }
 
-                /* SELEÇÃO ATIVA */
-                .e-gantt .e-active,
-                .e-gantt .e-row.e-active {
-                    background: linear-gradient(135deg, rgba(79, 70, 229, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%) !important;
-                    border-left: 3px solid #4f46e5 !important;
-                }
+               /* ZONA DE DROP */
+               .e-gantt .e-row.e-valid-drop-target {
+                   background: rgba(245, 124, 0, 0.1) !important;
+                   border-left: 2px solid #F57C00 !important;
+               }
 
-                /* CURSOR DURANTE DRAG */
-                .e-gantt .e-drag-clone {
-                    cursor: grabbing !important;
-                    opacity: 0.8 !important;
-                }
+               /* SCROLLBARS MINIMALISTAS */
+               .e-content::-webkit-scrollbar {
+                   width: 6px;
+                   height: 6px;
+               }
 
-                /* ZONA DE DROP */
-                .e-gantt .e-row.e-valid-drop-target {
-                    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%) !important;
-                    border-left: 3px solid #10b981 !important;
-                }
+               .e-content::-webkit-scrollbar-track {
+                   background: #f1f5f9;
+                   border-radius: 3px;
+               }
 
-                /* SCROLLBARS CUSTOMIZADAS */
-                .e-content::-webkit-scrollbar {
-                    width: 8px;
-                    height: 8px;
-                }
+               .e-content::-webkit-scrollbar-thumb {
+                   background: #F57C00;
+                   border-radius: 3px;
+               }
 
-                .e-content::-webkit-scrollbar-track {
-                    background: #f1f5f9;
-                    border-radius: 4px;
-                }
+               .e-content::-webkit-scrollbar-thumb:hover {
+                   background: #E65100;
+               }
 
-                .e-content::-webkit-scrollbar-thumb {
-                    background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
-                    border-radius: 4px;
-                }
+               /* SPLITTER */
+               .e-split-bar {
+                   background: #F57C00 !important;
+                   width: 3px !important;
+               }
 
-                .e-content::-webkit-scrollbar-thumb:hover {
-                    background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
-                }
+               /* CURSOR DURANTE DRAG */
+               .e-gantt .e-drag-clone {
+                   cursor: grabbing !important;
+                   opacity: 0.9 !important;
+               }
 
-                /* ANIMAÇÕES SUAVES */
-                * {
-                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                }
+               /* DENSIDADE COMPACTA GERAL */
+               .e-gantt .e-chart-row {
+                   height: 28px !important;
+               }
 
-                /* RESPONSIVIDADE */
-                @media (max-width: 768px) {
-                    .e-gantt-toolbar {
-                        padding: 8px 12px !important;
-                    }
+               .e-gantt .e-chart-row-cell {
+                   height: 28px !important;
+               }
 
-                    .e-gantt-toolbar .e-toolbar-item .e-tbar-btn {
-                        padding: 6px 12px !important;
-                        font-size: 12px !important;
-                    }
-                }
-            </style>
-            <script src="main.js" type="text/javascript"></script>
-       </body>
-  </html>
+               /* TOOLTIPS PROFISSIONAIS */
+               .e-tooltip {
+                   background: rgba(55, 65, 81, 0.95) !important;
+                   color: #ffffff !important;
+                   border: none !important;
+                   border-radius: 4px !important;
+                   font-size: 11px !important;
+                   padding: 6px 8px !important;
+                   box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+                   backdrop-filter: blur(10px) !important;
+               }
+
+               /* DIALOG BOXES EXECUTIVOS */
+               .e-dialog {
+                   border-radius: 6px !important;
+                   box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+                   border: 1px solid #e5e7eb !important;
+               }
+
+               .e-dialog .e-dlg-content {
+                   font-size: 12px !important;
+                   color: #374151 !important;
+                   padding: 16px !important;
+               }
+
+               .e-dialog .e-footer-content .e-btn {
+                   border-radius: 4px !important;
+                   font-size: 11px !important;
+                   padding: 6px 16px !important;
+                   margin: 0 4px !important;
+               }
+
+               /* RESPONSIVIDADE PARA EXECUTIVOS */
+               @media (max-width: 1200px) {
+                   .e-gantt-toolbar {
+                       padding: 4px 12px !important;
+                   }
+                   
+                   .e-gantt-toolbar .e-toolbar-item .e-tbar-btn {
+                       padding: 3px 6px !important;
+                       font-size: 10px !important;
+                   }
+                   
+                   .e-rowcell {
+                       font-size: 10px !important;
+                       padding: 3px 4px !important;
+                   }
+               }
+           </style>
+           <script src="main.js" type="text/javascript"></script>
+      </body>
+ </html>
