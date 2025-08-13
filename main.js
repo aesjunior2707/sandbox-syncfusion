@@ -138,13 +138,10 @@ function createNewEmptyTask() {
     var lastParentIndex = ganttChart.dataSource.length - 1;
     ganttChart.addRecord(newTask, lastParentIndex, 'Below');
 
-    // Auto-select the new row for immediate editing
+    // Auto-select the new row
     setTimeout(function() {
         var newRowIndex = ganttChart.flatData.length - 1;
         ganttChart.selectRow(newRowIndex);
-
-        // Start editing the task name immediately
-        ganttChart.editCell(newRowIndex, 'TaskName');
     }, 100);
 }
 
