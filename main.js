@@ -300,7 +300,55 @@ document.addEventListener('keydown', function(event) {
 
 ganttChart.appendTo('#Gantt');
 
-// Configurar edição com clique simples nas células
+// Aplicar Zoom to Fit automaticamente ao carregar
+ganttChart.dataBound = function() {
+    // Aplicar zoom to fit na primeira vez que os dados são carregados
+    if (!ganttChart.isInitialLoad) {
+        ganttChart.isInitialLoad = true;
+        setTimeout(function() {
+            ganttChart.zoomToFit();
+        }, 100);
+    }
+
+    // Configurar edição com clique simples nas células
+    var gridElement = ganttChart.element.querySelector('.e-gridcontent');
+    if (gridElement) {
+        gridElement.addEventListener('click', function(e) {
+            // Verificar se clicou em ícone de expansão/colapso
+            if (e.target.closest('.e-treegridexpand') || e.target.closest('.e-treegridcollapse')) {
+                return; // Permitir funcionamento normal dos ícones
+            }
+
+            var targetCell = e.target.closest('td.e-rowcell');
+            if (targetCell && !targetCell.classList.contains('e-editedbatchcell')) {
+                var cellIndex = Array.from(targetCell.parentNode.children).indexOf(targetCell);
+
+                // Verificar se é uma coluna editável (não incluir coluna do nome se for linha pai)
+                var columns = ganttChart.columns;
+                var isParentRow = targetCell.parentNode.querySelector('.e-treegridexpand, .e-treegridcollapse');
+
+                if (columns[cellIndex] && columns[cellIndex].allowEditing !== false && columns[cellIndex].field !== 'TaskID') {
+                    // Se for linha pai e coluna nome da tarefa, não ativar edição
+                    if (isParentRow && columns[cellIndex].field === 'TaskName') {
+                        return;
+                    }
+
+                    // Simular duplo clique para ativar edição
+                    setTimeout(function() {
+                        var dblClickEvent = new MouseEvent('dblclick', {
+                            bubbles: true,
+                            cancelable: true,
+                            view: window
+                        });
+                        targetCell.dispatchEvent(dblClickEvent);
+                    }, 10);
+                }
+            }
+        });
+    }
+};
+
+// Configurar edição com clique simples nas células (fallback)
 ganttChart.dataBound = function() {
     var gridElement = ganttChart.element.querySelector('.e-gridcontent');
     if (gridElement) {
