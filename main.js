@@ -126,10 +126,17 @@ function getNextTaskID() {
 }
 
 function createNewEmptyTask() {
+    // Find the latest end date from all tasks
+    var latestEndDate = getLatestTaskEndDate();
+
+    // Calculate start date for new task (one day after the latest end date)
+    var newStartDate = new Date(latestEndDate);
+    newStartDate.setDate(newStartDate.getDate() + 1);
+
     var newTask = {
         TaskID: getNextTaskID(),
         TaskName: 'Nova Tarefa',
-        StartDate: new Date(),
+        StartDate: newStartDate,
         Duration: 1,
         Progress: 0
     };
