@@ -123,8 +123,8 @@ var ganttChart = new ej.gantt.Gantt({
     splitterSettings: {
         columnIndex: 2
     },
-    projectStartDate: new Date('09/28/2023'),
-    projectEndDate: new Date('10/25/2023'),
+    projectStartDate: new Date('08/01/2025'),
+    projectEndDate: new Date('08/31/2025'),
     zoomSettings: {
         enable: true,
         zoomIn: true,
