@@ -81,6 +81,8 @@ var ganttChart = new ej.gantt.Gantt({
     allowSelection: true,
     allowResizing: true,
     allowReordering: true,
+    treeColumnIndex: 1,
+    showColumnMenu: false,
     sortSettings: {
         columns: [
             { field: 'TaskID', direction: 'Ascending' }
