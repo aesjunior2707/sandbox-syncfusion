@@ -66,14 +66,14 @@ var ganttChart = new ej.gantt.Gantt({
     toolbar: ['Add', 'Edit', 'Update', 'Delete', 'Cancel', 'ExpandAll', 'CollapseAll', 'ExcelExport', 'PdfExport', 'Search', 'ZoomIn', 'ZoomOut', 'ZoomToFit'],
     highlightWeekends: true,
     timelineSettings: {
-        timelineUnitSize: 50,
+        timelineUnitSize: 80,
         topTier: {
-            unit: 'Week',
-            format: 'MMM dd, yyyy'
+            unit: 'Month',
+            format: 'MMM yyyy'
         },
         bottomTier: {
-            unit: 'Day',
-            format: 'd'
+            unit: 'Week',
+            format: 'dd MMM'
         }
     },
     columns: [
