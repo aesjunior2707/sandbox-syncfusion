@@ -2,34 +2,67 @@ var ganttChart = new ej.gantt.Gantt({
     dataSource: [
         {
             TaskID: 1,
-            TaskName: 'Planejamento da Produção',
-            StartDate: new Date('10/01/2023'),
-            EndDate: new Date('10/05/2023'),
+            TaskName: 'Planejamento e Design do Veículo',
+            StartDate: new Date('08/01/2025'),
+            EndDate: new Date('08/05/2025'),
             subtasks: [
-                { TaskID: 2, TaskName: 'Definir cronograma de produção', StartDate: new Date('10/01/2023'), Duration: 2, Progress: 60 },
-                { TaskID: 3, TaskName: 'Alocar recursos', StartDate: new Date('10/02/2023'), Duration: 2, Progress: 40 },
-                { TaskID: 4, TaskName: 'Aprovação do planejamento', StartDate: new Date('10/03/2023'), Duration: 1, Progress: 30 },
+                { TaskID: 2, TaskName: 'Análise de requisitos técnicos', StartDate: new Date('08/01/2025'), Duration: 2, Progress: 80 },
+                { TaskID: 3, TaskName: 'Design da carroceria', StartDate: new Date('08/03/2025'), Duration: 2, Progress: 70 },
+                { TaskID: 4, TaskName: 'Especificação de componentes', StartDate: new Date('08/04/2025'), Duration: 1, Progress: 60 },
             ]
         },
         {
             TaskID: 5,
-            TaskName: 'Produção de Peças',
-            StartDate: new Date('10/06/2023'),
-            EndDate: new Date('10/15/2023'),
+            TaskName: 'Fabricação da Carroceria',
+            StartDate: new Date('08/06/2025'),
+            EndDate: new Date('08/12/2025'),
             subtasks: [
-                { TaskID: 6, TaskName: 'Corte de matéria-prima', StartDate: new Date('10/06/2023'), Duration: 3, Progress: 50 },
-                { TaskID: 7, TaskName: 'Usinagem', StartDate: new Date('10/09/2023'), Duration: 4, Progress: 40 },
-                { TaskID: 8, TaskName: 'Tratamento térmico', StartDate: new Date('10/13/2023'), Duration: 2, Progress: 20 },
+                { TaskID: 6, TaskName: 'Corte de chapas metálicas', StartDate: new Date('08/06/2025'), Duration: 2, Progress: 90 },
+                { TaskID: 7, TaskName: 'Estampagem de peças', StartDate: new Date('08/08/2025'), Duration: 2, Progress: 75 },
+                { TaskID: 8, TaskName: 'Solda da estrutura', StartDate: new Date('08/10/2025'), Duration: 3, Progress: 50 },
             ]
         },
         {
             TaskID: 9,
-            TaskName: 'Montagem e Inspeção',
-            StartDate: new Date('10/16/2023'),
-            EndDate: new Date('10/20/2023'),
+            TaskName: 'Sistema de Motorização',
+            StartDate: new Date('08/13/2025'),
+            EndDate: new Date('08/18/2025'),
             subtasks: [
-                { TaskID: 10, TaskName: 'Montagem dos componentes', StartDate: new Date('10/16/2023'), Duration: 3, Progress: 30 },
-                { TaskID: 11, TaskName: 'Inspeção de qualidade', StartDate: new Date('10/19/2023'), Duration: 2, Progress: 10 },
+                { TaskID: 10, TaskName: 'Usinagem do bloco do motor', StartDate: new Date('08/13/2025'), Duration: 2, Progress: 60 },
+                { TaskID: 11, TaskName: 'Montagem do motor', StartDate: new Date('08/15/2025'), Duration: 2, Progress: 40 },
+                { TaskID: 12, TaskName: 'Sistema de transmissão', StartDate: new Date('08/17/2025'), Duration: 2, Progress: 30 },
+            ]
+        },
+        {
+            TaskID: 13,
+            TaskName: 'Chassi e Suspensão',
+            StartDate: new Date('08/19/2025'),
+            EndDate: new Date('08/23/2025'),
+            subtasks: [
+                { TaskID: 14, TaskName: 'Soldagem do chassi', StartDate: new Date('08/19/2025'), Duration: 2, Progress: 45 },
+                { TaskID: 15, TaskName: 'Sistema de freios', StartDate: new Date('08/21/2025'), Duration: 2, Progress: 25 },
+                { TaskID: 16, TaskName: 'Montagem da suspensão', StartDate: new Date('08/22/2025'), Duration: 2, Progress: 20 },
+            ]
+        },
+        {
+            TaskID: 17,
+            TaskName: 'Montagem Final',
+            StartDate: new Date('08/24/2025'),
+            EndDate: new Date('08/29/2025'),
+            subtasks: [
+                { TaskID: 18, TaskName: 'Instalação do motor no chassi', StartDate: new Date('08/24/2025'), Duration: 2, Progress: 15 },
+                { TaskID: 19, TaskName: 'Montagem da carroceria', StartDate: new Date('08/26/2025'), Duration: 2, Progress: 10 },
+                { TaskID: 20, TaskName: 'Sistema elétrico e eletrônico', StartDate: new Date('08/27/2025'), Duration: 2, Progress: 5 },
+            ]
+        },
+        {
+            TaskID: 21,
+            TaskName: 'Testes e Controle de Qualidade',
+            StartDate: new Date('08/30/2025'),
+            EndDate: new Date('08/31/2025'),
+            subtasks: [
+                { TaskID: 22, TaskName: 'Testes de funcionamento', StartDate: new Date('08/30/2025'), Duration: 1, Progress: 0 },
+                { TaskID: 23, TaskName: 'Inspeção final de qualidade', StartDate: new Date('08/31/2025'), Duration: 1, Progress: 0 },
             ]
         },
     ],
@@ -48,6 +81,8 @@ var ganttChart = new ej.gantt.Gantt({
     allowSelection: true,
     allowResizing: true,
     allowReordering: true,
+    treeColumnIndex: 1,
+    showColumnMenu: false,
     sortSettings: {
         columns: [
             { field: 'TaskID', direction: 'Ascending' }
@@ -66,20 +101,20 @@ var ganttChart = new ej.gantt.Gantt({
     toolbar: ['Add', 'Edit', 'Update', 'Delete', 'Cancel', 'ExpandAll', 'CollapseAll', 'ExcelExport', 'PdfExport', 'Search', 'ZoomIn', 'ZoomOut', 'ZoomToFit'],
     highlightWeekends: true,
     timelineSettings: {
-        timelineUnitSize: 50,
+        timelineUnitSize: 80,
         topTier: {
-            unit: 'Week',
-            format: 'MMM dd, yyyy'
+            unit: 'Month',
+            format: 'MMM yyyy'
         },
         bottomTier: {
-            unit: 'Day',
-            format: 'd'
+            unit: 'Week',
+            format: 'dd MMM'
         }
     },
     columns: [
         { field: 'TaskID', headerText: 'ID', width: 60, textAlign: 'Right', allowEditing: false },
-        { field: 'TaskName', headerText: 'Nome da Tarefa', width: 250, allowEditing: true },
-        { field: 'StartDate', headerText: 'Data de Início', width: 120, format: 'dd/MM/yyyy', textAlign: 'Right', allowEditing: true, editType: 'datepickeredit' },
+        { field: 'TaskName', headerText: 'Nome da Tarefa', width: 280, allowEditing: true, clipMode: 'EllipsisWithTooltip' },
+        { field: 'StartDate', headerText: 'Data de Início', width: 120, format: 'dd MM yyyy', textAlign: 'Right', allowEditing: true, editType: 'datepickeredit' },
         { field: 'Duration', headerText: 'Duração', width: 100, textAlign: 'Right', allowEditing: true, editType: 'numericedit' },
         { field: 'Progress', headerText: 'Progresso', width: 100, textAlign: 'Right', allowEditing: true, editType: 'numericedit' }
     ],
@@ -90,8 +125,8 @@ var ganttChart = new ej.gantt.Gantt({
     splitterSettings: {
         columnIndex: 2
     },
-    projectStartDate: new Date('09/28/2023'),
-    projectEndDate: new Date('10/25/2023'),
+    projectStartDate: new Date('08/01/2025'),
+    projectEndDate: new Date('08/31/2025'),
     zoomSettings: {
         enable: true,
         zoomIn: true,
@@ -136,21 +171,18 @@ var ganttChart = new ej.gantt.Gantt({
         }
     },
 
-    // Melhorar feedback visual durante o drag
-    rowDrag: function (args) {
-        // Adicionar classe visual durante o drag
-        if (args.target && args.target.closest('tr')) {
-            var targetRow = args.target.closest('tr');
-            targetRow.classList.add('e-drag-hover');
-        }
+    // Controle de drag sem hover excessivo
+    rowDragStart: function (args) {
+        // Adicionar classe para desabilitar hover durante drag
+        ganttChart.element.classList.add('e-dragging');
     },
 
-    // Limpar feedback visual
-    rowDragStart: function (args) {
-        // Remover classes de hover anteriores
-        var rows = ganttChart.element.querySelectorAll('.e-drag-hover');
+    rowDragEnd: function (args) {
+        // Remover classe de drag e limpar estilos
+        ganttChart.element.classList.remove('e-dragging');
+        var rows = ganttChart.element.querySelectorAll('.e-valid-drop-target');
         rows.forEach(function(row) {
-            row.classList.remove('e-drag-hover');
+            row.classList.remove('e-valid-drop-target');
         });
     }
 });
@@ -276,13 +308,25 @@ ganttChart.dataBound = function() {
     var gridElement = ganttChart.element.querySelector('.e-gridcontent');
     if (gridElement) {
         gridElement.addEventListener('click', function(e) {
+            // Verificar se clicou em ícone de expansão/colapso
+            if (e.target.closest('.e-treegridexpand') || e.target.closest('.e-treegridcollapse')) {
+                return; // Permitir funcionamento normal dos ícones
+            }
+
             var targetCell = e.target.closest('td.e-rowcell');
             if (targetCell && !targetCell.classList.contains('e-editedbatchcell')) {
                 var cellIndex = Array.from(targetCell.parentNode.children).indexOf(targetCell);
 
-                // Verificar se é uma coluna editável
+                // Verificar se é uma coluna editável (não incluir coluna do nome se for linha pai)
                 var columns = ganttChart.columns;
+                var isParentRow = targetCell.parentNode.querySelector('.e-treegridexpand, .e-treegridcollapse');
+
                 if (columns[cellIndex] && columns[cellIndex].allowEditing !== false && columns[cellIndex].field !== 'TaskID') {
+                    // Se for linha pai e coluna nome da tarefa, não ativar edição
+                    if (isParentRow && columns[cellIndex].field === 'TaskName') {
+                        return;
+                    }
+
                     // Simular duplo clique para ativar edição
                     setTimeout(function() {
                         var dblClickEvent = new MouseEvent('dblclick', {
