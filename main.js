@@ -2,34 +2,67 @@ var ganttChart = new ej.gantt.Gantt({
     dataSource: [
         {
             TaskID: 1,
-            TaskName: 'Planejamento da Produção',
-            StartDate: new Date('10/01/2023'),
-            EndDate: new Date('10/05/2023'),
+            TaskName: 'Planejamento e Design do Veículo',
+            StartDate: new Date('08/01/2025'),
+            EndDate: new Date('08/05/2025'),
             subtasks: [
-                { TaskID: 2, TaskName: 'Definir cronograma de produção', StartDate: new Date('10/01/2023'), Duration: 2, Progress: 60 },
-                { TaskID: 3, TaskName: 'Alocar recursos', StartDate: new Date('10/02/2023'), Duration: 2, Progress: 40 },
-                { TaskID: 4, TaskName: 'Aprovação do planejamento', StartDate: new Date('10/03/2023'), Duration: 1, Progress: 30 },
+                { TaskID: 2, TaskName: 'Análise de requisitos técnicos', StartDate: new Date('08/01/2025'), Duration: 2, Progress: 80 },
+                { TaskID: 3, TaskName: 'Design da carroceria', StartDate: new Date('08/03/2025'), Duration: 2, Progress: 70 },
+                { TaskID: 4, TaskName: 'Especificação de componentes', StartDate: new Date('08/04/2025'), Duration: 1, Progress: 60 },
             ]
         },
         {
             TaskID: 5,
-            TaskName: 'Produção de Peças',
-            StartDate: new Date('10/06/2023'),
-            EndDate: new Date('10/15/2023'),
+            TaskName: 'Fabricação da Carroceria',
+            StartDate: new Date('08/06/2025'),
+            EndDate: new Date('08/12/2025'),
             subtasks: [
-                { TaskID: 6, TaskName: 'Corte de matéria-prima', StartDate: new Date('10/06/2023'), Duration: 3, Progress: 50 },
-                { TaskID: 7, TaskName: 'Usinagem', StartDate: new Date('10/09/2023'), Duration: 4, Progress: 40 },
-                { TaskID: 8, TaskName: 'Tratamento térmico', StartDate: new Date('10/13/2023'), Duration: 2, Progress: 20 },
+                { TaskID: 6, TaskName: 'Corte de chapas metálicas', StartDate: new Date('08/06/2025'), Duration: 2, Progress: 90 },
+                { TaskID: 7, TaskName: 'Estampagem de peças', StartDate: new Date('08/08/2025'), Duration: 2, Progress: 75 },
+                { TaskID: 8, TaskName: 'Solda da estrutura', StartDate: new Date('08/10/2025'), Duration: 3, Progress: 50 },
             ]
         },
         {
             TaskID: 9,
-            TaskName: 'Montagem e Inspeção',
-            StartDate: new Date('10/16/2023'),
-            EndDate: new Date('10/20/2023'),
+            TaskName: 'Sistema de Motorização',
+            StartDate: new Date('08/13/2025'),
+            EndDate: new Date('08/18/2025'),
             subtasks: [
-                { TaskID: 10, TaskName: 'Montagem dos componentes', StartDate: new Date('10/16/2023'), Duration: 3, Progress: 30 },
-                { TaskID: 11, TaskName: 'Inspeção de qualidade', StartDate: new Date('10/19/2023'), Duration: 2, Progress: 10 },
+                { TaskID: 10, TaskName: 'Usinagem do bloco do motor', StartDate: new Date('08/13/2025'), Duration: 2, Progress: 60 },
+                { TaskID: 11, TaskName: 'Montagem do motor', StartDate: new Date('08/15/2025'), Duration: 2, Progress: 40 },
+                { TaskID: 12, TaskName: 'Sistema de transmissão', StartDate: new Date('08/17/2025'), Duration: 2, Progress: 30 },
+            ]
+        },
+        {
+            TaskID: 13,
+            TaskName: 'Chassi e Suspensão',
+            StartDate: new Date('08/19/2025'),
+            EndDate: new Date('08/23/2025'),
+            subtasks: [
+                { TaskID: 14, TaskName: 'Soldagem do chassi', StartDate: new Date('08/19/2025'), Duration: 2, Progress: 45 },
+                { TaskID: 15, TaskName: 'Sistema de freios', StartDate: new Date('08/21/2025'), Duration: 2, Progress: 25 },
+                { TaskID: 16, TaskName: 'Montagem da suspensão', StartDate: new Date('08/22/2025'), Duration: 2, Progress: 20 },
+            ]
+        },
+        {
+            TaskID: 17,
+            TaskName: 'Montagem Final',
+            StartDate: new Date('08/24/2025'),
+            EndDate: new Date('08/29/2025'),
+            subtasks: [
+                { TaskID: 18, TaskName: 'Instalação do motor no chassi', StartDate: new Date('08/24/2025'), Duration: 2, Progress: 15 },
+                { TaskID: 19, TaskName: 'Montagem da carroceria', StartDate: new Date('08/26/2025'), Duration: 2, Progress: 10 },
+                { TaskID: 20, TaskName: 'Sistema elétrico e eletrônico', StartDate: new Date('08/27/2025'), Duration: 2, Progress: 5 },
+            ]
+        },
+        {
+            TaskID: 21,
+            TaskName: 'Testes e Controle de Qualidade',
+            StartDate: new Date('08/30/2025'),
+            EndDate: new Date('08/31/2025'),
+            subtasks: [
+                { TaskID: 22, TaskName: 'Testes de funcionamento', StartDate: new Date('08/30/2025'), Duration: 1, Progress: 0 },
+                { TaskID: 23, TaskName: 'Inspeção final de qualidade', StartDate: new Date('08/31/2025'), Duration: 1, Progress: 0 },
             ]
         },
     ],
