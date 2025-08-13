@@ -134,8 +134,9 @@ function createNewEmptyTask() {
         Progress: 0
     };
 
-    // Add the new task at the end of the main data
-    ganttChart.addRecord(newTask, ganttChart.dataSource.length, 'Below');
+    // Add the new task at the end of the main data (as sibling to last parent)
+    var lastParentIndex = ganttChart.dataSource.length - 1;
+    ganttChart.addRecord(newTask, lastParentIndex, 'Below');
 
     // Auto-select the new row for immediate editing
     setTimeout(function() {
