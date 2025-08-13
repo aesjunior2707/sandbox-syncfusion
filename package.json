@@ -1,0 +1,16 @@
+{
+  "name": "gantt-chart-app",
+  "version": "1.0.0",
+  "description": "Syncfusion Gantt Chart Application",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve . -p 3000",
+    "start": "npx serve . -p 3000"
+  },
+  "keywords": ["gantt", "syncfusion", "chart"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}
