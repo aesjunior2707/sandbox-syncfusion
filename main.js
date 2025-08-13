@@ -79,7 +79,7 @@ var ganttChart = new ej.gantt.Gantt({
     columns: [
         { field: 'TaskID', headerText: 'ID', width: 60, textAlign: 'Right', allowEditing: false },
         { field: 'TaskName', headerText: 'Nome da Tarefa', width: 250, allowEditing: true },
-        { field: 'StartDate', headerText: 'Data de Início', width: 120, format: 'dd/MM/yyyy', textAlign: 'Right', allowEditing: true, editType: 'datepickeredit' },
+        { field: 'StartDate', headerText: 'Data de Início', width: 120, format: 'dd MM yyyy', textAlign: 'Right', allowEditing: true, editType: 'datepickeredit' },
         { field: 'Duration', headerText: 'Duração', width: 100, textAlign: 'Right', allowEditing: true, editType: 'numericedit' },
         { field: 'Progress', headerText: 'Progresso', width: 100, textAlign: 'Right', allowEditing: true, editType: 'numericedit' }
     ],
