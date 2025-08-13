@@ -236,3 +236,25 @@ ganttChart.cellSelect = function(args) {
         }, 50);
     }
 };
+
+// Adicionar listener para cliques nas células da tabela
+ganttChart.dataBound = function() {
+    var gridElement = ganttChart.element.querySelector('.e-gridcontent');
+    if (gridElement) {
+        gridElement.addEventListener('click', function(e) {
+            var targetCell = e.target.closest('td.e-rowcell');
+            if (targetCell && !targetCell.classList.contains('e-editedbatchcell')) {
+                var cellIndex = Array.from(targetCell.parentNode.children).indexOf(targetCell);
+                var rowIndex = Array.from(targetCell.parentNode.parentNode.children).indexOf(targetCell.parentNode);
+
+                // Verificar se é uma coluna editável
+                var columns = ganttChart.columns;
+                if (columns[cellIndex] && columns[cellIndex].allowEditing !== false && columns[cellIndex].field !== 'TaskID') {
+                    setTimeout(function() {
+                        ganttChart.editCell(rowIndex, columns[cellIndex].field);
+                    }, 10);
+                }
+            }
+        });
+    }
+};
