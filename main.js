@@ -225,7 +225,7 @@ function getLatestTaskEndDate() {
     return latestDate;
 }
 
-function createNewEmptyTask() {   
+function createNewEmptyTask() {
     var latestEndDate = getLatestTaskEndDate();
 
     var newStartDate = new Date(latestEndDate);
@@ -244,6 +244,11 @@ function createNewEmptyTask() {
     setTimeout(function() {
         var newRowIndex = ganttChart.flatData.length - 1;
         ganttChart.selectRow(newRowIndex);
+
+        // Ativar edição automaticamente na nova tarefa
+        setTimeout(function() {
+            activateEditForSelectedRow();
+        }, 200);
     }, 100);
 }
 
