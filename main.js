@@ -267,10 +267,46 @@ document.addEventListener('keydown', function(event) {
         var totalRows = ganttChart.flatData.length;
 
         if (document.activeElement && ganttChart.element.contains(document.activeElement)) {
-            // Arrow Down key
-            if (event.key === 'ArrowDown' && selectedRowIndex >= totalRows - 1) {
-                event.preventDefault();
-                createNewEmptyTask();
+            // Navegação por setas - ativar edição após movimento
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+                // Se chegou na última linha com Arrow Down, criar nova tarefa
+                if (event.key === 'ArrowDown' && selectedRowIndex >= totalRows - 1) {
+                    event.preventDefault();
+                    createNewEmptyTask();
+                    return;
+                }
+
+                // Aguardar o movimento da seleção e então ativar edição
+                setTimeout(function() {
+                    var newSelectedRowIndex = ganttChart.selectedRowIndex;
+                    if (newSelectedRowIndex >= 0) {
+                        var gridContent = ganttChart.element.querySelector('.e-gridcontent');
+                        if (gridContent) {
+                            var selectedRow = gridContent.querySelector('.e-row.e-active');
+                            if (selectedRow) {
+                                // Encontrar a primeira célula editável
+                                var cells = selectedRow.querySelectorAll('td.e-rowcell');
+                                for (var i = 0; i < cells.length; i++) {
+                                    var cellIndex = i;
+                                    var columns = ganttChart.columns;
+                                    if (columns[cellIndex] && columns[cellIndex].allowEditing !== false && columns[cellIndex].field !== 'TaskID') {
+                                        // Preferir a coluna TaskName se editável
+                                        if (columns[cellIndex].field === 'TaskName') {
+                                            var isParentRow = selectedRow.querySelector('.e-treegridexpand, .e-treegridcollapse');
+                                            if (!isParentRow) {
+                                                activateEditForCell(cells[i]);
+                                                break;
+                                            }
+                                        } else {
+                                            activateEditForCell(cells[i]);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }, 150);
             }
             // Tab key (when not in edit mode)
             else if (event.key === 'Tab' && selectedRowIndex >= totalRows - 1 && !ganttChart.isEdit) {
