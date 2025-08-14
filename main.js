@@ -283,8 +283,39 @@ document.addEventListener('keydown', function(event) {
 
 ganttChart.appendTo('#Gantt');
 
+// Função para ativar edição em uma célula
+function activateEditForCell(targetCell) {
+    if (!targetCell || targetCell.classList.contains('e-editedbatchcell')) {
+        return false;
+    }
+
+    var cellIndex = Array.from(targetCell.parentNode.children).indexOf(targetCell);
+    var columns = ganttChart.columns;
+    var isParentRow = targetCell.parentNode.querySelector('.e-treegridexpand, .e-treegridcollapse');
+
+    // Verificar se a célula é editável
+    if (columns[cellIndex] && columns[cellIndex].allowEditing !== false && columns[cellIndex].field !== 'TaskID') {
+        // Se for linha pai e coluna nome da tarefa, não ativar edição
+        if (isParentRow && columns[cellIndex].field === 'TaskName') {
+            return false;
+        }
+
+        // Ativar edição
+        setTimeout(function() {
+            var dblClickEvent = new MouseEvent('dblclick', {
+                bubbles: true,
+                cancelable: true,
+                view: window
+            });
+            targetCell.dispatchEvent(dblClickEvent);
+        }, 50);
+        return true;
+    }
+    return false;
+}
+
 ganttChart.dataBound = function() {
-   
+
     if (!ganttChart.isInitialLoad) {
         ganttChart.isInitialLoad = true;
         setTimeout(function() {
@@ -294,6 +325,7 @@ ganttChart.dataBound = function() {
 
     var gridElement = ganttChart.element.querySelector('.e-gridcontent');
     if (gridElement) {
+        // Click para ativar edição imediata
         gridElement.addEventListener('click', function(e) {
             // Verificar se clicou em ícone de expansão/colapso
             if (e.target.closest('.e-treegridexpand') || e.target.closest('.e-treegridcollapse')) {
@@ -301,30 +333,31 @@ ganttChart.dataBound = function() {
             }
 
             var targetCell = e.target.closest('td.e-rowcell');
-            if (targetCell && !targetCell.classList.contains('e-editedbatchcell')) {
-                var cellIndex = Array.from(targetCell.parentNode.children).indexOf(targetCell);
-
-                
-                var columns = ganttChart.columns;
-                var isParentRow = targetCell.parentNode.querySelector('.e-treegridexpand, .e-treegridcollapse');
-
-                if (columns[cellIndex] && columns[cellIndex].allowEditing !== false && columns[cellIndex].field !== 'TaskID') {
-                    // Se for linha pai e coluna nome da tarefa, não ativar edição
-                    if (isParentRow && columns[cellIndex].field === 'TaskName') {
-                        return;
-                    }
-
-                   
-                    setTimeout(function() {
-                        var dblClickEvent = new MouseEvent('dblclick', {
-                            bubbles: true,
-                            cancelable: true,
-                            view: window
-                        });
-                        targetCell.dispatchEvent(dblClickEvent);
-                    }, 10);
-                }
+            if (targetCell) {
+                activateEditForCell(targetCell);
             }
         });
     }
+};
+
+// Listener para navegação por teclado
+ganttChart.cellSelected = function(args) {
+    // Aguardar um pouco para garantir que a seleção foi processada
+    setTimeout(function() {
+        var selectedRowIndex = ganttChart.selectedRowIndex;
+        var selectedCellIndex = args.cellIndex;
+
+        if (selectedRowIndex >= 0 && selectedCellIndex >= 0) {
+            var gridContent = ganttChart.element.querySelector('.e-gridcontent');
+            if (gridContent) {
+                var rows = gridContent.querySelectorAll('tr.e-row');
+                if (rows[selectedRowIndex]) {
+                    var cells = rows[selectedRowIndex].querySelectorAll('td.e-rowcell');
+                    if (cells[selectedCellIndex]) {
+                        activateEditForCell(cells[selectedCellIndex]);
+                    }
+                }
+            }
+        }
+    }, 100);
 };
