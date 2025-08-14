@@ -365,4 +365,58 @@ ganttChart.dataBound = function() {
             ganttChart.fitToProject();
         }, 100);
     }
+
+    // Adicionar evento de clique simples para edição
+    setTimeout(function() {
+        addClickEditFunctionality();
+    }, 200);
 };
+
+// Função para adicionar funcionalidade de edição por clique simples
+function addClickEditFunctionality() {
+    var gridContent = ganttChart.element.querySelector('.e-gridcontent');
+    if (gridContent) {
+        // Remover eventos anteriores para evitar duplicação
+        gridContent.removeEventListener('click', handleCellClick);
+        // Adicionar novo evento
+        gridContent.addEventListener('click', handleCellClick);
+    }
+}
+
+// Handler para clique nas células
+function handleCellClick(event) {
+    var target = event.target;
+
+    // Verificar se clicou em uma célula editável
+    var cell = target.closest('td.e-rowcell');
+    if (!cell) return;
+
+    var row = cell.closest('tr.e-row');
+    if (!row) return;
+
+    // Verificar se a célula é editável
+    var cellIndex = Array.from(row.children).indexOf(cell);
+    var columns = ganttChart.columns;
+
+    if (columns[cellIndex] && columns[cellIndex].allowEditing !== false && columns[cellIndex].field !== 'TaskID') {
+        // Verificar se é linha pai e se estamos clicando na coluna TaskName
+        var isParentRow = row.querySelector('.e-treegridexpand, .e-treegridcollapse');
+        if (isParentRow && columns[cellIndex].field === 'TaskName') {
+            return; // Não permitir edição do nome em tarefas pai
+        }
+
+        // Selecionar a linha primeiro
+        var rowIndex = Array.from(row.parentNode.children).indexOf(row);
+        ganttChart.selectRow(rowIndex);
+
+        // Ativar edição com um pequeno delay
+        setTimeout(function() {
+            var dblClickEvent = new MouseEvent('dblclick', {
+                bubbles: true,
+                cancelable: true,
+                view: window
+            });
+            cell.dispatchEvent(dblClickEvent);
+        }, 100);
+    }
+}
