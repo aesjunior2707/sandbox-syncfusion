@@ -160,6 +160,15 @@ var ganttChart = new ej.gantt.Gantt({
                 Progress: 0
             };
             ganttChart.addRecord(newTask, null, 'Child');
+
+            // Ativar edição automaticamente na nova tarefa
+            setTimeout(function() {
+                var newRowIndex = ganttChart.flatData.length - 1;
+                ganttChart.selectRow(newRowIndex);
+                setTimeout(function() {
+                    activateEditForSelectedRow();
+                }, 200);
+            }, 100);
         }
     },
 
@@ -225,7 +234,7 @@ function getLatestTaskEndDate() {
     return latestDate;
 }
 
-function createNewEmptyTask() {   
+function createNewEmptyTask() {
     var latestEndDate = getLatestTaskEndDate();
 
     var newStartDate = new Date(latestEndDate);
@@ -244,6 +253,11 @@ function createNewEmptyTask() {
     setTimeout(function() {
         var newRowIndex = ganttChart.flatData.length - 1;
         ganttChart.selectRow(newRowIndex);
+
+        // Ativar edição automaticamente na nova tarefa
+        setTimeout(function() {
+            activateEditForSelectedRow();
+        }, 200);
     }, 100);
 }
 
@@ -267,8 +281,13 @@ document.addEventListener('keydown', function(event) {
         var totalRows = ganttChart.flatData.length;
 
         if (document.activeElement && ganttChart.element.contains(document.activeElement)) {
+            // Enter key - ativar edição na linha selecionada
+            if (event.key === 'Enter' && !ganttChart.isEdit) {
+                event.preventDefault();
+                activateEditForSelectedRow();
+            }
             // Arrow Down key
-            if (event.key === 'ArrowDown' && selectedRowIndex >= totalRows - 1) {
+            else if (event.key === 'ArrowDown' && selectedRowIndex >= totalRows - 1) {
                 event.preventDefault();
                 createNewEmptyTask();
             }
@@ -283,38 +302,45 @@ document.addEventListener('keydown', function(event) {
 
 ganttChart.appendTo('#Gantt');
 
-ganttChart.dataBound = function() {
-   
-    if (!ganttChart.isInitialLoad) {
-        ganttChart.isInitialLoad = true;
-        setTimeout(function() {
-            ganttChart.fitToProject();
-        }, 100);
-    }
+// Função para ativar edição na linha selecionada
+function activateEditForSelectedRow() {
+    var selectedRowIndex = ganttChart.selectedRowIndex;
+    if (selectedRowIndex >= 0) {
+        var gridContent = ganttChart.element.querySelector('.e-gridcontent');
+        if (gridContent) {
+            var rows = gridContent.querySelectorAll('tr.e-row');
+            var selectedRow = rows[selectedRowIndex];
 
-    var gridElement = ganttChart.element.querySelector('.e-gridcontent');
-    if (gridElement) {
-        gridElement.addEventListener('click', function(e) {
-            // Verificar se clicou em ícone de expansão/colapso
-            if (e.target.closest('.e-treegridexpand') || e.target.closest('.e-treegridcollapse')) {
-                return; // Permitir funcionamento normal dos ícones
-            }
+            if (selectedRow) {
+                // Verificar se é linha pai (não editável na coluna TaskName)
+                var isParentRow = selectedRow.querySelector('.e-treegridexpand, .e-treegridcollapse');
 
-            var targetCell = e.target.closest('td.e-rowcell');
-            if (targetCell && !targetCell.classList.contains('e-editedbatchcell')) {
-                var cellIndex = Array.from(targetCell.parentNode.children).indexOf(targetCell);
+                var cells = selectedRow.querySelectorAll('td.e-rowcell');
+                var targetCell = null;
 
-                
-                var columns = ganttChart.columns;
-                var isParentRow = targetCell.parentNode.querySelector('.e-treegridexpand, .e-treegridcollapse');
+                // Encontrar a primeira célula editável
+                for (var i = 0; i < cells.length; i++) {
+                    var cellIndex = i;
+                    var columns = ganttChart.columns;
 
-                if (columns[cellIndex] && columns[cellIndex].allowEditing !== false && columns[cellIndex].field !== 'TaskID') {
-                    // Se for linha pai e coluna nome da tarefa, não ativar edição
-                    if (isParentRow && columns[cellIndex].field === 'TaskName') {
-                        return;
+                    if (columns[cellIndex] && columns[cellIndex].allowEditing !== false && columns[cellIndex].field !== 'TaskID') {
+                        // Se for linha pai, pular a coluna TaskName
+                        if (isParentRow && columns[cellIndex].field === 'TaskName') {
+                            continue;
+                        }
+                        // Preferir TaskName para linhas filhas
+                        if (!isParentRow && columns[cellIndex].field === 'TaskName') {
+                            targetCell = cells[i];
+                            break;
+                        }
+                        // Usar primeira célula editável como fallback
+                        if (!targetCell) {
+                            targetCell = cells[i];
+                        }
                     }
+                }
 
-                   
+                if (targetCell) {
                     setTimeout(function() {
                         var dblClickEvent = new MouseEvent('dblclick', {
                             bubbles: true,
@@ -322,9 +348,21 @@ ganttChart.dataBound = function() {
                             view: window
                         });
                         targetCell.dispatchEvent(dblClickEvent);
-                    }, 10);
+                    }, 50);
+                    return true;
                 }
             }
-        });
+        }
+    }
+    return false;
+}
+
+ganttChart.dataBound = function() {
+
+    if (!ganttChart.isInitialLoad) {
+        ganttChart.isInitialLoad = true;
+        setTimeout(function() {
+            ganttChart.fitToProject();
+        }, 100);
     }
 };
