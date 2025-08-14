@@ -140,22 +140,17 @@ var ganttChart = new ej.gantt.Gantt({
             var draggedRecord = args.data[0];
             var targetRecord = args.targetRecord;
 
-            
-
-            // Se foi solto "inside" (dentro de) outra tarefa, criar como subtask
             if (args.dropPosition === 'child' && targetRecord) {
                 console.log('Criando subtask de:', targetRecord.TaskName);
 
-                // Remove a tarefa da posição original
                 ganttChart.deleteRecord(draggedRecord);
 
-                // Adiciona como subtask da tarefa alvo
                 setTimeout(function() {
                     ganttChart.addRecord(draggedRecord, targetRecord.TaskID, 'Child');
                 }, 100);
             }
         }
-        // Se foi solto em área vazia, criar nova tarefa
+       
         else if (!args.dropIndex) {
             var newTask = {
                 TaskID: getNextTaskID(),
@@ -168,14 +163,12 @@ var ganttChart = new ej.gantt.Gantt({
         }
     },
 
-    // Controle de drag sem hover excessivo
+
     rowDragStart: function (args) {
-        // Adicionar classe para desabilitar hover durante drag
         ganttChart.element.classList.add('e-dragging');
     },
 
     rowDragEnd: function (args) {
-        // Remover classe de drag e limpar estilos
         ganttChart.element.classList.remove('e-dragging');
         var rows = ganttChart.element.querySelectorAll('.e-valid-drop-target');
         rows.forEach(function(row) {
@@ -184,7 +177,6 @@ var ganttChart = new ej.gantt.Gantt({
     }
 });
 
-// Helper functions for auto-creating new rows
 function getNextTaskID() {
     var maxId = 0;
     function findMaxId(data) {
@@ -209,7 +201,6 @@ function getLatestTaskEndDate() {
             var task = data[i];
             var taskEndDate;
 
-            // Calculate end date based on start date and duration
             if (task.EndDate) {
                 taskEndDate = new Date(task.EndDate);
             } else if (task.StartDate && task.Duration) {
@@ -224,7 +215,6 @@ function getLatestTaskEndDate() {
                 latestDate = taskEndDate;
             }
 
-            // Check subtasks recursively
             if (task.subtasks && task.subtasks.length > 0) {
                 findLatestEndDate(task.subtasks);
             }
@@ -235,11 +225,9 @@ function getLatestTaskEndDate() {
     return latestDate;
 }
 
-function createNewEmptyTask() {
-    // Find the latest end date from all tasks
+function createNewEmptyTask() {   
     var latestEndDate = getLatestTaskEndDate();
 
-    // Calculate start date for new task (one day after the latest end date)
     var newStartDate = new Date(latestEndDate);
     newStartDate.setDate(newStartDate.getDate() + 1);
 
@@ -251,10 +239,8 @@ function createNewEmptyTask() {
         Progress: 0
     };
 
-    // Add the new task at the end as a top-level task
     ganttChart.addRecord(newTask);
 
-    // Auto-select the new row
     setTimeout(function() {
         var newRowIndex = ganttChart.flatData.length - 1;
         ganttChart.selectRow(newRowIndex);
@@ -264,7 +250,6 @@ function createNewEmptyTask() {
 function checkAndCreateNewRow(rowIndex) {
     var totalRows = ganttChart.flatData.length;
 
-    // If selecting the last row, prepare to create a new one
     if (rowIndex >= totalRows - 1) {
         // Add a small delay to allow for navigation completion
         setTimeout(function() {
@@ -276,13 +261,11 @@ function checkAndCreateNewRow(rowIndex) {
     }
 }
 
-// Handle keyboard navigation for creating new rows
 document.addEventListener('keydown', function(event) {
     if (ganttChart && ganttChart.element) {
         var selectedRowIndex = ganttChart.selectedRowIndex;
         var totalRows = ganttChart.flatData.length;
 
-        // Check if we're in the Gantt component
         if (document.activeElement && ganttChart.element.contains(document.activeElement)) {
             // Arrow Down key
             if (event.key === 'ArrowDown' && selectedRowIndex >= totalRows - 1) {
@@ -300,9 +283,8 @@ document.addEventListener('keydown', function(event) {
 
 ganttChart.appendTo('#Gantt');
 
-// Aplicar Zoom to Fit automaticamente ao carregar
 ganttChart.dataBound = function() {
-    // Aplicar zoom to fit na primeira vez que os dados são carregados
+   
     if (!ganttChart.isInitialLoad) {
         ganttChart.isInitialLoad = true;
         setTimeout(function() {
@@ -310,7 +292,6 @@ ganttChart.dataBound = function() {
         }, 100);
     }
 
-    // Configurar edição com clique simples nas células
     var gridElement = ganttChart.element.querySelector('.e-gridcontent');
     if (gridElement) {
         gridElement.addEventListener('click', function(e) {
@@ -323,7 +304,7 @@ ganttChart.dataBound = function() {
             if (targetCell && !targetCell.classList.contains('e-editedbatchcell')) {
                 var cellIndex = Array.from(targetCell.parentNode.children).indexOf(targetCell);
 
-                // Verificar se é uma coluna editável (não incluir coluna do nome se for linha pai)
+                
                 var columns = ganttChart.columns;
                 var isParentRow = targetCell.parentNode.querySelector('.e-treegridexpand, .e-treegridcollapse');
 
@@ -333,7 +314,7 @@ ganttChart.dataBound = function() {
                         return;
                     }
 
-                    // Simular duplo clique para ativar edição
+                   
                     setTimeout(function() {
                         var dblClickEvent = new MouseEvent('dblclick', {
                             bubbles: true,
