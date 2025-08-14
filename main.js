@@ -160,6 +160,15 @@ var ganttChart = new ej.gantt.Gantt({
                 Progress: 0
             };
             ganttChart.addRecord(newTask, null, 'Child');
+
+            // Ativar edição automaticamente na nova tarefa
+            setTimeout(function() {
+                var newRowIndex = ganttChart.flatData.length - 1;
+                ganttChart.selectRow(newRowIndex);
+                setTimeout(function() {
+                    activateEditForSelectedRow();
+                }, 200);
+            }, 100);
         }
     },
 
