@@ -16,7 +16,7 @@ var ganttChart = new ej.gantt.Gantt({
             TaskName: 'Fabricação da Carroceria',
             StartDate: new Date('08/06/2025'),
             EndDate: new Date('08/12/2025'),
-            Predecessor: '1',
+            Predecessor: '1FS',
             subtasks: [
                 { TaskID: 6, TaskName: 'Corte de chapas metálicas', StartDate: new Date('08/06/2025'), Duration: 2, Progress: 90 },
                 { TaskID: 7, TaskName: 'Estampagem de peças', StartDate: new Date('08/08/2025'), Duration: 2, Progress: 75, Predecessor: '6FS' },
@@ -28,7 +28,7 @@ var ganttChart = new ej.gantt.Gantt({
             TaskName: 'Sistema de Motorização',
             StartDate: new Date('08/13/2025'),
             EndDate: new Date('08/18/2025'),
-            Predecessor: '1',
+            Predecessor: '1FS',
             subtasks: [
                 { TaskID: 10, TaskName: 'Usinagem do bloco do motor', StartDate: new Date('08/13/2025'), Duration: 2, Progress: 60 },
                 { TaskID: 11, TaskName: 'Montagem do motor', StartDate: new Date('08/15/2025'), Duration: 2, Progress: 40, Predecessor: '10FS' },
@@ -40,7 +40,7 @@ var ganttChart = new ej.gantt.Gantt({
             TaskName: 'Chassi e Suspensão',
             StartDate: new Date('08/19/2025'),
             EndDate: new Date('08/23/2025'),
-            Predecessor: '1',
+            Predecessor: '1FS',
             subtasks: [
                 { TaskID: 14, TaskName: 'Soldagem do chassi', StartDate: new Date('08/19/2025'), Duration: 2, Progress: 45 },
                 { TaskID: 15, TaskName: 'Sistema de freios', StartDate: new Date('08/21/2025'), Duration: 2, Progress: 25, Predecessor: '14FS' },
