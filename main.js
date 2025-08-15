@@ -286,10 +286,51 @@ document.addEventListener('keydown', function(event) {
                 event.preventDefault();
                 activateEditForSelectedRow();
             }
-            // Arrow Down key
-            else if (event.key === 'ArrowDown' && selectedRowIndex >= totalRows - 1) {
-                event.preventDefault();
-                createNewEmptyTask();
+            // Arrow Down key - navegação com auto-edição
+            else if (event.key === 'ArrowDown') {
+                // Se está em edição, cancelar edição atual e mover para próxima linha
+                if (ganttChart.isEdit) {
+                    event.preventDefault();
+                    // Finalizar edição atual
+                    ganttChart.endEdit();
+
+                    setTimeout(function() {
+                        var newIndex = selectedRowIndex + 1;
+
+                        // Se chegou na última linha, criar nova tarefa
+                        if (newIndex >= totalRows) {
+                            createNewEmptyTask();
+                        } else {
+                            // Mover para próxima linha e ativar edição
+                            ganttChart.selectRow(newIndex);
+                            setTimeout(function() {
+                                activateEditForSelectedRow();
+                            }, 100);
+                        }
+                    }, 50);
+                }
+                // Se não está em edição e está na última linha
+                else if (selectedRowIndex >= totalRows - 1) {
+                    event.preventDefault();
+                    createNewEmptyTask();
+                }
+            }
+            // Arrow Up key - navegação com auto-edição
+            else if (event.key === 'ArrowUp') {
+                // Se está em edição, cancelar edição atual e mover para linha anterior
+                if (ganttChart.isEdit && selectedRowIndex > 0) {
+                    event.preventDefault();
+                    // Finalizar edição atual
+                    ganttChart.endEdit();
+
+                    setTimeout(function() {
+                        var newIndex = selectedRowIndex - 1;
+                        ganttChart.selectRow(newIndex);
+                        setTimeout(function() {
+                            activateEditForSelectedRow();
+                        }, 100);
+                    }, 50);
+                }
             }
             // Tab key (when not in edit mode)
             else if (event.key === 'Tab' && selectedRowIndex >= totalRows - 1 && !ganttChart.isEdit) {
