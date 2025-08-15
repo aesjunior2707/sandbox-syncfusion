@@ -332,6 +332,31 @@ document.addEventListener('keydown', function(event) {
                     }, 50);
                 }
             }
+            // Arrow Left/Right - navegação horizontal entre células
+            else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+                if (ganttChart.isEdit) {
+                    event.preventDefault();
+                    // Finalizar edição atual
+                    ganttChart.endEdit();
+
+                    setTimeout(function() {
+                        // Encontrar próxima célula editável na mesma linha
+                        var currentCell = findCurrentEditableCell();
+                        var nextCell = findNextEditableCell(currentCell, event.key === 'ArrowRight');
+
+                        if (nextCell) {
+                            setTimeout(function() {
+                                var dblClickEvent = new MouseEvent('dblclick', {
+                                    bubbles: true,
+                                    cancelable: true,
+                                    view: window
+                                });
+                                nextCell.dispatchEvent(dblClickEvent);
+                            }, 100);
+                        }
+                    }, 50);
+                }
+            }
             // Tab key (when not in edit mode)
             else if (event.key === 'Tab' && selectedRowIndex >= totalRows - 1 && !ganttChart.isEdit) {
                 event.preventDefault();
