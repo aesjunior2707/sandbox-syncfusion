@@ -449,6 +449,55 @@ function addClickEditFunctionality() {
     }
 }
 
+// Função para encontrar a célula editável atual
+function findCurrentEditableCell() {
+    var selectedRowIndex = ganttChart.selectedRowIndex;
+    if (selectedRowIndex < 0) return null;
+
+    var gridContent = ganttChart.element.querySelector('.e-gridcontent');
+    if (!gridContent) return null;
+
+    var rows = gridContent.querySelectorAll('tr.e-row');
+    var selectedRow = rows[selectedRowIndex];
+    if (!selectedRow) return null;
+
+    // Procurar pela célula que está sendo editada
+    var editCell = selectedRow.querySelector('.e-editedboundcell, .e-editcell');
+    return editCell;
+}
+
+// Função para encontrar próxima célula editável
+function findNextEditableCell(currentCell, moveRight) {
+    if (!currentCell) return null;
+
+    var row = currentCell.closest('tr.e-row');
+    if (!row) return null;
+
+    var cells = row.querySelectorAll('td.e-rowcell');
+    var currentIndex = Array.from(cells).indexOf(currentCell);
+    if (currentIndex < 0) return null;
+
+    var columns = ganttChart.columns;
+    var isParentRow = row.querySelector('.e-treegridexpand, .e-treegridcollapse');
+
+    // Determinar direção da busca
+    var direction = moveRight ? 1 : -1;
+    var startIndex = currentIndex + direction;
+
+    // Procurar próxima célula editável
+    for (var i = startIndex; i >= 0 && i < cells.length; i += direction) {
+        if (columns[i] && columns[i].allowEditing !== false && columns[i].field !== 'TaskID') {
+            // Se for linha pai, pular a coluna TaskName
+            if (isParentRow && columns[i].field === 'TaskName') {
+                continue;
+            }
+            return cells[i];
+        }
+    }
+
+    return null;
+}
+
 // Handler para clique nas células
 function handleCellClick(event) {
     var target = event.target;
