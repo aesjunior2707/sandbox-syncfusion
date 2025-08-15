@@ -7,8 +7,8 @@ var ganttChart = new ej.gantt.Gantt({
             EndDate: new Date('08/05/2025'),
             subtasks: [
                 { TaskID: 2, TaskName: 'Análise de requisitos técnicos', StartDate: new Date('08/01/2025'), Duration: 2, Progress: 80 },
-                { TaskID: 3, TaskName: 'Design da carroceria', StartDate: new Date('08/03/2025'), Duration: 2, Progress: 70, Predecessor: '2' },
-                { TaskID: 4, TaskName: 'Especificação de componentes', StartDate: new Date('08/04/2025'), Duration: 1, Progress: 60, Predecessor: '3' },
+                { TaskID: 3, TaskName: 'Design da carroceria', StartDate: new Date('08/03/2025'), Duration: 2, Progress: 70, Predecessor: '2FS' },
+                { TaskID: 4, TaskName: 'Especificação de componentes', StartDate: new Date('08/04/2025'), Duration: 1, Progress: 60, Predecessor: '3FS' },
             ]
         },
         {
