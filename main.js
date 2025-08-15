@@ -123,7 +123,8 @@ var ganttChart = new ej.gantt.Gantt({
         { field: 'StartDate', headerText: 'Início', width: 90, format: 'dd/MM/yy', textAlign: 'Center', allowEditing: true, editType: 'datepickeredit' },
         { field: 'EndDate', headerText: 'Final', width: 90, format: 'dd/MM/yy', textAlign: 'Center', allowEditing: true, editType: 'datepickeredit' },
         { field: 'Progress', headerText: 'Prog.', width: 70, textAlign: 'Center', allowEditing: true, editType: 'numericedit' },
-        { field: 'Predecessor', headerText: 'Pred.', width: 80, textAlign: 'Center', allowEditing: true, editType: 'stringedit', clipMode: 'EllipsisWithTooltip' }
+        { field: 'Predecessor', headerText: 'Predecessores', width: 120, textAlign: 'Left', allowEditing: true, editType: 'stringedit', clipMode: 'EllipsisWithTooltip',
+          valueAccessor: displayPredecessors, edit: { params: { placeholder: 'Ex: 1,2,3' } } }
     ],
     labelSettings: {
         leftLabel: 'TaskName',
