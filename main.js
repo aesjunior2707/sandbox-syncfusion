@@ -1,76 +1,10 @@
+// Inicializar cultura padrão (Português Brasil)
+if (typeof ej !== 'undefined' && ej.base && ej.base.setCulture) {
+    ej.base.setCulture('pt-BR');
+}
+
 var ganttChart = new ej.gantt.Gantt({
-    dataSource: [
-        {
-            TaskID: 1,
-            TaskName: 'Planejamento e Design do Veículo',
-            StartDate: new Date('08/01/2025'),
-            EndDate: new Date('08/05/2025'),
-            subtasks: [
-                { TaskID: 2, TaskName: 'Análise de requisitos técnicos', StartDate: new Date('08/01/2025'), Duration: 2, Progress: 80 },
-                { TaskID: 3, TaskName: 'Design da carroceria', StartDate: new Date('08/03/2025'), Duration: 2, Progress: 70, Predecessor: '2FS' },
-                { TaskID: 4, TaskName: 'Especificação de componentes', StartDate: new Date('08/04/2025'), Duration: 1, Progress: 60, Predecessor: '3FS' },
-            ]
-        },
-        {
-            TaskID: 5,
-            TaskName: 'Fabricação da Carroceria',
-            StartDate: new Date('08/06/2025'),
-            EndDate: new Date('08/12/2025'),
-            Predecessor: '1FS',
-            subtasks: [
-                { TaskID: 6, TaskName: 'Corte de chapas metálicas', StartDate: new Date('08/06/2025'), Duration: 2, Progress: 90 },
-                { TaskID: 7, TaskName: 'Estampagem de peças', StartDate: new Date('08/08/2025'), Duration: 2, Progress: 75, Predecessor: '6FS' },
-                { TaskID: 8, TaskName: 'Solda da estrutura', StartDate: new Date('08/10/2025'), Duration: 3, Progress: 50, Predecessor: '7FS' },
-            ]
-        },
-        {
-            TaskID: 9,
-            TaskName: 'Sistema de Motorização',
-            StartDate: new Date('08/13/2025'),
-            EndDate: new Date('08/18/2025'),
-            Predecessor: '1FS',
-            subtasks: [
-                { TaskID: 10, TaskName: 'Usinagem do bloco do motor', StartDate: new Date('08/13/2025'), Duration: 2, Progress: 60 },
-                { TaskID: 11, TaskName: 'Montagem do motor', StartDate: new Date('08/15/2025'), Duration: 2, Progress: 40, Predecessor: '10FS' },
-                { TaskID: 12, TaskName: 'Sistema de transmissão', StartDate: new Date('08/17/2025'), Duration: 2, Progress: 30, Predecessor: '11FS' },
-            ]
-        },
-        {
-            TaskID: 13,
-            TaskName: 'Chassi e Suspensão',
-            StartDate: new Date('08/19/2025'),
-            EndDate: new Date('08/23/2025'),
-            Predecessor: '1FS',
-            subtasks: [
-                { TaskID: 14, TaskName: 'Soldagem do chassi', StartDate: new Date('08/19/2025'), Duration: 2, Progress: 45 },
-                { TaskID: 15, TaskName: 'Sistema de freios', StartDate: new Date('08/21/2025'), Duration: 2, Progress: 25, Predecessor: '14FS' },
-                { TaskID: 16, TaskName: 'Montagem da suspensão', StartDate: new Date('08/22/2025'), Duration: 2, Progress: 20, Predecessor: '14FS' },
-            ]
-        },
-        {
-            TaskID: 17,
-            TaskName: 'Montagem Final',
-            StartDate: new Date('08/24/2025'),
-            EndDate: new Date('08/29/2025'),
-            Predecessor: '5FS;9FS;13FS',
-            subtasks: [
-                { TaskID: 18, TaskName: 'Instalação do motor no chassi', StartDate: new Date('08/24/2025'), Duration: 2, Progress: 15 },
-                { TaskID: 19, TaskName: 'Montagem da carroceria', StartDate: new Date('08/26/2025'), Duration: 2, Progress: 10, Predecessor: '18FS' },
-                { TaskID: 20, TaskName: 'Sistema elétrico e eletrônico', StartDate: new Date('08/27/2025'), Duration: 2, Progress: 5, Predecessor: '19FS' },
-            ]
-        },
-        {
-            TaskID: 21,
-            TaskName: 'Testes e Controle de Qualidade',
-            StartDate: new Date('08/30/2025'),
-            EndDate: new Date('08/31/2025'),
-            Predecessor: '17FS',
-            subtasks: [
-                { TaskID: 22, TaskName: 'Testes de funcionamento', StartDate: new Date('08/30/2025'), Duration: 1, Progress: 0 },
-                { TaskID: 23, TaskName: 'Inspeção final de qualidade', StartDate: new Date('08/31/2025'), Duration: 1, Progress: 0, Predecessor: '22FS' },
-            ]
-        },
-    ],
+    dataSource: getProjectDataByLocale('pt-BR'),
     width: '100%',
     height: '100%',
     taskFields: {
