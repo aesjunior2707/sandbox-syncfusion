@@ -251,12 +251,25 @@
 
                /* Barras filhas menores e dentro da estrutura */
                .e-gantt .e-gantt-child-taskbar {
-                   background: linear-gradient(135deg, #FB8C00 0%, #F57C00 100%) !important;
+                   background: linear-gradient(to bottom, #FFA726 0%, #FB8C00 50%, #F57C00 100%) !important;
                    border: 1px solid #E65100 !important;
+                   border-radius: 2px !important;
+                   box-shadow: 0 2px 4px rgba(229, 81, 0, 0.3) !important;
+                   height: 14px !important;
+                   margin: 3px 0 !important;
+                   position: relative !important;
+               }
+
+               /* Adicionar um pequeno indicador visual nas barras filhas */
+               .e-gantt .e-gantt-child-taskbar::before {
+                   content: '' !important;
+                   position: absolute !important;
+                   left: 2px !important;
+                   top: 2px !important;
+                   bottom: 2px !important;
+                   width: 2px !important;
+                   background: rgba(255, 255, 255, 0.6) !important;
                    border-radius: 1px !important;
-                   box-shadow: 0 1px 2px rgba(251, 140, 0, 0.25) !important;
-                   height: 12px !important;
-                   margin: 2px 0 !important;
                }
 
                /* Linha superior e inferior nas barras pai para conectar visualmente (MS Project style) */
