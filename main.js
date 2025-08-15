@@ -281,26 +281,57 @@ document.addEventListener('keydown', function(event) {
         var totalRows = ganttChart.flatData.length;
 
         if (document.activeElement && ganttChart.element.contains(document.activeElement)) {
-            // Enter key - ativar edição na linha selecionada
             if (event.key === 'Enter' && !ganttChart.isEdit) {
                 event.preventDefault();
                 activateEditForSelectedRow();
             }
-            // Arrow Down key
+        
             else if (event.key === 'ArrowDown' && selectedRowIndex >= totalRows - 1) {
                 event.preventDefault();
                 createNewEmptyTask();
             }
-            // Tab key (when not in edit mode)
+   
             else if (event.key === 'Tab' && selectedRowIndex >= totalRows - 1 && !ganttChart.isEdit) {
                 event.preventDefault();
                 createNewEmptyTask();
             }
         }
     }
+
 });
 
 ganttChart.appendTo('#Gantt');
+document.addEventListener('keydown', function(event) {
+    // Verifica se a tecla pressionada é F7
+    if (event.key === "F7") {
+        event.preventDefault(); // evita comportamento padrão
+        console.log("F7 pressionado!");
+        var enterEvent = new KeyboardEvent('keydown', {
+            key: 'Enter',
+            code: 'Enter',
+            keyCode: 13,
+            bubbles: true,
+            cancelable: true
+        });
+        document.dispatchEvent(enterEvent);
+    }
+
+    // Verifica se a linha está em edição e as teclas de navegação são pressionadas
+    if (ganttChart.isEdit) {
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+            console.log("Navegação com seta pressionada durante edição:", event.key);
+            event.preventDefault(); // evita comportamento padrão
+            var enterEvent = new KeyboardEvent('keydown', {
+                key: 'Enter',
+                code: 'Enter',
+                keyCode: 13,
+                bubbles: true,
+                cancelable: true
+            });
+            document.dispatchEvent(enterEvent);
+        }
+    }
+});
 
 // Função para ativar edição na linha selecionada
 function activateEditForSelectedRow() {
