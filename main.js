@@ -126,7 +126,8 @@ var ganttChart = new ej.gantt.Gantt({
     ],
     labelSettings: {
         leftLabel: 'TaskName',
-        rightLabel: 'Progress'
+        rightLabel: 'Progress',
+        taskLabel: '${Progress}%'
     },
     splitterSettings: {
         columnIndex: 3
