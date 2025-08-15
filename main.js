@@ -7,6 +7,7 @@ var ganttChart = new ej.gantt.Gantt({
     dataSource: getProjectDataByLocale('pt-BR'),
     width: '100%',
     height: '100%',
+    locale: 'pt-BR',
     taskFields: {
         id: 'TaskID',
         name: 'TaskName',
