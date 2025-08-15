@@ -129,7 +129,7 @@ var ganttChart = new ej.gantt.Gantt({
         rightLabel: 'Progress'
     },
     splitterSettings: {
-        columnIndex: 2
+        columnIndex: 3
     },
     rowHeight: 28,
     projectStartDate: new Date('08/01/2025'),
