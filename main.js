@@ -7,8 +7,8 @@ var ganttChart = new ej.gantt.Gantt({
             EndDate: new Date('08/05/2025'),
             subtasks: [
                 { TaskID: 2, TaskName: 'Análise de requisitos técnicos', StartDate: new Date('08/01/2025'), Duration: 2, Progress: 80 },
-                { TaskID: 3, TaskName: 'Design da carroceria', StartDate: new Date('08/03/2025'), Duration: 2, Progress: 70, Predecessor: '2' },
-                { TaskID: 4, TaskName: 'Especificação de componentes', StartDate: new Date('08/04/2025'), Duration: 1, Progress: 60, Predecessor: '3' },
+                { TaskID: 3, TaskName: 'Design da carroceria', StartDate: new Date('08/03/2025'), Duration: 2, Progress: 70, Predecessor: '2FS' },
+                { TaskID: 4, TaskName: 'Especificação de componentes', StartDate: new Date('08/04/2025'), Duration: 1, Progress: 60, Predecessor: '3FS' },
             ]
         },
         {
@@ -16,11 +16,11 @@ var ganttChart = new ej.gantt.Gantt({
             TaskName: 'Fabricação da Carroceria',
             StartDate: new Date('08/06/2025'),
             EndDate: new Date('08/12/2025'),
-            Predecessor: '1',
+            Predecessor: '1FS',
             subtasks: [
                 { TaskID: 6, TaskName: 'Corte de chapas metálicas', StartDate: new Date('08/06/2025'), Duration: 2, Progress: 90 },
-                { TaskID: 7, TaskName: 'Estampagem de peças', StartDate: new Date('08/08/2025'), Duration: 2, Progress: 75, Predecessor: '6' },
-                { TaskID: 8, TaskName: 'Solda da estrutura', StartDate: new Date('08/10/2025'), Duration: 3, Progress: 50, Predecessor: '7' },
+                { TaskID: 7, TaskName: 'Estampagem de peças', StartDate: new Date('08/08/2025'), Duration: 2, Progress: 75, Predecessor: '6FS' },
+                { TaskID: 8, TaskName: 'Solda da estrutura', StartDate: new Date('08/10/2025'), Duration: 3, Progress: 50, Predecessor: '7FS' },
             ]
         },
         {
@@ -28,11 +28,11 @@ var ganttChart = new ej.gantt.Gantt({
             TaskName: 'Sistema de Motorização',
             StartDate: new Date('08/13/2025'),
             EndDate: new Date('08/18/2025'),
-            Predecessor: '1',
+            Predecessor: '1FS',
             subtasks: [
                 { TaskID: 10, TaskName: 'Usinagem do bloco do motor', StartDate: new Date('08/13/2025'), Duration: 2, Progress: 60 },
-                { TaskID: 11, TaskName: 'Montagem do motor', StartDate: new Date('08/15/2025'), Duration: 2, Progress: 40, Predecessor: '10' },
-                { TaskID: 12, TaskName: 'Sistema de transmissão', StartDate: new Date('08/17/2025'), Duration: 2, Progress: 30, Predecessor: '11' },
+                { TaskID: 11, TaskName: 'Montagem do motor', StartDate: new Date('08/15/2025'), Duration: 2, Progress: 40, Predecessor: '10FS' },
+                { TaskID: 12, TaskName: 'Sistema de transmissão', StartDate: new Date('08/17/2025'), Duration: 2, Progress: 30, Predecessor: '11FS' },
             ]
         },
         {
@@ -40,11 +40,11 @@ var ganttChart = new ej.gantt.Gantt({
             TaskName: 'Chassi e Suspensão',
             StartDate: new Date('08/19/2025'),
             EndDate: new Date('08/23/2025'),
-            Predecessor: '1',
+            Predecessor: '1FS',
             subtasks: [
                 { TaskID: 14, TaskName: 'Soldagem do chassi', StartDate: new Date('08/19/2025'), Duration: 2, Progress: 45 },
-                { TaskID: 15, TaskName: 'Sistema de freios', StartDate: new Date('08/21/2025'), Duration: 2, Progress: 25, Predecessor: '14' },
-                { TaskID: 16, TaskName: 'Montagem da suspensão', StartDate: new Date('08/22/2025'), Duration: 2, Progress: 20, Predecessor: '14' },
+                { TaskID: 15, TaskName: 'Sistema de freios', StartDate: new Date('08/21/2025'), Duration: 2, Progress: 25, Predecessor: '14FS' },
+                { TaskID: 16, TaskName: 'Montagem da suspensão', StartDate: new Date('08/22/2025'), Duration: 2, Progress: 20, Predecessor: '14FS' },
             ]
         },
         {
@@ -52,11 +52,11 @@ var ganttChart = new ej.gantt.Gantt({
             TaskName: 'Montagem Final',
             StartDate: new Date('08/24/2025'),
             EndDate: new Date('08/29/2025'),
-            Predecessor: '5;9;13',
+            Predecessor: '5FS;9FS;13FS',
             subtasks: [
                 { TaskID: 18, TaskName: 'Instalação do motor no chassi', StartDate: new Date('08/24/2025'), Duration: 2, Progress: 15 },
-                { TaskID: 19, TaskName: 'Montagem da carroceria', StartDate: new Date('08/26/2025'), Duration: 2, Progress: 10, Predecessor: '18' },
-                { TaskID: 20, TaskName: 'Sistema elétrico e eletrônico', StartDate: new Date('08/27/2025'), Duration: 2, Progress: 5, Predecessor: '19' },
+                { TaskID: 19, TaskName: 'Montagem da carroceria', StartDate: new Date('08/26/2025'), Duration: 2, Progress: 10, Predecessor: '18FS' },
+                { TaskID: 20, TaskName: 'Sistema elétrico e eletrônico', StartDate: new Date('08/27/2025'), Duration: 2, Progress: 5, Predecessor: '19FS' },
             ]
         },
         {
@@ -64,10 +64,10 @@ var ganttChart = new ej.gantt.Gantt({
             TaskName: 'Testes e Controle de Qualidade',
             StartDate: new Date('08/30/2025'),
             EndDate: new Date('08/31/2025'),
-            Predecessor: '17',
+            Predecessor: '17FS',
             subtasks: [
                 { TaskID: 22, TaskName: 'Testes de funcionamento', StartDate: new Date('08/30/2025'), Duration: 1, Progress: 0 },
-                { TaskID: 23, TaskName: 'Inspeção final de qualidade', StartDate: new Date('08/31/2025'), Duration: 1, Progress: 0, Predecessor: '22' },
+                { TaskID: 23, TaskName: 'Inspeção final de qualidade', StartDate: new Date('08/31/2025'), Duration: 1, Progress: 0, Predecessor: '22FS' },
             ]
         },
     ],
@@ -123,7 +123,8 @@ var ganttChart = new ej.gantt.Gantt({
         { field: 'StartDate', headerText: 'Início', width: 90, format: 'dd/MM/yy', textAlign: 'Center', allowEditing: true, editType: 'datepickeredit' },
         { field: 'EndDate', headerText: 'Final', width: 90, format: 'dd/MM/yy', textAlign: 'Center', allowEditing: true, editType: 'datepickeredit' },
         { field: 'Progress', headerText: 'Prog.', width: 70, textAlign: 'Center', allowEditing: true, editType: 'numericedit' },
-        { field: 'Predecessor', headerText: 'Pred.', width: 80, textAlign: 'Center', allowEditing: true, editType: 'stringedit', clipMode: 'EllipsisWithTooltip' }
+        { field: 'Predecessor', headerText: 'Predecessores', width: 120, textAlign: 'Left', allowEditing: true, editType: 'stringedit', clipMode: 'EllipsisWithTooltip',
+          valueAccessor: displayPredecessors, edit: { params: { placeholder: 'Ex: 1,2,3' } } }
     ],
     labelSettings: {
         leftLabel: 'TaskName',
@@ -191,8 +192,129 @@ var ganttChart = new ej.gantt.Gantt({
         rows.forEach(function(row) {
             row.classList.remove('e-valid-drop-target');
         });
+    },
+
+    actionBegin: function (args) {
+        // Processa predecessores antes de salvar
+        if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
+            const originalValue = args.data.Predecessor;
+
+            // Validar predecessores
+            const validation = validatePredecessors(originalValue, args.data.TaskID);
+            if (!validation.isValid) {
+                args.cancel = true;
+                alert('Erro nos predecessores: ' + validation.message);
+                return;
+            }
+
+            // Processar predecessores com regra FS
+            const processedPredecessors = parsePredecessors(originalValue);
+            args.data.Predecessor = processedPredecessors;
+
+            console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
+        }
+
+        // Respeitar links de predecessores durante validação
+        if (args.requestType === 'validateLinkedTask') {
+            args.validateMode = { respectLink: true };
+        }
+    },
+
+    actionComplete: function (args) {
+        // Log para acompanhar alterações
+        if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
+            console.log('Predecessores salvos para tarefa', args.data.TaskID + ':', args.data.Predecessor);
+        }
     }
 });
+
+// Função para exibir predecessores de forma amigável na coluna
+function displayPredecessors(field, data, column) {
+    if (data.Predecessor) {
+        // Remove FS de cada predecessor para exibir apenas os IDs
+        return data.Predecessor.replace(/(\d+)FS/g, '$1').replace(/;/g, ', ');
+    }
+    return '';
+}
+
+// Função para parsing de predecessores separados por vírgula e aplicação da regra FS
+function parsePredecessors(predecessorString) {
+    if (!predecessorString || predecessorString.trim() === '') {
+        return '';
+    }
+
+    // Remove espaços e quebra em vírgulas
+    const predecessorIds = predecessorString.split(',').map(id => id.trim()).filter(id => id !== '');
+
+    // Aplica a regra FS a cada predecessor se não estiver especificada
+    const processedPredecessors = predecessorIds.map(id => {
+        // Remove caracteres não numéricos e verifica se é um número válido
+        const numericId = id.replace(/[^\d]/g, '');
+        if (numericId && !isNaN(numericId)) {
+            // Se já contém uma regra (FS, SS, FF, SF), mantém como está
+            if (id.match(/\d+(FS|SS|FF|SF)/)) {
+                return id;
+            } else {
+                // Aplica a regra FS automaticamente
+                return numericId + 'FS';
+            }
+        }
+        return null;
+    }).filter(pred => pred !== null);
+
+    return processedPredecessors.join(';');
+}
+
+// Função para validar se os predecessores existem
+function validatePredecessors(predecessorString, currentTaskId) {
+    if (!predecessorString || predecessorString.trim() === '') {
+        return { isValid: true, message: '' };
+    }
+
+    const predecessorIds = predecessorString.split(',').map(id => id.trim().replace(/[^\d]/g, ''));
+    const allTaskIds = getAllTaskIds();
+
+    for (const predId of predecessorIds) {
+        if (predId === '') continue;
+
+        const numericPredId = parseInt(predId);
+
+        // Verifica se o predecessor existe
+        if (!allTaskIds.includes(numericPredId)) {
+            return {
+                isValid: false,
+                message: `Tarefa ${numericPredId} não existe.`
+            };
+        }
+
+        // Verifica se não está tentando criar dependência circular
+        if (numericPredId === currentTaskId) {
+            return {
+                isValid: false,
+                message: 'Uma tarefa não pode ser predecessora de si mesma.'
+            };
+        }
+    }
+
+    return { isValid: true, message: '' };
+}
+
+// Função para obter todos os IDs de tarefas
+function getAllTaskIds() {
+    const taskIds = [];
+
+    function extractIds(data) {
+        for (const item of data) {
+            taskIds.push(item.TaskID);
+            if (item.subtasks && item.subtasks.length > 0) {
+                extractIds(item.subtasks);
+            }
+        }
+    }
+
+    extractIds(ganttChart.dataSource);
+    return taskIds;
+}
 
 function getNextTaskID() {
     var maxId = 0;
