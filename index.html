@@ -213,21 +213,47 @@
                    line-height: 23px !important;
                }
 
-               /* BARRAS DE TAREFA EXECUTIVAS */
+               /* BARRAS DE TAREFA EXECUTIVAS - ESTILO MS PROJECT */
                .e-gantt .e-gantt-parent-taskbar {
-                   background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%) !important;
-                   border: none !important;
-                   border-radius: 3px !important;
-                   box-shadow: 0 1px 3px rgba(107, 114, 128, 0.3) !important;
-                   height: 18px !important;
+                   background: linear-gradient(135deg, #9CA3AF 0%, #6B7280 100%) !important;
+                   border: 1px solid #4B5563 !important;
+                   border-radius: 0px !important;
+                   box-shadow: 0 2px 4px rgba(107, 114, 128, 0.4) !important;
+                   height: 20px !important;
+                   position: relative !important;
                }
 
+               /* Criar bordas laterais nas barras pai para encapsular (estilo MS Project) */
+               .e-gantt .e-gantt-parent-taskbar::before {
+                   content: '' !important;
+                   position: absolute !important;
+                   left: -1px !important;
+                   top: -2px !important;
+                   bottom: -2px !important;
+                   width: 3px !important;
+                   background: #374151 !important;
+                   border-radius: 0px !important;
+               }
+
+               .e-gantt .e-gantt-parent-taskbar::after {
+                   content: '' !important;
+                   position: absolute !important;
+                   right: -1px !important;
+                   top: -2px !important;
+                   bottom: -2px !important;
+                   width: 3px !important;
+                   background: #374151 !important;
+                   border-radius: 0px !important;
+               }
+
+               /* Barras filhas menores e dentro da estrutura */
                .e-gantt .e-gantt-child-taskbar {
                    background: linear-gradient(135deg, #FB8C00 0%, #F57C00 100%) !important;
-                   border: none !important;
-                   border-radius: 2px !important;
+                   border: 1px solid #E65100 !important;
+                   border-radius: 1px !important;
                    box-shadow: 0 1px 2px rgba(251, 140, 0, 0.25) !important;
-                   height: 14px !important;
+                   height: 12px !important;
+                   margin: 2px 0 !important;
                }
 
                /* BARRAS DE PROGRESSO */
