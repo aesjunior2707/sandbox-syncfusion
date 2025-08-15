@@ -192,6 +192,39 @@ var ganttChart = new ej.gantt.Gantt({
         rows.forEach(function(row) {
             row.classList.remove('e-valid-drop-target');
         });
+    },
+
+    actionBegin: function (args) {
+        // Processa predecessores antes de salvar
+        if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
+            const originalValue = args.data.Predecessor;
+
+            // Validar predecessores
+            const validation = validatePredecessors(originalValue, args.data.TaskID);
+            if (!validation.isValid) {
+                args.cancel = true;
+                alert('Erro nos predecessores: ' + validation.message);
+                return;
+            }
+
+            // Processar predecessores com regra FS
+            const processedPredecessors = parsePredecessors(originalValue);
+            args.data.Predecessor = processedPredecessors;
+
+            console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
+        }
+
+        // Respeitar links de predecessores durante validação
+        if (args.requestType === 'validateLinkedTask') {
+            args.validateMode = { respectLink: true };
+        }
+    },
+
+    actionComplete: function (args) {
+        // Log para acompanhar alterações
+        if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
+            console.log('Predecessores salvos para tarefa', args.data.TaskID + ':', args.data.Predecessor);
+        }
     }
 });
 
