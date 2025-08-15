@@ -285,10 +285,77 @@ document.addEventListener('keydown', function(event) {
                 event.preventDefault();
                 activateEditForSelectedRow();
             }
-        
-            else if (event.key === 'ArrowDown' && selectedRowIndex >= totalRows - 1) {
-                event.preventDefault();
-                createNewEmptyTask();
+
+            // Arrow Down key - navegação com auto-edição
+            else if (event.key === 'ArrowDown') {
+                // Se está em edição, cancelar edição atual e mover para próxima linha
+                if (ganttChart.isEdit) {
+                    event.preventDefault();
+                    // Finalizar edição atual
+                    ganttChart.endEdit();
+
+                    setTimeout(function() {
+                        var newIndex = selectedRowIndex + 1;
+
+                        // Se chegou na última linha, criar nova tarefa
+                        if (newIndex >= totalRows) {
+                            createNewEmptyTask();
+                        } else {
+                            // Mover para próxima linha e ativar edição
+                            ganttChart.selectRow(newIndex);
+                            setTimeout(function() {
+                                activateEditForSelectedRow();
+                            }, 100);
+                        }
+                    }, 50);
+                }
+                // Se não está em edição e está na última linha
+                else if (selectedRowIndex >= totalRows - 1) {
+                    event.preventDefault();
+                    createNewEmptyTask();
+                }
+            }
+            // Arrow Up key - navegação com auto-edição
+            else if (event.key === 'ArrowUp') {
+                // Se está em edição, cancelar edição atual e mover para linha anterior
+                if (ganttChart.isEdit && selectedRowIndex > 0) {
+                    event.preventDefault();
+                    // Finalizar edição atual
+                    ganttChart.endEdit();
+
+                    setTimeout(function() {
+                        var newIndex = selectedRowIndex - 1;
+                        ganttChart.selectRow(newIndex);
+                        setTimeout(function() {
+                            activateEditForSelectedRow();
+                        }, 100);
+                    }, 50);
+                }
+            }
+            // Arrow Left/Right - navegação horizontal entre células
+            else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+                if (ganttChart.isEdit) {
+                    event.preventDefault();
+                    // Finalizar edição atual
+                    ganttChart.endEdit();
+
+                    setTimeout(function() {
+                        // Encontrar próxima célula editável na mesma linha
+                        var currentCell = findCurrentEditableCell();
+                        var nextCell = findNextEditableCell(currentCell, event.key === 'ArrowRight');
+
+                        if (nextCell) {
+                            setTimeout(function() {
+                                var dblClickEvent = new MouseEvent('dblclick', {
+                                    bubbles: true,
+                                    cancelable: true,
+                                    view: window
+                                });
+                                nextCell.dispatchEvent(dblClickEvent);
+                            }, 100);
+                        }
+                    }, 50);
+                }
             }
    
             else if (event.key === 'Tab' && selectedRowIndex >= totalRows - 1 && !ganttChart.isEdit) {
@@ -412,6 +479,55 @@ function addClickEditFunctionality() {
         // Adicionar novo evento
         gridContent.addEventListener('click', handleCellClick);
     }
+}
+
+// Função para encontrar a célula editável atual
+function findCurrentEditableCell() {
+    var selectedRowIndex = ganttChart.selectedRowIndex;
+    if (selectedRowIndex < 0) return null;
+
+    var gridContent = ganttChart.element.querySelector('.e-gridcontent');
+    if (!gridContent) return null;
+
+    var rows = gridContent.querySelectorAll('tr.e-row');
+    var selectedRow = rows[selectedRowIndex];
+    if (!selectedRow) return null;
+
+    // Procurar pela célula que está sendo editada
+    var editCell = selectedRow.querySelector('.e-editedboundcell, .e-editcell');
+    return editCell;
+}
+
+// Função para encontrar próxima célula editável
+function findNextEditableCell(currentCell, moveRight) {
+    if (!currentCell) return null;
+
+    var row = currentCell.closest('tr.e-row');
+    if (!row) return null;
+
+    var cells = row.querySelectorAll('td.e-rowcell');
+    var currentIndex = Array.from(cells).indexOf(currentCell);
+    if (currentIndex < 0) return null;
+
+    var columns = ganttChart.columns;
+    var isParentRow = row.querySelector('.e-treegridexpand, .e-treegridcollapse');
+
+    // Determinar direção da busca
+    var direction = moveRight ? 1 : -1;
+    var startIndex = currentIndex + direction;
+
+    // Procurar próxima célula editável
+    for (var i = startIndex; i >= 0 && i < cells.length; i += direction) {
+        if (columns[i] && columns[i].allowEditing !== false && columns[i].field !== 'TaskID') {
+            // Se for linha pai, pular a coluna TaskName
+            if (isParentRow && columns[i].field === 'TaskName') {
+                continue;
+            }
+            return cells[i];
+        }
+    }
+
+    return null;
 }
 
 // Handler para clique nas células
