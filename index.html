@@ -238,20 +238,13 @@
                    box-shadow: inset 0 1px 1px rgba(255,255,255,0.3) !important;
                }
 
-               /* LABELS DE PROGRESSO */
-               .e-gantt .e-task-label,
-               .e-gantt .e-gantt-label,
-               .e-gantt .e-taskbar-main-container .e-taskbar-label,
-               .e-gantt .e-taskbar-label-text,
-               .e-gantt .e-left-label-container,
-               .e-gantt .e-right-label-container,
-               .e-gantt .e-label,
-               .e-gantt-taskbar .e-taskbar-label,
-               .e-gantt .e-progressbar-label,
-               .e-gantt text[class*="label"],
-               .e-gantt svg text,
-               .e-gantt .e-chart-row svg text,
-               .e-gantt .e-gantt-chart svg text {
+               /* LABELS DE PROGRESSO - APENAS NAS BARRAS */
+               .e-gantt .e-gantt-chart .e-taskbar-label,
+               .e-gantt .e-gantt-chart text[class*="progressbar"],
+               .e-gantt .e-gantt-chart text[class*="taskbar"],
+               .e-gantt .e-chart-row .e-taskbar-main-container text,
+               .e-gantt .e-chart-row .e-gantt-parent-taskbar text,
+               .e-gantt .e-chart-row .e-gantt-child-taskbar text {
                    font-weight: bold !important;
                    font-size: 10px !important;
                    color: #ffffff !important;
