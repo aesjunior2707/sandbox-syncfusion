@@ -195,6 +195,94 @@ var ganttChart = new ej.gantt.Gantt({
     }
 });
 
+// Função para exibir predecessores de forma amigável na coluna
+function displayPredecessors(field, data, column) {
+    if (data.Predecessor) {
+        // Remove FS de cada predecessor para exibir apenas os IDs
+        return data.Predecessor.replace(/(\d+)FS/g, '$1').replace(/;/g, ', ');
+    }
+    return '';
+}
+
+// Função para parsing de predecessores separados por vírgula e aplicação da regra FS
+function parsePredecessors(predecessorString) {
+    if (!predecessorString || predecessorString.trim() === '') {
+        return '';
+    }
+
+    // Remove espaços e quebra em vírgulas
+    const predecessorIds = predecessorString.split(',').map(id => id.trim()).filter(id => id !== '');
+
+    // Aplica a regra FS a cada predecessor se não estiver especificada
+    const processedPredecessors = predecessorIds.map(id => {
+        // Remove caracteres não numéricos e verifica se é um número válido
+        const numericId = id.replace(/[^\d]/g, '');
+        if (numericId && !isNaN(numericId)) {
+            // Se já contém uma regra (FS, SS, FF, SF), mantém como está
+            if (id.match(/\d+(FS|SS|FF|SF)/)) {
+                return id;
+            } else {
+                // Aplica a regra FS automaticamente
+                return numericId + 'FS';
+            }
+        }
+        return null;
+    }).filter(pred => pred !== null);
+
+    return processedPredecessors.join(';');
+}
+
+// Função para validar se os predecessores existem
+function validatePredecessors(predecessorString, currentTaskId) {
+    if (!predecessorString || predecessorString.trim() === '') {
+        return { isValid: true, message: '' };
+    }
+
+    const predecessorIds = predecessorString.split(',').map(id => id.trim().replace(/[^\d]/g, ''));
+    const allTaskIds = getAllTaskIds();
+
+    for (const predId of predecessorIds) {
+        if (predId === '') continue;
+
+        const numericPredId = parseInt(predId);
+
+        // Verifica se o predecessor existe
+        if (!allTaskIds.includes(numericPredId)) {
+            return {
+                isValid: false,
+                message: `Tarefa ${numericPredId} não existe.`
+            };
+        }
+
+        // Verifica se não está tentando criar dependência circular
+        if (numericPredId === currentTaskId) {
+            return {
+                isValid: false,
+                message: 'Uma tarefa não pode ser predecessora de si mesma.'
+            };
+        }
+    }
+
+    return { isValid: true, message: '' };
+}
+
+// Função para obter todos os IDs de tarefas
+function getAllTaskIds() {
+    const taskIds = [];
+
+    function extractIds(data) {
+        for (const item of data) {
+            taskIds.push(item.TaskID);
+            if (item.subtasks && item.subtasks.length > 0) {
+                extractIds(item.subtasks);
+            }
+        }
+    }
+
+    extractIds(ganttChart.dataSource);
+    return taskIds;
+}
+
 function getNextTaskID() {
     var maxId = 0;
     function findMaxId(data) {
