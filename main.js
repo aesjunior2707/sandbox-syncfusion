@@ -1,4 +1,21 @@
 // Inicializar cultura padrão (Portugu��s Brasil)
+// Função para verificar se todas as dependências estão carregadas
+function checkDependencies() {
+    var dependencies = [
+        { name: 'Syncfusion ej', check: function() { return typeof ej !== 'undefined'; } },
+        { name: 'getProjectDataByLocale', check: function() { return typeof getProjectDataByLocale !== 'undefined'; } }
+    ];
+
+    for (var i = 0; i < dependencies.length; i++) {
+        if (!dependencies[i].check()) {
+            console.warn('Dependência não carregada:', dependencies[i].name);
+            return false;
+        }
+    }
+    return true;
+}
+
+// Inicializar cultura padrão (Português Brasil)
 try {
     if (typeof ej !== 'undefined' && ej.base && ej.base.setCulture) {
         ej.base.setCulture('pt-BR');
