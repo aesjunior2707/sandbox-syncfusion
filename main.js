@@ -500,9 +500,34 @@ document.addEventListener('keydown', function(event) {
 
 });
 
+// Função para calcular EndDate em dados que não possuem
+function calculateMissingEndDates(data) {
+    for (var i = 0; i < data.length; i++) {
+        var task = data[i];
+
+        // Se tem StartDate e Duration mas não tem EndDate, calcular
+        if (task.StartDate && task.Duration && !task.EndDate) {
+            var startDate = new Date(task.StartDate);
+            var endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + task.Duration);
+            task.EndDate = endDate;
+            console.log('EndDate calculada para tarefa', task.TaskID + ':', endDate);
+        }
+
+        // Processar subtarefas recursivamente
+        if (task.subtasks && task.subtasks.length > 0) {
+            calculateMissingEndDates(task.subtasks);
+        }
+    }
+}
+
 // Adicionar o Gantt ao DOM com tratamento de erro
 if (ganttChart) {
     try {
+        // Calcular EndDate para tarefas que não possuem
+        var currentData = ganttChart.dataSource;
+        calculateMissingEndDates(currentData);
+
         ganttChart.appendTo('#Gantt');
     } catch (error) {
         console.error('Erro ao anexar Gantt ao DOM:', error);
