@@ -590,12 +590,18 @@ if (ganttChart) {
 
 // Função para adicionar funcionalidade de edição por clique simples
 function addClickEditFunctionality() {
-    var gridContent = ganttChart.element.querySelector('.e-gridcontent');
-    if (gridContent) {
-        // Remover eventos anteriores para evitar duplicação
-        gridContent.removeEventListener('click', handleCellClick);
-        // Adicionar novo evento
-        gridContent.addEventListener('click', handleCellClick);
+    try {
+        if (ganttChart && ganttChart.element) {
+            var gridContent = ganttChart.element.querySelector('.e-gridcontent');
+            if (gridContent) {
+                // Remover eventos anteriores para evitar duplicação
+                gridContent.removeEventListener('click', handleCellClick);
+                // Adicionar novo evento
+                gridContent.addEventListener('click', handleCellClick);
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao adicionar funcionalidade de edição:', error);
     }
 }
 
