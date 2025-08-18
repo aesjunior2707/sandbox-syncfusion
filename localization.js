@@ -602,7 +602,7 @@ function updateColumnHeaders(locale) {
             'TaskID': 'ID',
             'TaskName': 'Task Name',
             'StartDate': 'Start Date',
-            'EndDate': 'End Date',
+            'EndDateInput': 'End Date',
             'Duration': 'Duration',
             'Progress': 'Progress',
             'Predecessor': 'Predecessors'
@@ -611,7 +611,7 @@ function updateColumnHeaders(locale) {
             'TaskID': 'ID',
             'TaskName': 'Tarefa',
             'StartDate': 'Início',
-            'EndDate': 'Fim',
+            'EndDateInput': 'Fim',
             'Duration': 'Duração',
             'Progress': 'Prog.',
             'Predecessor': 'Predecessores'
@@ -620,7 +620,7 @@ function updateColumnHeaders(locale) {
             'TaskID': 'ID',
             'TaskName': 'Tarea',
             'StartDate': 'Inicio',
-            'EndDate': 'Fin',
+            'EndDateInput': 'Fin',
             'Duration': 'Duración',
             'Progress': 'Prog.',
             'Predecessor': 'Predecesores'
