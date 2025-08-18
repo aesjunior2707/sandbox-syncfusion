@@ -520,7 +520,7 @@ document.addEventListener('keydown', function(event) {
 
             // Arrow Down key - navegação com auto-edição
             else if (event.key === 'ArrowDown') {
-                // Se está em ediç��o, cancelar edição atual e mover para próxima linha
+                // Se está em edição, cancelar edição atual e mover para próxima linha
                 if (ganttChart.isEdit) {
                     event.preventDefault();
                     // Finalizar edição atual
@@ -549,7 +549,7 @@ document.addEventListener('keydown', function(event) {
             }
             // Arrow Up key - navegação com auto-edição
             else if (event.key === 'ArrowUp') {
-                // Se está em edição, cancelar edi��ão atual e mover para linha anterior
+                // Se está em edição, cancelar edição atual e mover para linha anterior
                 if (ganttChart.isEdit && selectedRowIndex > 0) {
                     event.preventDefault();
                     // Finalizar edição atual
@@ -609,11 +609,9 @@ function populateEndDateInput() {
                     var endDate = new Date(startDate);
                     endDate.setDate(startDate.getDate() + parseInt(task.Duration));
 
-                    var day = ('0' + endDate.getDate()).slice(-2);
-                    var month = ('0' + (endDate.getMonth() + 1)).slice(-2);
-                    var year = String(endDate.getFullYear()).substr(-2);
-
-                    task.EndDateInput = day + '/' + month + '/' + year;
+                    // Atualizar tanto EndDateInput quanto EndDate
+                    task.EndDateInput = endDate;
+                    task.EndDate = endDate;
                 }
             });
 
@@ -626,6 +624,34 @@ function populateEndDateInput() {
         }
     } catch (error) {
         console.error('Erro ao popular EndDateInput:', error);
+    }
+}
+
+// Função para habilitar edição com double-click em células de data
+function enableDateEditingOnDoubleClick() {
+    if (!ganttChart || !ganttChart.element) return;
+
+    var gridContent = ganttChart.element.querySelector('.e-gridcontent');
+    if (gridContent) {
+        gridContent.addEventListener('dblclick', function(event) {
+            var cell = event.target.closest('td.e-rowcell');
+            if (!cell) return;
+
+            var cellIndex = Array.from(cell.parentNode.children).indexOf(cell);
+            var columns = ganttChart.columns;
+
+            // Verificar se é uma coluna de data
+            if (columns[cellIndex] && (columns[cellIndex].field === 'StartDate' || columns[cellIndex].field === 'EndDateInput')) {
+                console.log('Editando coluna de data:', columns[cellIndex].field);
+
+                // Garantir que a edição seja habilitada
+                if (!ganttChart.isEdit) {
+                    setTimeout(function() {
+                        ganttChart.editModule.startEdit();
+                    }, 100);
+                }
+            }
+        });
     }
 }
 
