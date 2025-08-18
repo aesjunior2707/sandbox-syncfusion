@@ -159,46 +159,50 @@ try {
             console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
         }
 
-        // Validar e sincronizar datas/duração
-        if (args.requestType === 'save' && args.data) {
+        // Processar edição da data fim customizada
+        if (args.requestType === 'save' && args.data && args.data.EndDateCustom) {
             try {
                 var startDate = args.data.StartDate;
-                var endDate = args.data.EndDate;
-                var duration = args.data.Duration;
+                var endDateStr = args.data.EndDateCustom;
 
-                // Validação básica de datas
+                // Converter string de data fim para Date
+                var endDate = parseCustomDate(endDateStr);
+
                 if (startDate && endDate) {
                     var start = new Date(startDate);
-                    var end = new Date(endDate);
 
                     // Verificar se data fim é posterior à data início
-                    if (end < start) {
+                    if (endDate < start) {
                         args.cancel = true;
                         alert('Erro: A data fim não pode ser anterior à data de início.');
                         return;
                     }
 
-                    // Calcular diferença em dias (inclusivo)
-                    var timeDiff = end.getTime() - start.getTime();
+                    // Calcular diferença em dias
+                    var timeDiff = endDate.getTime() - start.getTime();
                     var daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
                     // Atualizar duração baseada nas datas
                     args.data.Duration = daysDiff > 0 ? daysDiff : 1;
-                    console.log('Duração calculada:', args.data.Duration, 'dias');
+                    console.log('Duração calculada a partir da data fim:', args.data.Duration, 'dias');
                 }
 
-                // Validar duração mínima
-                if (args.data.Duration !== undefined && args.data.Duration <= 0) {
-                    args.data.Duration = 1;
-                    console.log('Duração ajustada para 1 dia (mínimo)');
-                }
+                // Limpar o campo customizado pois não deve ser salvo
+                delete args.data.EndDateCustom;
 
                 console.log('Dados sendo salvos:', args.data);
             } catch (error) {
-                console.error('Erro na validação:', error);
-                alert('Erro na validação: ' + error.message);
-                // Não cancelar, apenas logar o erro
+                console.error('Erro ao processar data fim:', error);
+                alert('Formato de data inválido. Use: dd/mm/aa');
+                args.cancel = true;
+                return;
             }
+        }
+
+        // Validar duração mínima
+        if (args.data && args.data.Duration !== undefined && args.data.Duration <= 0) {
+            args.data.Duration = 1;
+            console.log('Duração ajustada para 1 dia (mínimo)');
         }
 
         // Respeitar links de predecessores durante validação
