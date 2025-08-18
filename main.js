@@ -146,7 +146,7 @@ try {
             };
             ganttChart.addRecord(newTask, null, 'Child');
 
-            // Ativar edição automaticamente na nova tarefa
+            // Ativar ediç��o automaticamente na nova tarefa
             setTimeout(function() {
                 var newRowIndex = ganttChart.flatData.length - 1;
                 ganttChart.selectRow(newRowIndex);
@@ -751,7 +751,7 @@ if (ganttChart) {
             // Adicionar evento de clique simples para edição
             setTimeout(function() {
                 addClickEditFunctionality();
-                enableDateEditingOnDoubleClick();
+                enableImprovedDateEditing();
             }, 200);
         } catch (error) {
             console.error('Erro na função dataBound:', error);
