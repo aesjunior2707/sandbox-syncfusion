@@ -277,41 +277,26 @@ try {
 function parseCustomDate(dateStr) {
     if (!dateStr) return null;
 
-    // Se já é um objeto Date, retornar diretamente
-    if (dateStr instanceof Date) {
-        return dateStr;
+    var parts = dateStr.split('/');
+    if (parts.length !== 3) throw new Error('Formato inválido');
+
+    var day = parseInt(parts[0]);
+    var month = parseInt(parts[1]) - 1; // Month is 0-based
+    var year = parseInt(parts[2]);
+
+    // Se ano tem 2 dígitos, assumir 20xx
+    if (year < 100) {
+        year += 2000;
     }
 
-    // Se é string, tentar fazer parse
-    if (typeof dateStr === 'string') {
-        var parts = dateStr.split('/');
-        if (parts.length !== 3) throw new Error('Formato inválido');
+    var date = new Date(year, month, day);
 
-        var day = parseInt(parts[0]);
-        var month = parseInt(parts[1]) - 1; // Month is 0-based
-        var year = parseInt(parts[2]);
-
-        // Se ano tem 2 dígitos, assumir 20xx
-        if (year < 100) {
-            year += 2000;
-        }
-
-        var date = new Date(year, month, day);
-
-        // Validar se a data é válida
-        if (date.getDate() !== day || date.getMonth() !== month || date.getFullYear() !== year) {
-            throw new Error('Data inválida');
-        }
-
-        return date;
+    // Validar se a data é válida
+    if (date.getDate() !== day || date.getMonth() !== month || date.getFullYear() !== year) {
+        throw new Error('Data inválida');
     }
 
-    // Tentar converter diretamente para Date
-    try {
-        return new Date(dateStr);
-    } catch (error) {
-        throw new Error('Formato de data não reconhecido');
-    }
+    return date;
 }
 
 
