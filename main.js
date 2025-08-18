@@ -130,6 +130,9 @@ var ganttChart = new ej.gantt.Gantt({
     },
 
     actionBegin: function (args) {
+        // Debug: Log de todos os eventos de actionBegin
+        console.log('actionBegin:', args.requestType, args);
+
         // Processa predecessores antes de salvar
         if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
             const originalValue = args.data.Predecessor;
