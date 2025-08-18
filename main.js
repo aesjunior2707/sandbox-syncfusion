@@ -494,35 +494,6 @@ document.addEventListener('keydown', function(event) {
 
 });
 
-// Função para popular EndDateInput com data calculada
-function populateEndDateInput() {
-    try {
-        if (ganttChart && typeof ganttChart.flatData !== 'undefined' && ganttChart.flatData) {
-            ganttChart.flatData.forEach(function(task) {
-                if (task.StartDate && task.Duration) {
-                    var startDate = new Date(task.StartDate);
-                    var endDate = new Date(startDate);
-                    endDate.setDate(startDate.getDate() + parseInt(task.Duration));
-
-                    var day = ('0' + endDate.getDate()).slice(-2);
-                    var month = ('0' + (endDate.getMonth() + 1)).slice(-2);
-                    var year = String(endDate.getFullYear()).substr(-2);
-
-                    task.EndDateInput = day + '/' + month + '/' + year;
-                }
-            });
-
-            if (typeof ganttChart.refresh === 'function') {
-                ganttChart.refresh();
-            }
-        } else {
-            console.log('Gantt chart ainda não inicializado completamente. Tentando novamente...');
-            setTimeout(populateEndDateInput, 2000);
-        }
-    } catch (error) {
-        console.error('Erro ao popular EndDateInput:', error);
-    }
-}
 
 // Função para habilitar edição melhorada de datas
 function enableImprovedDateEditing() {
