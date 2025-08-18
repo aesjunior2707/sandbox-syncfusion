@@ -1,6 +1,10 @@
-// Inicializar cultura padrão (Português Brasil)
-if (typeof ej !== 'undefined' && ej.base && ej.base.setCulture) {
-    ej.base.setCulture('pt-BR');
+// Inicializar cultura padrão (Portugu��s Brasil)
+try {
+    if (typeof ej !== 'undefined' && ej.base && ej.base.setCulture) {
+        ej.base.setCulture('pt-BR');
+    }
+} catch (error) {
+    console.error('Erro ao inicializar cultura:', error);
 }
 
 var ganttChart = new ej.gantt.Gantt({
