@@ -27,8 +27,8 @@ try {
 var ganttChart;
 try {
     // Verificar se as dependências estão carregadas
-    if (typeof getProjectDataByLocale === 'undefined') {
-        throw new Error('Função getProjectDataByLocale não encontrada. Verifique se localization.js foi carregado.');
+    if (!checkDependencies()) {
+        throw new Error('Dependências não carregadas. Verifique se todos os scripts foram carregados.');
     }
 
     ganttChart = new ej.gantt.Gantt({
