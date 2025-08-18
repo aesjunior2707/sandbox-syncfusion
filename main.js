@@ -540,8 +540,8 @@ function populateEndDateInput() {
                 var endDate = new Date(startDate);
                 endDate.setDate(startDate.getDate() + parseInt(task.Duration));
 
-                var day = String(endDate.getDate()).padStart(2, '0');
-                var month = String(endDate.getMonth() + 1).padStart(2, '0');
+                var day = ('0' + endDate.getDate()).slice(-2);
+                var month = ('0' + (endDate.getMonth() + 1)).slice(-2);
                 var year = String(endDate.getFullYear()).substr(-2);
 
                 task.EndDateInput = day + '/' + month + '/' + year;
@@ -597,7 +597,7 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-// Função para ativar edição na linha selecionada
+// Fun��ão para ativar edição na linha selecionada
 function activateEditForSelectedRow() {
     var selectedRowIndex = ganttChart.selectedRowIndex;
     if (selectedRowIndex >= 0) {
