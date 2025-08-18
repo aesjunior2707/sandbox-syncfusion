@@ -19,6 +19,9 @@ function checkDependencies() {
 try {
     if (typeof ej !== 'undefined' && ej.base && ej.base.setCulture) {
         ej.base.setCulture('pt-BR');
+        console.log('Cultura pt-BR definida com sucesso');
+    } else {
+        console.warn('Syncfusion não disponível para definir cultura');
     }
 } catch (error) {
     console.error('Erro ao inicializar cultura:', error);
@@ -142,7 +145,7 @@ try {
             };
             ganttChart.addRecord(newTask, null, 'Child');
 
-            // Ativar edição automaticamente na nova tarefa
+            // Ativar ediç��o automaticamente na nova tarefa
             setTimeout(function() {
                 var newRowIndex = ganttChart.flatData.length - 1;
                 ganttChart.selectRow(newRowIndex);
