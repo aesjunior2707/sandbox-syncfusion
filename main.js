@@ -209,8 +209,19 @@ try {
 
     actionComplete: function (args) {
         // Log para acompanhar alterações
-        if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
-            console.log('Predecessores salvos para tarefa', args.data.TaskID + ':', args.data.Predecessor);
+        if (args.requestType === 'save' && args.data) {
+            if (args.data.Predecessor !== undefined) {
+                console.log('Predecessores salvos para tarefa', args.data.TaskID + ':', args.data.Predecessor);
+            }
+
+            // Log mudanças de data e duração
+            if (args.data.StartDate || args.data.EndDate || args.data.Duration) {
+                console.log('Tarefa', args.data.TaskID, 'atualizada:', {
+                    inicio: args.data.StartDate,
+                    fim: args.data.EndDate,
+                    duracao: args.data.Duration
+                });
+            }
         }
     }
     });
