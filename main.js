@@ -772,6 +772,7 @@ if (ganttChart) {
             // Adicionar evento de clique simples para edição
             setTimeout(function() {
                 addClickEditFunctionality();
+                enableDateEditingOnDoubleClick();
             }, 200);
         } catch (error) {
             console.error('Erro na função dataBound:', error);
