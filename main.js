@@ -24,6 +24,15 @@ try {
     console.error('Erro ao inicializar cultura:', error);
 }
 
+// Função para exibir predecessores de forma amigável na coluna
+function displayPredecessors(field, data, column) {
+    if (data.Predecessor) {
+        // Remove FS de cada predecessor para exibir apenas os IDs
+        return data.Predecessor.replace(/(\d+)FS/g, '$1').replace(/;/g, ', ');
+    }
+    return '';
+}
+
 var ganttChart;
 try {
     // Verificar se as dependências estão carregadas
