@@ -159,10 +159,49 @@ try {
             console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
         }
 
-        // Validar datas antes de salvar
+        // Calcular duração automaticamente baseado nas datas
         if (args.requestType === 'save' && args.data) {
             try {
-                // Verificar se a duração é válida
+                var startDate = args.data.StartDate;
+                var endDate = args.data.EndDate;
+                var duration = args.data.Duration;
+
+                // Se temos data de início e fim, calcular duração automaticamente
+                if (startDate && endDate) {
+                    var start = new Date(startDate);
+                    var end = new Date(endDate);
+
+                    // Verificar se data fim é posterior à data início
+                    if (end < start) {
+                        args.cancel = true;
+                        alert('Erro: A data fim não pode ser anterior à data de início.');
+                        return;
+                    }
+
+                    // Calcular diferença em dias
+                    var timeDiff = end.getTime() - start.getTime();
+                    var daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+                    // Se a duração calculada é diferente, atualizar
+                    if (daysDiff !== duration) {
+                        args.data.Duration = daysDiff;
+                        console.log('Duração calculada automaticamente:', daysDiff, 'dias');
+                    }
+                }
+                // Se temos data de início e duração, calcular data fim
+                else if (startDate && duration && duration > 0) {
+                    var start = new Date(startDate);
+                    var calculatedEndDate = new Date(start);
+                    calculatedEndDate.setDate(start.getDate() + duration);
+
+                    // Se a data fim calculada é diferente, atualizar
+                    if (!endDate || calculatedEndDate.getTime() !== new Date(endDate).getTime()) {
+                        args.data.EndDate = calculatedEndDate;
+                        console.log('Data fim calculada automaticamente:', calculatedEndDate);
+                    }
+                }
+
+                // Validar duração final
                 if (args.data.Duration !== undefined && args.data.Duration <= 0) {
                     args.cancel = true;
                     alert('Erro: A duração deve ser maior que zero.');
