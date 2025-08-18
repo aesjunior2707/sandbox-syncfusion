@@ -161,23 +161,18 @@ try {
         // Validar datas antes de salvar
         if (args.requestType === 'save' && args.data) {
             try {
-                // Verificar se data final é posterior à data inicial
-                if (args.data.StartDate && args.data.EndDate) {
-                    var startDate = new Date(args.data.StartDate);
-                    var endDate = new Date(args.data.EndDate);
-
-                    if (endDate < startDate) {
-                        args.cancel = true;
-                        alert('Erro: A data final não pode ser anterior à data de início.');
-                        return;
-                    }
+                // Verificar se a duração é válida
+                if (args.data.Duration !== undefined && args.data.Duration <= 0) {
+                    args.cancel = true;
+                    alert('Erro: A duração deve ser maior que zero.');
+                    return;
                 }
 
                 console.log('Dados sendo salvos:', args.data);
             } catch (error) {
-                console.error('Erro na validação de datas:', error);
+                console.error('Erro na validação:', error);
                 args.cancel = true;
-                alert('Erro na valida��ão de datas: ' + error.message);
+                alert('Erro na validação: ' + error.message);
                 return;
             }
         }
