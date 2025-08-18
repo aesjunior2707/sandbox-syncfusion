@@ -94,7 +94,8 @@ try {
     columns: [
         { field: 'TaskID', headerText: 'ID', width: 50, textAlign: 'Center', allowEditing: false },
         { field: 'TaskName', headerText: 'Tarefa', width: 250, allowEditing: true, clipMode: 'EllipsisWithTooltip' },
-        { field: 'StartDate', headerText: 'Início', width: 90, allowEditing: true },
+        { field: 'StartDate', headerText: 'Início', width: 90, allowEditing: true, editType: 'datepickeredit',
+          edit: { params: { locale: 'en-US', format: 'M/d/yyyy' } } },
         { field: 'Duration', headerText: 'Duração', width: 80, textAlign: 'Center', allowEditing: true },
         { field: 'Progress', headerText: 'Prog.', width: 70, textAlign: 'Center', allowEditing: true },
         { field: 'Predecessor', headerText: 'Predecessores', width: 120, textAlign: 'Left', allowEditing: true, clipMode: 'EllipsisWithTooltip',
