@@ -194,60 +194,40 @@ try {
         if (args.requestType === 'save' && args.data && args.data.EndDateInput) {
             try {
                 var startDate = args.data.StartDate;
-                var endDate = args.data.EndDateInput;
+                var endDateStr = args.data.EndDateInput;
 
-                console.log('Processando data fim:', endDate, 'para tarefa com início:', startDate);
+                console.log('Processando data fim:', endDateStr, 'para tarefa com início:', startDate);
 
-                // Se EndDateInput é uma data válida
+                // Converter string de data fim para Date
+                var endDate = parseCustomDate(endDateStr);
+
                 if (startDate && endDate) {
                     var start = new Date(startDate);
-                    var end = new Date(endDate);
 
                     // Verificar se data fim é posterior à data início
-                    if (end < start) {
+                    if (endDate < start) {
                         alert('Erro: A data fim não pode ser anterior à data de início.');
                         args.cancel = true;
                         return;
                     }
 
                     // Calcular diferença em dias
-                    var timeDiff = end.getTime() - start.getTime();
+                    var timeDiff = endDate.getTime() - start.getTime();
                     var daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
                     // Atualizar duração baseada nas datas
                     args.data.Duration = daysDiff > 0 ? daysDiff : 1;
                     console.log('✅ Duração calculada:', args.data.Duration, 'dias');
 
-                    // Atualizar EndDate oficial do Gantt
-                    args.data.EndDate = end;
+                    // Limpar o campo de entrada pois não deve ser persistido
+                    delete args.data.EndDateInput;
                 }
 
             } catch (error) {
                 console.error('Erro ao processar data fim:', error);
-                alert('Erro ao processar a data fim.');
+                alert('Formato de data inválido. Use: dd/mm/aa (ex: 15/08/25)');
                 args.cancel = true;
                 return;
-            }
-        }
-
-        // Processar mudanças na data de início
-        if (args.requestType === 'save' && args.data && args.data.StartDate && args.data.Duration) {
-            try {
-                var startDate = new Date(args.data.StartDate);
-                var duration = parseInt(args.data.Duration) || 1;
-
-                // Calcular nova data fim baseada na duração
-                var endDate = new Date(startDate);
-                endDate.setDate(startDate.getDate() + duration);
-
-                // Atualizar EndDateInput para exibição
-                args.data.EndDateInput = endDate;
-                args.data.EndDate = endDate;
-
-                console.log('✅ Data de início atualizada. Nova data fim:', endDate);
-
-            } catch (error) {
-                console.error('Erro ao processar data de início:', error);
             }
         }
 
