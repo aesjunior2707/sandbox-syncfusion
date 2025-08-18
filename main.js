@@ -234,6 +234,32 @@ try {
     alert('Erro ao carregar o gráfico Gantt. Verifique o console para mais detalhes.');
 }
 
+// Função para converter string de data dd/mm/aa para Date
+function parseCustomDate(dateStr) {
+    if (!dateStr) return null;
+
+    var parts = dateStr.split('/');
+    if (parts.length !== 3) throw new Error('Formato inválido');
+
+    var day = parseInt(parts[0]);
+    var month = parseInt(parts[1]) - 1; // Month is 0-based
+    var year = parseInt(parts[2]);
+
+    // Se ano tem 2 dígitos, assumir 20xx
+    if (year < 100) {
+        year += 2000;
+    }
+
+    var date = new Date(year, month, day);
+
+    // Validar se a data é válida
+    if (date.getDate() !== day || date.getMonth() !== month || date.getFullYear() !== year) {
+        throw new Error('Data inválida');
+    }
+
+    return date;
+}
+
 // Função para calcular e exibir data fim baseada na duração
 function displayEndDate(field, data, column) {
     if (data.StartDate && data.Duration) {
