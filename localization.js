@@ -158,7 +158,7 @@ if (typeof ej !== 'undefined' && ej.base && ej.base.L10n) {
                 'zoomOutButton': 'Reduzir',
                 'zoomToFitButton': 'Ajustar ao Projeto',
                 'prevTimeSpanButton': 'Período Anterior',
-                'nextTimeSpanButton': 'Próximo Período',
+                'nextTimeSpanButton': 'Próximo Per��odo',
                 'criticalPathButton': 'Caminho Crítico',
                 
                 // Menu de contexto
@@ -600,7 +600,7 @@ function updateColumnHeaders(locale) {
             'TaskID': 'ID',
             'TaskName': 'Task Name',
             'StartDate': 'Start Date',
-            'EndDateInput': 'End Date',
+            'EndDate': 'End Date',
             'Duration': 'Duration',
             'Progress': 'Progress',
             'Predecessor': 'Predecessors'
@@ -609,7 +609,7 @@ function updateColumnHeaders(locale) {
             'TaskID': 'ID',
             'TaskName': 'Tarefa',
             'StartDate': 'Início',
-            'EndDateInput': 'Fim',
+            'EndDate': 'Fim',
             'Duration': 'Duração',
             'Progress': 'Prog.',
             'Predecessor': 'Predecessores'
@@ -618,7 +618,7 @@ function updateColumnHeaders(locale) {
             'TaskID': 'ID',
             'TaskName': 'Tarea',
             'StartDate': 'Inicio',
-            'EndDateInput': 'Fin',
+            'EndDate': 'Fin',
             'Duration': 'Duración',
             'Progress': 'Prog.',
             'Predecessor': 'Predecesores'
