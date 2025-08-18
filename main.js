@@ -206,12 +206,12 @@ function parsePredecessors(predecessorString) {
     }
 
     // Remove espaços e quebra em vírgulas
-    const predecessorIds = predecessorString.split(',').map(id => id.trim()).filter(id => id !== '');
+    var predecessorIds = predecessorString.split(',').map(function(id) { return id.trim(); }).filter(function(id) { return id !== ''; });
 
     // Aplica a regra FS a cada predecessor se não estiver especificada
-    const processedPredecessors = predecessorIds.map(id => {
+    var processedPredecessors = predecessorIds.map(function(id) {
         // Remove caracteres não numéricos e verifica se é um número válido
-        const numericId = id.replace(/[^\d]/g, '');
+        var numericId = id.replace(/[^\d]/g, '');
         if (numericId && !isNaN(numericId)) {
             // Se já contém uma regra (FS, SS, FF, SF), mantém como está
             if (id.match(/\d+(FS|SS|FF|SF)/)) {
