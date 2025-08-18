@@ -188,46 +188,6 @@ try {
             console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
         }
 
-        // Processar edição da data fim
-        if (args.requestType === 'save' && args.data && args.data.EndDateInput) {
-            try {
-                var startDate = args.data.StartDate;
-                var endDateStr = args.data.EndDateInput;
-
-                console.log('Processando data fim:', endDateStr, 'para tarefa com início:', startDate);
-
-                // Converter string de data fim para Date
-                var endDate = parseCustomDate(endDateStr);
-
-                if (startDate && endDate) {
-                    var start = new Date(startDate);
-
-                    // Verificar se data fim é posterior à data início
-                    if (endDate < start) {
-                        alert('Erro: A data fim não pode ser anterior à data de início.');
-                        args.cancel = true;
-                        return;
-                    }
-
-                    // Calcular diferença em dias
-                    var timeDiff = endDate.getTime() - start.getTime();
-                    var daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-                    // Atualizar duração baseada nas datas
-                    args.data.Duration = daysDiff > 0 ? daysDiff : 1;
-                    console.log('✅ Duração calculada:', args.data.Duration, 'dias');
-
-                    // Limpar o campo de entrada pois não deve ser persistido
-                    delete args.data.EndDateInput;
-                }
-
-            } catch (error) {
-                console.error('Erro ao processar data fim:', error);
-                alert('Formato de data inválido. Use: dd/mm/aa (ex: 15/08/25)');
-                args.cancel = true;
-                return;
-            }
-        }
 
         // Respeitar links de predecessores durante validação
         if (args.requestType === 'validateLinkedTask') {
@@ -512,7 +472,7 @@ document.addEventListener('keydown', function(event) {
                 // Se está em edição, cancelar edição atual e mover para linha anterior
                 if (ganttChart.isEdit && selectedRowIndex > 0) {
                     event.preventDefault();
-                    // Finalizar edi��ão atual
+                    // Finalizar edição atual
                     ganttChart.endEdit();
 
                     setTimeout(function() {
