@@ -219,6 +219,12 @@ try {
                 });
             }
         }
+    },
+
+    cellEdit: function (args) {
+        console.log('cellEdit evento:', args);
+        console.log('Coluna sendo editada:', args.columnName);
+        console.log('Valor atual:', args.value);
     }
     });
 } catch (error) {
