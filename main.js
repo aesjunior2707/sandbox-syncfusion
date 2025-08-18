@@ -97,7 +97,8 @@ try {
         { field: 'TaskName', headerText: 'Tarefa', width: 250, allowEditing: true, clipMode: 'EllipsisWithTooltip' },
         { field: 'StartDate', headerText: 'Início', width: 90, allowEditing: true, editType: 'datepickeredit',
           edit: { params: { locale: 'en-US', format: 'M/d/yyyy' } } },
-        { field: 'Duration', headerText: 'Duração', width: 80, textAlign: 'Center', allowEditing: true },
+        { field: 'Duration', headerText: 'Duração', width: 80, textAlign: 'Center', allowEditing: true, editType: 'numericedit',
+          edit: { params: { min: 1, max: 999, step: 1, format: 'n0' } } },
         { field: 'Progress', headerText: 'Prog.', width: 70, textAlign: 'Center', allowEditing: true },
         { field: 'Predecessor', headerText: 'Predecessores', width: 120, textAlign: 'Left', allowEditing: true, clipMode: 'EllipsisWithTooltip',
           valueAccessor: displayPredecessors }
