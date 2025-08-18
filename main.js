@@ -231,7 +231,20 @@ try {
     });
 } catch (error) {
     console.error('Erro ao inicializar Gantt Chart:', error);
-    alert('Erro ao carregar o gráfico Gantt. Verifique o console para mais detalhes.');
+    alert('Erro ao carregar o gráfico Gantt: ' + error.message);
+
+    // Tentar reinicializar com dados padrão
+    try {
+        console.log('Tentando reinicialização com dados mínimos...');
+        ganttChart = new ej.gantt.Gantt({
+            dataSource: [],
+            width: '100%',
+            height: '100%',
+            locale: 'pt-BR'
+        });
+    } catch (fallbackError) {
+        console.error('Falha na reinicialização:', fallbackError);
+    }
 }
 
 // Função para converter string de data dd/mm/aa para Date
