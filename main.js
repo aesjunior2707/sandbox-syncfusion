@@ -233,13 +233,14 @@ function validatePredecessors(predecessorString, currentTaskId) {
         return { isValid: true, message: '' };
     }
 
-    const predecessorIds = predecessorString.split(',').map(id => id.trim().replace(/[^\d]/g, ''));
-    const allTaskIds = getAllTaskIds();
+    var predecessorIds = predecessorString.split(',').map(function(id) { return id.trim().replace(/[^\d]/g, ''); });
+    var allTaskIds = getAllTaskIds();
 
-    for (const predId of predecessorIds) {
+    for (var i = 0; i < predecessorIds.length; i++) {
+        var predId = predecessorIds[i];
         if (predId === '') continue;
 
-        const numericPredId = parseInt(predId);
+        var numericPredId = parseInt(predId);
 
         // Verifica se o predecessor existe
         if (!allTaskIds.includes(numericPredId)) {
