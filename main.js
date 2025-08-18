@@ -91,13 +91,11 @@ try {
     columns: [
         { field: 'TaskID', headerText: 'ID', width: 50, textAlign: 'Center', allowEditing: false },
         { field: 'TaskName', headerText: 'Tarefa', width: 250, allowEditing: true, clipMode: 'EllipsisWithTooltip' },
-        { field: 'StartDate', headerText: 'Início', width: 90, format: 'dd/MM/yy', textAlign: 'Center', allowEditing: true, editType: 'datepickeredit' },
-        { field: 'EndDateInput', headerText: 'Fim', width: 90, textAlign: 'Center', allowEditing: true, editType: 'stringedit',
-          edit: { params: { placeholder: 'dd/mm/aa' } } },
-        { field: 'Duration', headerText: 'Duração', width: 80, textAlign: 'Center', allowEditing: true, editType: 'numericedit' },
-        { field: 'Progress', headerText: 'Prog.', width: 70, textAlign: 'Center', allowEditing: true, editType: 'numericedit' },
-        { field: 'Predecessor', headerText: 'Predecessores', width: 120, textAlign: 'Left', allowEditing: true, editType: 'stringedit', clipMode: 'EllipsisWithTooltip',
-          valueAccessor: displayPredecessors, edit: { params: { placeholder: 'Ex: 1,2,3' } } }
+        { field: 'StartDate', headerText: 'Início', width: 90, format: 'dd/MM/yy', textAlign: 'Center', allowEditing: true },
+        { field: 'Duration', headerText: 'Duração', width: 80, textAlign: 'Center', allowEditing: true },
+        { field: 'Progress', headerText: 'Prog.', width: 70, textAlign: 'Center', allowEditing: true },
+        { field: 'Predecessor', headerText: 'Predecessores', width: 120, textAlign: 'Left', allowEditing: true, clipMode: 'EllipsisWithTooltip',
+          valueAccessor: displayPredecessors }
     ],
     labelSettings: {
         leftLabel: 'TaskName',
@@ -351,7 +349,7 @@ function validatePredecessors(predecessorString, currentTaskId) {
             };
         }
 
-        // Verifica se não est�� tentando criar dependência circular
+        // Verifica se não está tentando criar dependência circular
         if (numericPredId === currentTaskId) {
             return {
                 isValid: false,
@@ -514,7 +512,7 @@ document.addEventListener('keydown', function(event) {
                 // Se está em edição, cancelar edição atual e mover para linha anterior
                 if (ganttChart.isEdit && selectedRowIndex > 0) {
                     event.preventDefault();
-                    // Finalizar edição atual
+                    // Finalizar edi��ão atual
                     ganttChart.endEdit();
 
                     setTimeout(function() {
