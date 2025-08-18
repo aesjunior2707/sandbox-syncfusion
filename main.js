@@ -152,6 +152,30 @@ var ganttChart = new ej.gantt.Gantt({
             console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
         }
 
+        // Validar datas antes de salvar
+        if (args.requestType === 'save' && args.data) {
+            try {
+                // Verificar se data final é posterior à data inicial
+                if (args.data.StartDate && args.data.EndDate) {
+                    var startDate = new Date(args.data.StartDate);
+                    var endDate = new Date(args.data.EndDate);
+
+                    if (endDate < startDate) {
+                        args.cancel = true;
+                        alert('Erro: A data final não pode ser anterior à data de início.');
+                        return;
+                    }
+                }
+
+                console.log('Dados sendo salvos:', args.data);
+            } catch (error) {
+                console.error('Erro na validação de datas:', error);
+                args.cancel = true;
+                alert('Erro na validação de datas: ' + error.message);
+                return;
+            }
+        }
+
         // Respeitar links de predecessores durante validação
         if (args.requestType === 'validateLinkedTask') {
             args.validateMode = { respectLink: true };
