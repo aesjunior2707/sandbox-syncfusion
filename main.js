@@ -351,7 +351,7 @@ function validatePredecessors(predecessorString, currentTaskId) {
             };
         }
 
-        // Verifica se não está tentando criar dependência circular
+        // Verifica se não est�� tentando criar dependência circular
         if (numericPredId === currentTaskId) {
             return {
                 isValid: false,
@@ -571,9 +571,11 @@ function populateEndDateInput() {
                     var endDate = new Date(startDate);
                     endDate.setDate(startDate.getDate() + parseInt(task.Duration));
 
-                    // Atualizar tanto EndDateInput quanto EndDate
-                    task.EndDateInput = endDate;
-                    task.EndDate = endDate;
+                    var day = ('0' + endDate.getDate()).slice(-2);
+                    var month = ('0' + (endDate.getMonth() + 1)).slice(-2);
+                    var year = String(endDate.getFullYear()).substr(-2);
+
+                    task.EndDateInput = day + '/' + month + '/' + year;
                 }
             });
 
