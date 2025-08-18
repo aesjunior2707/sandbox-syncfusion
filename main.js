@@ -507,10 +507,6 @@ if (ganttChart) {
     try {
         ganttChart.appendTo('#Gantt');
 
-        // Popular campos EndDateInput após carregar
-        setTimeout(function() {
-            populateEndDateInput();
-        }, 1000);
 
     } catch (error) {
         console.error('Erro ao anexar Gantt ao DOM:', error);
