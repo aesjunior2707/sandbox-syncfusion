@@ -9,6 +9,11 @@ try {
 
 var ganttChart;
 try {
+    // Verificar se as dependências estão carregadas
+    if (typeof getProjectDataByLocale === 'undefined') {
+        throw new Error('Função getProjectDataByLocale não encontrada. Verifique se localization.js foi carregado.');
+    }
+
     ganttChart = new ej.gantt.Gantt({
     dataSource: getProjectDataByLocale('pt-BR'),
     width: '100%',
