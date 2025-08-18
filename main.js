@@ -230,6 +230,23 @@ try {
     alert('Erro ao carregar o gráfico Gantt. Verifique o console para mais detalhes.');
 }
 
+// Função para calcular e exibir data fim baseada na duração
+function displayEndDate(field, data, column) {
+    if (data.StartDate && data.Duration) {
+        var startDate = new Date(data.StartDate);
+        var endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + parseInt(data.Duration));
+
+        // Formatar como dd/MM/yy
+        var day = String(endDate.getDate()).padStart(2, '0');
+        var month = String(endDate.getMonth() + 1).padStart(2, '0');
+        var year = String(endDate.getFullYear()).substr(-2);
+
+        return day + '/' + month + '/' + year;
+    }
+    return '';
+}
+
 // Função para exibir predecessores de forma amigável na coluna
 function displayPredecessors(field, data, column) {
     if (data.Predecessor) {
