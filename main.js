@@ -91,10 +91,8 @@ try {
     columns: [
         { field: 'TaskID', headerText: 'ID', width: 50, textAlign: 'Center', allowEditing: false },
         { field: 'TaskName', headerText: 'Tarefa', width: 250, allowEditing: true, clipMode: 'EllipsisWithTooltip' },
-        { field: 'StartDate', headerText: 'Início', width: 90, format: 'dd/MM/yy', textAlign: 'Center', allowEditing: true, editType: 'datepickeredit',
-          edit: { params: { format: 'dd/MM/yyyy', strictMode: false, showClearButton: true } } },
-        { field: 'EndDateInput', headerText: 'Fim', width: 90, textAlign: 'Center', allowEditing: true, editType: 'datepickeredit',
-          edit: { params: { format: 'dd/MM/yyyy', strictMode: false, showClearButton: true, placeholder: 'Selecione a data' } } },
+        { field: 'StartDate', headerText: 'Início', width: 90, format: 'dd/MM/yy', textAlign: 'Center', allowEditing: true, editType: 'datepickeredit' },
+        { field: 'EndDateInput', headerText: 'Fim', width: 90, textAlign: 'Center', allowEditing: true, editType: 'datepickeredit' },
         { field: 'Duration', headerText: 'Duração', width: 80, textAlign: 'Center', allowEditing: true, editType: 'numericedit',
           edit: { params: { min: 1, max: 365, step: 1 } } },
         { field: 'Progress', headerText: 'Prog.', width: 70, textAlign: 'Center', allowEditing: true, editType: 'numericedit',
@@ -146,7 +144,7 @@ try {
             };
             ganttChart.addRecord(newTask, null, 'Child');
 
-            // Ativar ediç��o automaticamente na nova tarefa
+            // Ativar edição automaticamente na nova tarefa
             setTimeout(function() {
                 var newRowIndex = ganttChart.flatData.length - 1;
                 ganttChart.selectRow(newRowIndex);
