@@ -53,6 +53,7 @@ try {
         id: 'TaskID',
         name: 'TaskName',
         startDate: 'StartDate',
+        endDate: 'EndDate',
         duration: 'Duration',
         progress: 'Progress',
         dependency: 'Predecessor',
