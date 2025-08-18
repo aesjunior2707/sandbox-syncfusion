@@ -96,7 +96,7 @@ try {
         { field: 'Duration', headerText: 'Duração', width: 80, textAlign: 'Center', allowEditing: true, editType: 'numericedit' },
         { field: 'Progress', headerText: 'Prog.', width: 70, textAlign: 'Center', allowEditing: true, editType: 'numericedit' },
         { field: 'Predecessor', headerText: 'Predecessores', width: 120, textAlign: 'Left', allowEditing: true, editType: 'stringedit', clipMode: 'EllipsisWithTooltip',
-          valueAccessor: displayPredecessors, edit: { params: { placeholder: 'Ex: 1,2,3' } } }
+          valueAccessor: displayPredecessors }
     ],
     labelSettings: {
         leftLabel: 'TaskName',
