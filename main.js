@@ -159,14 +159,14 @@ try {
             console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
         }
 
-        // Calcular duração automaticamente baseado nas datas
+        // Validar e sincronizar datas/duração
         if (args.requestType === 'save' && args.data) {
             try {
                 var startDate = args.data.StartDate;
                 var endDate = args.data.EndDate;
                 var duration = args.data.Duration;
 
-                // Se temos data de início e fim, calcular duração automaticamente
+                // Validação básica de datas
                 if (startDate && endDate) {
                     var start = new Date(startDate);
                     var end = new Date(endDate);
@@ -178,42 +178,26 @@ try {
                         return;
                     }
 
-                    // Calcular diferença em dias
+                    // Calcular diferença em dias (inclusivo)
                     var timeDiff = end.getTime() - start.getTime();
                     var daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
-                    // Se a duração calculada é diferente, atualizar
-                    if (daysDiff !== duration) {
-                        args.data.Duration = daysDiff;
-                        console.log('Duração calculada automaticamente:', daysDiff, 'dias');
-                    }
-                }
-                // Se temos data de início e duração, calcular data fim
-                else if (startDate && duration && duration > 0) {
-                    var start = new Date(startDate);
-                    var calculatedEndDate = new Date(start);
-                    calculatedEndDate.setDate(start.getDate() + duration);
-
-                    // Se a data fim calculada é diferente, atualizar
-                    if (!endDate || calculatedEndDate.getTime() !== new Date(endDate).getTime()) {
-                        args.data.EndDate = calculatedEndDate;
-                        console.log('Data fim calculada automaticamente:', calculatedEndDate);
-                    }
+                    // Atualizar duração baseada nas datas
+                    args.data.Duration = daysDiff > 0 ? daysDiff : 1;
+                    console.log('Duração calculada:', args.data.Duration, 'dias');
                 }
 
-                // Validar duração final
+                // Validar duração mínima
                 if (args.data.Duration !== undefined && args.data.Duration <= 0) {
-                    args.cancel = true;
-                    alert('Erro: A duração deve ser maior que zero.');
-                    return;
+                    args.data.Duration = 1;
+                    console.log('Duração ajustada para 1 dia (mínimo)');
                 }
 
                 console.log('Dados sendo salvos:', args.data);
             } catch (error) {
                 console.error('Erro na validação:', error);
-                args.cancel = true;
                 alert('Erro na validação: ' + error.message);
-                return;
+                // Não cancelar, apenas logar o erro
             }
         }
 
