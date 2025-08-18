@@ -74,7 +74,7 @@ try {
         taskLabel: '${Progress}%'
     },
     splitterSettings: {
-        columnIndex: 3
+        columnIndex: 4
     },
     rowHeight: 28,
     projectStartDate: new Date('08/01/2025'),
