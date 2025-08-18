@@ -15,11 +15,12 @@ function checkDependencies() {
     return true;
 }
 
-// Inicializar cultura padrão (Português Brasil)
+// Inicializar cultura com fallback seguro
 try {
     if (typeof ej !== 'undefined' && ej.base && ej.base.setCulture) {
-        ej.base.setCulture('pt-BR');
-        console.log('Cultura pt-BR definida com sucesso');
+        // Usar en-US como fallback seguro para componentes que podem ter problemas com pt-BR
+        ej.base.setCulture('en-US');
+        console.log('Cultura en-US definida como fallback seguro');
     } else {
         console.warn('Syncfusion não disponível para definir cultura');
     }
@@ -248,7 +249,7 @@ try {
 
 
 
-// Função para parsing de predecessores separados por vírgula e aplicação da regra FS
+// Função para parsing de predecessores separados por v��rgula e aplicação da regra FS
 function parsePredecessors(predecessorString) {
     if (!predecessorString || predecessorString.trim() === '') {
         return '';
