@@ -159,11 +159,13 @@ try {
             console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
         }
 
-        // Processar edição da data fim customizada
-        if (args.requestType === 'save' && args.data && args.data.EndDateCustom) {
+        // Processar edição da data fim
+        if (args.requestType === 'save' && args.data && args.data.EndDateInput) {
             try {
                 var startDate = args.data.StartDate;
-                var endDateStr = args.data.EndDateCustom;
+                var endDateStr = args.data.EndDateInput;
+
+                console.log('Processando data fim:', endDateStr, 'para tarefa com início:', startDate);
 
                 // Converter string de data fim para Date
                 var endDate = parseCustomDate(endDateStr);
@@ -173,8 +175,8 @@ try {
 
                     // Verificar se data fim é posterior à data início
                     if (endDate < start) {
-                        args.cancel = true;
                         alert('Erro: A data fim não pode ser anterior à data de início.');
+                        args.cancel = true;
                         return;
                     }
 
@@ -184,25 +186,18 @@ try {
 
                     // Atualizar duração baseada nas datas
                     args.data.Duration = daysDiff > 0 ? daysDiff : 1;
-                    console.log('Duração calculada a partir da data fim:', args.data.Duration, 'dias');
+                    console.log('✅ Duração calculada:', args.data.Duration, 'dias');
+
+                    // Limpar o campo de entrada pois não deve ser persistido
+                    delete args.data.EndDateInput;
                 }
 
-                // Limpar o campo customizado pois não deve ser salvo
-                delete args.data.EndDateCustom;
-
-                console.log('Dados sendo salvos:', args.data);
             } catch (error) {
                 console.error('Erro ao processar data fim:', error);
-                alert('Formato de data inválido. Use: dd/mm/aa');
+                alert('Formato de data inválido. Use: dd/mm/aa (ex: 15/08/25)');
                 args.cancel = true;
                 return;
             }
-        }
-
-        // Validar duração mínima
-        if (args.data && args.data.Duration !== undefined && args.data.Duration <= 0) {
-            args.data.Duration = 1;
-            console.log('Duração ajustada para 1 dia (mínimo)');
         }
 
         // Respeitar links de predecessores durante validação
