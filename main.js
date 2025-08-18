@@ -172,6 +172,11 @@ try {
         // Debug: Log de todos os eventos de actionBegin
         console.log('actionBegin:', args.requestType, args);
 
+        // Debug específico para edição de datas
+        if (args.requestType === 'beforeOpenEditDialog' || args.requestType === 'beforeEdit') {
+            console.log('Tentando editar:', args.data, 'Tipo:', args.requestType);
+        }
+
         // Processa predecessores antes de salvar
         if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
             var originalValue = args.data.Predecessor;
