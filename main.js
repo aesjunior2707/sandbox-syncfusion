@@ -338,15 +338,6 @@ function parseCustomDate(dateStr) {
 }
 
 
-// Função para exibir predecessores de forma amigável na coluna
-function displayPredecessors(field, data, column) {
-    if (data.Predecessor) {
-        // Remove FS de cada predecessor para exibir apenas os IDs
-        return data.Predecessor.replace(/(\d+)FS/g, '$1').replace(/;/g, ', ');
-    }
-    return '';
-}
-
 // Função para parsing de predecessores separados por vírgula e aplicação da regra FS
 function parsePredecessors(predecessorString) {
     if (!predecessorString || predecessorString.trim() === '') {
