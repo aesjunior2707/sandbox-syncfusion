@@ -565,20 +565,28 @@ function activateEditForSelectedRow() {
     return false;
 }
 
-ganttChart.dataBound = function() {
+// Configurar função dataBound com tratamento de erro
+if (ganttChart) {
+    ganttChart.dataBound = function() {
+        try {
+            if (!ganttChart.isInitialLoad) {
+                ganttChart.isInitialLoad = true;
+                setTimeout(function() {
+                    if (ganttChart && ganttChart.fitToProject) {
+                        ganttChart.fitToProject();
+                    }
+                }, 100);
+            }
 
-    if (!ganttChart.isInitialLoad) {
-        ganttChart.isInitialLoad = true;
-        setTimeout(function() {
-            ganttChart.fitToProject();
-        }, 100);
-    }
-
-    // Adicionar evento de clique simples para edição
-    setTimeout(function() {
-        addClickEditFunctionality();
-    }, 200);
-};
+            // Adicionar evento de clique simples para edição
+            setTimeout(function() {
+                addClickEditFunctionality();
+            }, 200);
+        } catch (error) {
+            console.error('Erro na função dataBound:', error);
+        }
+    };
+}
 
 // Função para adicionar funcionalidade de edição por clique simples
 function addClickEditFunctionality() {
