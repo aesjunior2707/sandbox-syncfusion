@@ -48,7 +48,7 @@ try {
     dataSource: getProjectDataByLocale('pt-BR'),
     width: '100%',
     height: '100%',
-    locale: 'pt-BR',
+    locale: 'en-US',
     taskFields: {
         id: 'TaskID',
         name: 'TaskName',
@@ -249,7 +249,7 @@ try {
 
 
 
-// Função para parsing de predecessores separados por v��rgula e aplicação da regra FS
+// Função para parsing de predecessores separados por vírgula e aplicação da regra FS
 function parsePredecessors(predecessorString) {
     if (!predecessorString || predecessorString.trim() === '') {
         return '';
