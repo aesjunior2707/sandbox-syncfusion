@@ -222,7 +222,7 @@ function parsePredecessors(predecessorString) {
             }
         }
         return null;
-    }).filter(pred => pred !== null);
+    }).filter(function(pred) { return pred !== null; });
 
     return processedPredecessors.join(';');
 }
