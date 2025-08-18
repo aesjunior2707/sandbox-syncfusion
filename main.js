@@ -1,9 +1,37 @@
-// Inicializar cultura padrão (Português Brasil)
-if (typeof ej !== 'undefined' && ej.base && ej.base.setCulture) {
-    ej.base.setCulture('pt-BR');
+// Inicializar cultura padrão (Portugu��s Brasil)
+// Função para verificar se todas as dependências estão carregadas
+function checkDependencies() {
+    var dependencies = [
+        { name: 'Syncfusion ej', check: function() { return typeof ej !== 'undefined'; } },
+        { name: 'getProjectDataByLocale', check: function() { return typeof getProjectDataByLocale !== 'undefined'; } }
+    ];
+
+    for (var i = 0; i < dependencies.length; i++) {
+        if (!dependencies[i].check()) {
+            console.warn('Dependência não carregada:', dependencies[i].name);
+            return false;
+        }
+    }
+    return true;
 }
 
-var ganttChart = new ej.gantt.Gantt({
+// Inicializar cultura padrão (Português Brasil)
+try {
+    if (typeof ej !== 'undefined' && ej.base && ej.base.setCulture) {
+        ej.base.setCulture('pt-BR');
+    }
+} catch (error) {
+    console.error('Erro ao inicializar cultura:', error);
+}
+
+var ganttChart;
+try {
+    // Verificar se as dependências estão carregadas
+    if (!checkDependencies()) {
+        throw new Error('Dependências não carregadas. Verifique se todos os scripts foram carregados.');
+    }
+
+    ganttChart = new ej.gantt.Gantt({
     dataSource: getProjectDataByLocale('pt-BR'),
     width: '100%',
     height: '100%',
@@ -12,7 +40,6 @@ var ganttChart = new ej.gantt.Gantt({
         id: 'TaskID',
         name: 'TaskName',
         startDate: 'StartDate',
-        endDate: 'EndDate',
         duration: 'Duration',
         progress: 'Progress',
         dependency: 'Predecessor',
@@ -39,7 +66,7 @@ var ganttChart = new ej.gantt.Gantt({
         allowTaskbarEditing: true,
         mode: 'Auto'
     },
-    toolbar: ['Add', 'Edit', 'Update', 'Delete', 'Cancel', 'ExpandAll', 'CollapseAll', 'ExcelExport', 'PdfExport', 'Search', 'ZoomIn', 'ZoomOut', 'ZoomToFit'],
+    toolbar: ['Update', 'Delete', 'Cancel', 'ExpandAll', 'CollapseAll', 'ExcelExport', 'PdfExport', 'Search', 'ZoomIn', 'ZoomOut', 'ZoomToFit'],
     highlightWeekends: true,
     timelineSettings: {
         timelineUnitSize: 100,
@@ -56,7 +83,9 @@ var ganttChart = new ej.gantt.Gantt({
         { field: 'TaskID', headerText: 'ID', width: 50, textAlign: 'Center', allowEditing: false },
         { field: 'TaskName', headerText: 'Tarefa', width: 250, allowEditing: true, clipMode: 'EllipsisWithTooltip' },
         { field: 'StartDate', headerText: 'Início', width: 90, format: 'dd/MM/yy', textAlign: 'Center', allowEditing: true, editType: 'datepickeredit' },
-        { field: 'EndDate', headerText: 'Final', width: 90, format: 'dd/MM/yy', textAlign: 'Center', allowEditing: true, editType: 'datepickeredit' },
+        { field: 'EndDateInput', headerText: 'Fim', width: 90, textAlign: 'Center', allowEditing: true, editType: 'stringedit',
+          edit: { params: { placeholder: 'dd/mm/aa' } } },
+        { field: 'Duration', headerText: 'Duração', width: 80, textAlign: 'Center', allowEditing: true, editType: 'numericedit' },
         { field: 'Progress', headerText: 'Prog.', width: 70, textAlign: 'Center', allowEditing: true, editType: 'numericedit' },
         { field: 'Predecessor', headerText: 'Predecessores', width: 120, textAlign: 'Left', allowEditing: true, editType: 'stringedit', clipMode: 'EllipsisWithTooltip',
           valueAccessor: displayPredecessors, edit: { params: { placeholder: 'Ex: 1,2,3' } } }
@@ -130,12 +159,15 @@ var ganttChart = new ej.gantt.Gantt({
     },
 
     actionBegin: function (args) {
+        // Debug: Log de todos os eventos de actionBegin
+        console.log('actionBegin:', args.requestType, args);
+
         // Processa predecessores antes de salvar
         if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
-            const originalValue = args.data.Predecessor;
+            var originalValue = args.data.Predecessor;
 
             // Validar predecessores
-            const validation = validatePredecessors(originalValue, args.data.TaskID);
+            var validation = validatePredecessors(originalValue, args.data.TaskID);
             if (!validation.isValid) {
                 args.cancel = true;
                 alert('Erro nos predecessores: ' + validation.message);
@@ -143,10 +175,51 @@ var ganttChart = new ej.gantt.Gantt({
             }
 
             // Processar predecessores com regra FS
-            const processedPredecessors = parsePredecessors(originalValue);
+            var processedPredecessors = parsePredecessors(originalValue);
             args.data.Predecessor = processedPredecessors;
 
             console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
+        }
+
+        // Processar edição da data fim
+        if (args.requestType === 'save' && args.data && args.data.EndDateInput) {
+            try {
+                var startDate = args.data.StartDate;
+                var endDateStr = args.data.EndDateInput;
+
+                console.log('Processando data fim:', endDateStr, 'para tarefa com início:', startDate);
+
+                // Converter string de data fim para Date
+                var endDate = parseCustomDate(endDateStr);
+
+                if (startDate && endDate) {
+                    var start = new Date(startDate);
+
+                    // Verificar se data fim é posterior à data início
+                    if (endDate < start) {
+                        alert('Erro: A data fim não pode ser anterior à data de início.');
+                        args.cancel = true;
+                        return;
+                    }
+
+                    // Calcular diferença em dias
+                    var timeDiff = endDate.getTime() - start.getTime();
+                    var daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+                    // Atualizar duração baseada nas datas
+                    args.data.Duration = daysDiff > 0 ? daysDiff : 1;
+                    console.log('✅ Duração calculada:', args.data.Duration, 'dias');
+
+                    // Limpar o campo de entrada pois não deve ser persistido
+                    delete args.data.EndDateInput;
+                }
+
+            } catch (error) {
+                console.error('Erro ao processar data fim:', error);
+                alert('Formato de data inválido. Use: dd/mm/aa (ex: 15/08/25)');
+                args.cancel = true;
+                return;
+            }
         }
 
         // Respeitar links de predecessores durante validação
@@ -157,11 +230,66 @@ var ganttChart = new ej.gantt.Gantt({
 
     actionComplete: function (args) {
         // Log para acompanhar alterações
-        if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
-            console.log('Predecessores salvos para tarefa', args.data.TaskID + ':', args.data.Predecessor);
+        if (args.requestType === 'save' && args.data) {
+            if (args.data.Predecessor !== undefined) {
+                console.log('Predecessores salvos para tarefa', args.data.TaskID + ':', args.data.Predecessor);
+            }
+
+            // Log mudanças de data e duração
+            if (args.data.StartDate || args.data.EndDate || args.data.Duration) {
+                console.log('Tarefa', args.data.TaskID, 'atualizada:', {
+                    inicio: args.data.StartDate,
+                    fim: args.data.EndDate,
+                    duracao: args.data.Duration
+                });
+            }
         }
     }
-});
+    });
+} catch (error) {
+    console.error('Erro ao inicializar Gantt Chart:', error);
+    alert('Erro ao carregar o gráfico Gantt: ' + error.message);
+
+    // Tentar reinicializar com dados padrão
+    try {
+        console.log('Tentando reinicialização com dados mínimos...');
+        ganttChart = new ej.gantt.Gantt({
+            dataSource: [],
+            width: '100%',
+            height: '100%',
+            locale: 'pt-BR'
+        });
+    } catch (fallbackError) {
+        console.error('Falha na reinicialização:', fallbackError);
+    }
+}
+
+// Função para converter string de data dd/mm/aa para Date
+function parseCustomDate(dateStr) {
+    if (!dateStr) return null;
+
+    var parts = dateStr.split('/');
+    if (parts.length !== 3) throw new Error('Formato inválido');
+
+    var day = parseInt(parts[0]);
+    var month = parseInt(parts[1]) - 1; // Month is 0-based
+    var year = parseInt(parts[2]);
+
+    // Se ano tem 2 dígitos, assumir 20xx
+    if (year < 100) {
+        year += 2000;
+    }
+
+    var date = new Date(year, month, day);
+
+    // Validar se a data é válida
+    if (date.getDate() !== day || date.getMonth() !== month || date.getFullYear() !== year) {
+        throw new Error('Data inválida');
+    }
+
+    return date;
+}
+
 
 // Função para exibir predecessores de forma amigável na coluna
 function displayPredecessors(field, data, column) {
@@ -179,12 +307,12 @@ function parsePredecessors(predecessorString) {
     }
 
     // Remove espaços e quebra em vírgulas
-    const predecessorIds = predecessorString.split(',').map(id => id.trim()).filter(id => id !== '');
+    var predecessorIds = predecessorString.split(',').map(function(id) { return id.trim(); }).filter(function(id) { return id !== ''; });
 
     // Aplica a regra FS a cada predecessor se não estiver especificada
-    const processedPredecessors = predecessorIds.map(id => {
+    var processedPredecessors = predecessorIds.map(function(id) {
         // Remove caracteres não numéricos e verifica se é um número válido
-        const numericId = id.replace(/[^\d]/g, '');
+        var numericId = id.replace(/[^\d]/g, '');
         if (numericId && !isNaN(numericId)) {
             // Se já contém uma regra (FS, SS, FF, SF), mantém como está
             if (id.match(/\d+(FS|SS|FF|SF)/)) {
@@ -195,7 +323,7 @@ function parsePredecessors(predecessorString) {
             }
         }
         return null;
-    }).filter(pred => pred !== null);
+    }).filter(function(pred) { return pred !== null; });
 
     return processedPredecessors.join(';');
 }
@@ -206,13 +334,14 @@ function validatePredecessors(predecessorString, currentTaskId) {
         return { isValid: true, message: '' };
     }
 
-    const predecessorIds = predecessorString.split(',').map(id => id.trim().replace(/[^\d]/g, ''));
-    const allTaskIds = getAllTaskIds();
+    var predecessorIds = predecessorString.split(',').map(function(id) { return id.trim().replace(/[^\d]/g, ''); });
+    var allTaskIds = getAllTaskIds();
 
-    for (const predId of predecessorIds) {
+    for (var i = 0; i < predecessorIds.length; i++) {
+        var predId = predecessorIds[i];
         if (predId === '') continue;
 
-        const numericPredId = parseInt(predId);
+        var numericPredId = parseInt(predId);
 
         // Verifica se o predecessor existe
         if (!allTaskIds.includes(numericPredId)) {
@@ -432,7 +561,50 @@ document.addEventListener('keydown', function(event) {
 
 });
 
-ganttChart.appendTo('#Gantt');
+// Função para popular EndDateInput com data calculada
+function populateEndDateInput() {
+    try {
+        if (ganttChart && typeof ganttChart.flatData !== 'undefined' && ganttChart.flatData) {
+            ganttChart.flatData.forEach(function(task) {
+                if (task.StartDate && task.Duration) {
+                    var startDate = new Date(task.StartDate);
+                    var endDate = new Date(startDate);
+                    endDate.setDate(startDate.getDate() + parseInt(task.Duration));
+
+                    var day = ('0' + endDate.getDate()).slice(-2);
+                    var month = ('0' + (endDate.getMonth() + 1)).slice(-2);
+                    var year = String(endDate.getFullYear()).substr(-2);
+
+                    task.EndDateInput = day + '/' + month + '/' + year;
+                }
+            });
+
+            if (typeof ganttChart.refresh === 'function') {
+                ganttChart.refresh();
+            }
+        } else {
+            console.log('Gantt chart ainda não inicializado completamente. Tentando novamente...');
+            setTimeout(populateEndDateInput, 2000);
+        }
+    } catch (error) {
+        console.error('Erro ao popular EndDateInput:', error);
+    }
+}
+
+// Adicionar o Gantt ao DOM com tratamento de erro
+if (ganttChart) {
+    try {
+        ganttChart.appendTo('#Gantt');
+
+        // Popular campos EndDateInput após carregar
+        setTimeout(function() {
+            populateEndDateInput();
+        }, 1000);
+
+    } catch (error) {
+        console.error('Erro ao anexar Gantt ao DOM:', error);
+    }
+}
 document.addEventListener('keydown', function(event) {
     // Verifica se a tecla pressionada é F7
     if (event.key === "F7") {
@@ -520,29 +692,43 @@ function activateEditForSelectedRow() {
     return false;
 }
 
-ganttChart.dataBound = function() {
+// Configurar função dataBound com tratamento de erro
+if (ganttChart) {
+    ganttChart.dataBound = function() {
+        try {
+            if (!ganttChart.isInitialLoad) {
+                ganttChart.isInitialLoad = true;
+                setTimeout(function() {
+                    if (ganttChart && ganttChart.fitToProject) {
+                        ganttChart.fitToProject();
+                    }
+                }, 100);
+            }
 
-    if (!ganttChart.isInitialLoad) {
-        ganttChart.isInitialLoad = true;
-        setTimeout(function() {
-            ganttChart.fitToProject();
-        }, 100);
-    }
-
-    // Adicionar evento de clique simples para edição
-    setTimeout(function() {
-        addClickEditFunctionality();
-    }, 200);
-};
+            // Adicionar evento de clique simples para edição
+            setTimeout(function() {
+                addClickEditFunctionality();
+            }, 200);
+        } catch (error) {
+            console.error('Erro na função dataBound:', error);
+        }
+    };
+}
 
 // Função para adicionar funcionalidade de edição por clique simples
 function addClickEditFunctionality() {
-    var gridContent = ganttChart.element.querySelector('.e-gridcontent');
-    if (gridContent) {
-        // Remover eventos anteriores para evitar duplicação
-        gridContent.removeEventListener('click', handleCellClick);
-        // Adicionar novo evento
-        gridContent.addEventListener('click', handleCellClick);
+    try {
+        if (ganttChart && ganttChart.element) {
+            var gridContent = ganttChart.element.querySelector('.e-gridcontent');
+            if (gridContent) {
+                // Remover eventos anteriores para evitar duplicação
+                gridContent.removeEventListener('click', handleCellClick);
+                // Adicionar novo evento
+                gridContent.addEventListener('click', handleCellClick);
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao adicionar funcionalidade de edição:', error);
     }
 }
 
