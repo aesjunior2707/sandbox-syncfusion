@@ -542,10 +542,36 @@ document.addEventListener('keydown', function(event) {
 
 });
 
+// Função para popular EndDateInput com data calculada
+function populateEndDateInput() {
+    if (ganttChart && ganttChart.flatData) {
+        ganttChart.flatData.forEach(function(task) {
+            if (task.StartDate && task.Duration) {
+                var startDate = new Date(task.StartDate);
+                var endDate = new Date(startDate);
+                endDate.setDate(startDate.getDate() + parseInt(task.Duration));
+
+                var day = String(endDate.getDate()).padStart(2, '0');
+                var month = String(endDate.getMonth() + 1).padStart(2, '0');
+                var year = String(endDate.getFullYear()).substr(-2);
+
+                task.EndDateInput = day + '/' + month + '/' + year;
+            }
+        });
+        ganttChart.refresh();
+    }
+}
+
 // Adicionar o Gantt ao DOM com tratamento de erro
 if (ganttChart) {
     try {
         ganttChart.appendTo('#Gantt');
+
+        // Popular campos EndDateInput após carregar
+        setTimeout(function() {
+            populateEndDateInput();
+        }, 1000);
+
     } catch (error) {
         console.error('Erro ao anexar Gantt ao DOM:', error);
     }
