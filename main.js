@@ -470,7 +470,14 @@ document.addEventListener('keydown', function(event) {
 
 });
 
-ganttChart.appendTo('#Gantt');
+// Adicionar o Gantt ao DOM com tratamento de erro
+if (ganttChart) {
+    try {
+        ganttChart.appendTo('#Gantt');
+    } catch (error) {
+        console.error('Erro ao anexar Gantt ao DOM:', error);
+    }
+}
 document.addEventListener('keydown', function(event) {
     // Verifica se a tecla pressionada é F7
     if (event.key === "F7") {
