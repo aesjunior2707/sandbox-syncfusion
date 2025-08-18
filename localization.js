@@ -574,14 +574,9 @@ function getProjectDataByLocale(locale) {
 // Função para trocar idioma
 function changeLanguage(newLocale) {
     if (typeof ej !== 'undefined' && ej.base && ej.base.setCulture) {
-        // Definir cultura global
-        ej.base.setCulture(newLocale);
-        console.log('Cultura alterada para:', newLocale);
-
-        // Atualizar locale do Gantt
+        // Manter cultura en-US para componentes internos funcionarem
+        // Apenas atualizar dados e textos do Gantt
         if (ganttChart) {
-            ganttChart.locale = newLocale;
-
             // Atualizar dados do projeto
             ganttChart.dataSource = getProjectDataByLocale(newLocale);
 
@@ -591,7 +586,7 @@ function changeLanguage(newLocale) {
             // Refresh do componente para aplicar mudanças
             ganttChart.refresh();
 
-            console.log('Gantt Chart atualizado para locale:', newLocale);
+            console.log('Gantt Chart atualizado para locale:', newLocale, '(cultura interna mantida como en-US)');
         }
     }
 }
