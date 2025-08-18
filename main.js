@@ -7,7 +7,9 @@ try {
     console.error('Erro ao inicializar cultura:', error);
 }
 
-var ganttChart = new ej.gantt.Gantt({
+var ganttChart;
+try {
+    ganttChart = new ej.gantt.Gantt({
     dataSource: getProjectDataByLocale('pt-BR'),
     width: '100%',
     height: '100%',
@@ -175,7 +177,7 @@ var ganttChart = new ej.gantt.Gantt({
             } catch (error) {
                 console.error('Erro na validação de datas:', error);
                 args.cancel = true;
-                alert('Erro na validação de datas: ' + error.message);
+                alert('Erro na valida��ão de datas: ' + error.message);
                 return;
             }
         }
@@ -192,7 +194,11 @@ var ganttChart = new ej.gantt.Gantt({
             console.log('Predecessores salvos para tarefa', args.data.TaskID + ':', args.data.Predecessor);
         }
     }
-});
+    });
+} catch (error) {
+    console.error('Erro ao inicializar Gantt Chart:', error);
+    alert('Erro ao carregar o gráfico Gantt. Verifique o console para mais detalhes.');
+}
 
 // Função para exibir predecessores de forma amigável na coluna
 function displayPredecessors(field, data, column) {
