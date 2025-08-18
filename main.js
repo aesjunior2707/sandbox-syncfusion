@@ -135,10 +135,10 @@ var ganttChart = new ej.gantt.Gantt({
 
         // Processa predecessores antes de salvar
         if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
-            const originalValue = args.data.Predecessor;
+            var originalValue = args.data.Predecessor;
 
             // Validar predecessores
-            const validation = validatePredecessors(originalValue, args.data.TaskID);
+            var validation = validatePredecessors(originalValue, args.data.TaskID);
             if (!validation.isValid) {
                 args.cancel = true;
                 alert('Erro nos predecessores: ' + validation.message);
@@ -146,7 +146,7 @@ var ganttChart = new ej.gantt.Gantt({
             }
 
             // Processar predecessores com regra FS
-            const processedPredecessors = parsePredecessors(originalValue);
+            var processedPredecessors = parsePredecessors(originalValue);
             args.data.Predecessor = processedPredecessors;
 
             console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
