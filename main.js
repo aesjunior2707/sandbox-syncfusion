@@ -258,12 +258,7 @@ try {
                 };
             }
 
-            // Destacar botões de ação durante o drag
-            var actionButtons = document.querySelectorAll('.subtask-action-button');
-            actionButtons.forEach(function(btn) {
-                btn.style.opacity = '1';
-                btn.style.display = 'inline-flex';
-            });
+            // Botões aparecerão automaticamente via CSS apenas na linha selecionada
         }
     },
 
