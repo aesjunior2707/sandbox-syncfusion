@@ -124,11 +124,11 @@ try {
         zoomToFit: true
     },
     rowDrop: function (args) {
-    
         if (args.dropIndex !== undefined && args.dropPosition) {
             var draggedRecord = args.data[0];
             var targetRecord = args.targetRecord;
 
+            // Verificar se é uma subtarefa sendo movida para se tornar filha de outro grupo
             if (args.dropPosition === 'child' && targetRecord) {
                 console.log('Criando subtask de:', targetRecord.TaskName);
 
@@ -138,8 +138,36 @@ try {
                     ganttChart.addRecord(draggedRecord, targetRecord.TaskID, 'Child');
                 }, 100);
             }
+            // Verificar se é uma subtarefa sendo movida para fora do grupo (desvinculação)
+            else if (args.dropPosition === 'above' || args.dropPosition === 'below') {
+                var draggedRecord = args.data[0];
+
+                // Verificar se a tarefa arrastada tem um pai (é uma subtarefa)
+                var parentRecord = ganttChart.getParentData(draggedRecord);
+
+                if (parentRecord) {
+                    console.log('Desvinculando subtarefa:', draggedRecord.TaskName, 'do grupo pai:', parentRecord.TaskName);
+
+                    // Remover a tarefa da posição atual
+                    ganttChart.deleteRecord(draggedRecord);
+
+                    // Adicionar como tarefa independente na nova posição
+                    setTimeout(function() {
+                        if (args.dropPosition === 'above') {
+                            ganttChart.addRecord(draggedRecord, args.dropIndex, 'Above');
+                        } else {
+                            ganttChart.addRecord(draggedRecord, args.dropIndex, 'Below');
+                        }
+
+                        console.log('Tarefa', draggedRecord.TaskName, 'agora é independente');
+                    }, 100);
+                } else {
+                    // Se não tem pai, é uma tarefa normal sendo reordenada
+                    console.log('Reordenando tarefa pai ou independente:', draggedRecord.TaskName);
+                }
+            }
         }
-       
+        // Criar nova tarefa quando solto em área vazia
         else if (!args.dropIndex) {
             var newTask = {
                 TaskID: getNextTaskID(),
