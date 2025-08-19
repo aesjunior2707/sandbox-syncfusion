@@ -365,7 +365,7 @@ function parsePredecessors(predecessorString) {
         return '';
     }
 
-    // Remove espaços e quebra em v��rgulas
+    // Remove espaços e quebra em vírgulas
     var predecessorIds = predecessorString.split(',').map(function(id) { return id.trim(); }).filter(function(id) { return id !== ''; });
 
     // Aplica a regra FS a cada predecessor se não estiver especificada
@@ -738,7 +738,7 @@ function addSubtaskActionButtons() {
     console.log('✅ Botões de ação adicionados para', subtaskRows.length, 'subtasks');
 }
 
-// Função para remover subtask do grupo
+// Função para remover subtask do grupo (com confirmação)
 function removeSubtaskFromGroup(taskData) {
     console.log('🔄 Removendo subtask do grupo:', taskData.TaskName);
 
@@ -746,6 +746,14 @@ function removeSubtaskFromGroup(taskData) {
     if (!confirm('Deseja remover "' + taskData.TaskName + '" do grupo e torná-la uma tarefa independente?')) {
         return;
     }
+
+    // Chamar função silenciosa
+    removeSubtaskFromGroupSilent(taskData);
+}
+
+// Função para remover subtask do grupo (sem confirmação - para drop zone)
+function removeSubtaskFromGroupSilent(taskData) {
+    console.log('🎯 Removendo subtask automaticamente:', taskData.TaskName);
 
     try {
         // Criar cópia dos dados da tarefa
@@ -758,7 +766,7 @@ function removeSubtaskFromGroup(taskData) {
         setTimeout(function() {
             ganttChart.addRecord(taskCopy);
 
-            console.log('✅ Subtask removida do grupo com sucesso:', taskCopy.TaskName);
+            console.log('✅ Subtask removida automaticamente com sucesso:', taskCopy.TaskName);
 
             // Recriar os botões após a operação
             setTimeout(function() {
@@ -767,8 +775,18 @@ function removeSubtaskFromGroup(taskData) {
         }, 100);
 
     } catch (error) {
-        console.error('❌ Erro ao remover subtask do grupo:', error);
-        alert('Erro ao remover a tarefa do grupo. Tente novamente.');
+        console.error('❌ Erro ao remover subtask do grupo automaticamente:', error);
+        console.log('🔄 Tentando fallback...');
+
+        // Fallback: tentar apenas remover e adicionar
+        try {
+            ganttChart.deleteRecord(taskData.TaskID);
+            setTimeout(function() {
+                ganttChart.addRecord(taskData);
+            }, 100);
+        } catch (fallbackError) {
+            console.error('❌ Fallback também falhou:', fallbackError);
+        }
     }
 }
 
@@ -1070,7 +1088,7 @@ function handleCellClick(event) {
     var row = cell.closest('tr.e-row');
     if (!row) return;
 
-    // Verificar se a célula é editável
+    // Verificar se a célula é edit��vel
     var cellIndex = Array.from(row.children).indexOf(cell);
     var columns = ganttChart.columns;
 
