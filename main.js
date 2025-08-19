@@ -190,9 +190,32 @@ try {
             var draggedTask = args.data[0];
             console.log('Iniciando drag de:', draggedTask.TaskName);
 
-            // Verificar se é uma subtarefa
-            var parentData = ganttChart.getParentData(draggedTask);
-            if (parentData) {
+            // Verificar se é uma subtarefa usando a estrutura de dados
+            var isSubtask = false;
+            var parentData = null;
+
+            // Buscar na estrutura de dados para encontrar o pai
+            function findParent(data, targetId) {
+                for (var i = 0; i < data.length; i++) {
+                    var item = data[i];
+                    if (item.subtasks && item.subtasks.length > 0) {
+                        for (var j = 0; j < item.subtasks.length; j++) {
+                            if (item.subtasks[j].TaskID === targetId) {
+                                return item;
+                            }
+                        }
+                        // Busca recursiva em subtarefas aninhadas
+                        var found = findParent(item.subtasks, targetId);
+                        if (found) return found;
+                    }
+                }
+                return null;
+            }
+
+            parentData = findParent(ganttChart.dataSource, draggedTask.TaskID);
+            isSubtask = parentData !== null;
+
+            if (isSubtask) {
                 console.log('É uma subtarefa de:', parentData.TaskName);
                 // Salvar contexto no elemento gantt para usar no drop
                 ganttChart._draggedSubtask = {
