@@ -513,7 +513,24 @@
                    visibility: visible !important;
                }
 
-               /* ÍCONES PRETOS PARA GRUPOS SELECIONADOS - MAIOR ESPECIFICIDADE */
+               /* ÍCONES PRETOS PARA GRUPOS SELECIONADOS - CLASSE ESPECÍFICA */
+               .e-gantt .e-gridcontent .e-treerowcell.e-focus.e-selectionbackground.e-active .e-treegridexpand,
+               .e-gantt .e-gridcontent .e-treerowcell.e-focus.e-selectionbackground.e-active .e-treegridcollapse {
+                   background: rgba(255,255,255,0.95) !important;
+                   border: 2px solid rgba(0,0,0,0.6) !important;
+                   color: #000000 !important;
+               }
+
+               .e-gantt .e-gridcontent .e-treerowcell.e-focus.e-selectionbackground.e-active .e-treegridexpand::after,
+               .e-gantt .e-gridcontent .e-treerowcell.e-focus.e-selectionbackground.e-active .e-treegridcollapse::after {
+                   color: #000000 !important;
+                   text-shadow: none !important;
+                   font-weight: 900 !important;
+                   opacity: 1 !important;
+                   visibility: visible !important;
+               }
+
+               /* FALLBACK PARA ÍCONES */
                .e-gantt .e-gridcontent .e-row.e-active .e-treegridexpand,
                .e-gantt .e-gridcontent .e-row.e-active .e-treegridcollapse {
                    background: rgba(255,255,255,0.95) !important;
