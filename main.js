@@ -278,8 +278,17 @@ try {
             row.classList.remove('e-valid-drop-target');
         });
 
+        // Remover classes visuais dos botões
+        var actionButtons = document.querySelectorAll('.subtask-action-button');
+        actionButtons.forEach(function(btn) {
+            btn.classList.remove('drop-zone-hover');
+            btn.classList.remove('drop-zone-active');
+        });
+
         // Limpar contexto do drag
-        ganttChart._draggedSubtask = null;
+        setTimeout(function() {
+            ganttChart._draggedSubtask = null;
+        }, 200);
     },
 
     actionBegin: function (args) {
