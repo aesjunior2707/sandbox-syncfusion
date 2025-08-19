@@ -225,6 +225,7 @@
                    align-items: center !important;
                    height: 100% !important;
                    line-height: 1 !important;
+                   padding-left: 2px !important;
                }
 
                .e-gantt .e-treerowcell .e-treecell {
@@ -232,12 +233,54 @@
                    align-items: center !important;
                    line-height: 1 !important;
                    height: 100% !important;
+                   padding-left: 4px !important;
                }
 
                /* Forçar alinhamento específico para o container interno */
                .e-gantt .e-treerowcell .e-treecolumn-container {
-                   padding: 0 !important;
+                   padding: 2px 4px !important;
                    margin: 0 !important;
+               }
+
+               /* Melhorar feedback visual na linha toda quando hover no ícone */
+               .e-gantt .e-treerowcell:hover {
+                   background: linear-gradient(135deg, #FF8F00 0%, #F57C00 100%) !important;
+                   box-shadow: 0 2px 4px rgba(245, 124, 0, 0.3) !important;
+               }
+
+               /* Estilo especial para botões expand/collapse em telas pequenas */
+               @media (max-width: 768px) {
+                   .e-gantt .e-treegridexpand,
+                   .e-gantt .e-treegridcollapse {
+                       width: 28px !important;
+                       height: 28px !important;
+                       font-size: 14px !important;
+                       margin-right: 10px !important;
+                   }
+
+                   .e-gantt .e-treegridexpand::before,
+                   .e-gantt .e-treegridcollapse::before {
+                       top: -6px !important;
+                       left: -6px !important;
+                       right: -6px !important;
+                       bottom: -6px !important;
+                   }
+               }
+
+               /* Tooltip personalizado para ícones */
+               .e-gantt .e-treegridexpand:hover::after {
+                   content: attr(title) !important;
+                   position: absolute !important;
+                   top: -30px !important;
+                   left: 50% !important;
+                   transform: translateX(-50%) !important;
+                   background: rgba(0,0,0,0.8) !important;
+                   color: white !important;
+                   padding: 4px 8px !important;
+                   border-radius: 4px !important;
+                   font-size: 10px !important;
+                   white-space: nowrap !important;
+                   z-index: 1000 !important;
                }
 
                /* TIMELINE COMPACTO */
