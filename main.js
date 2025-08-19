@@ -204,6 +204,26 @@ try {
 
     rowDragStart: function (args) {
         ganttChart.element.classList.add('e-dragging');
+
+        // Salvar informações do drag para usar no drop
+        if (args.data && args.data.length > 0) {
+            var draggedTask = args.data[0];
+            console.log('Iniciando drag de:', draggedTask.TaskName);
+
+            // Verificar se é uma subtarefa
+            var parentData = ganttChart.getParentData(draggedTask);
+            if (parentData) {
+                console.log('É uma subtarefa de:', parentData.TaskName);
+                // Salvar contexto no elemento gantt para usar no drop
+                ganttChart._draggedSubtask = {
+                    task: draggedTask,
+                    parent: parentData
+                };
+            } else {
+                console.log('É uma tarefa pai ou independente');
+                ganttChart._draggedSubtask = null;
+            }
+        }
     },
 
     rowDragEnd: function (args) {
@@ -212,6 +232,9 @@ try {
         rows.forEach(function(row) {
             row.classList.remove('e-valid-drop-target');
         });
+
+        // Limpar contexto do drag
+        ganttChart._draggedSubtask = null;
     },
 
     actionBegin: function (args) {
@@ -316,7 +339,7 @@ function parsePredecessors(predecessorString) {
         // Remove caracteres não numéricos e verifica se é um número válido
         var numericId = id.replace(/[^\d]/g, '');
         if (numericId && !isNaN(numericId)) {
-            // Se já contém uma regra (FS, SS, FF, SF), mant��m como está
+            // Se já contém uma regra (FS, SS, FF, SF), mantém como está
             if (id.match(/\d+(FS|SS|FF|SF)/)) {
                 return id;
             } else {
