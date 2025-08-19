@@ -477,6 +477,31 @@
                    border-left: 2px solid #F57C00 !important;
                }
 
+               /* TEXTO PRETO PARA GRUPOS SELECIONADOS */
+               .e-gantt .e-row.e-active .e-treerowcell {
+                   background: linear-gradient(135deg, #F57C00 0%, #FF8F00 100%) !important;
+                   color: #000000 !important;
+               }
+
+               .e-gantt .e-row.e-active .e-treerowcell .e-treecell {
+                   color: #000000 !important;
+                   font-weight: 700 !important;
+                   text-shadow: none !important;
+               }
+
+               /* Garantir que ícones expand/collapse mantenham visibilidade em grupos selecionados */
+               .e-gantt .e-row.e-active .e-treegridexpand,
+               .e-gantt .e-row.e-active .e-treegridcollapse {
+                   background: rgba(0,0,0,0.15) !important;
+                   border: 1px solid rgba(0,0,0,0.3) !important;
+               }
+
+               .e-gantt .e-row.e-active .e-treegridexpand::after,
+               .e-gantt .e-row.e-active .e-treegridcollapse::after {
+                   color: #000000 !important;
+                   text-shadow: 0 1px 1px rgba(255,255,255,0.5) !important;
+               }
+
                /* ZONA DE DROP */
                .e-gantt .e-row.e-valid-drop-target {
                    background: rgba(245, 124, 0, 0.1) !important;
