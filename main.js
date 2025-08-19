@@ -602,10 +602,96 @@ if (ganttChart) {
     try {
         ganttChart.appendTo('#Gantt');
 
+        // Melhorar usabilidade dos ícones expand/collapse após inicialização
+        setTimeout(function() {
+            improveExpandCollapseUsability();
+        }, 1000);
 
     } catch (error) {
         console.error('Erro ao anexar Gantt ao DOM:', error);
     }
+}
+
+// Função para melhorar usabilidade dos ícones expand/collapse
+function improveExpandCollapseUsability() {
+    if (!ganttChart || !ganttChart.element) return;
+
+    // Adicionar tooltips aos ícones
+    function addTooltipsToIcons() {
+        var expandIcons = ganttChart.element.querySelectorAll('.e-treegridexpand');
+        var collapseIcons = ganttChart.element.querySelectorAll('.e-treegridcollapse');
+
+        expandIcons.forEach(function(icon) {
+            icon.setAttribute('title', 'Clique para expandir grupo');
+            icon.setAttribute('aria-label', 'Expandir grupo');
+        });
+
+        collapseIcons.forEach(function(icon) {
+            icon.setAttribute('title', 'Clique para colapsar grupo');
+            icon.setAttribute('aria-label', 'Colapsar grupo');
+        });
+    }
+
+    // Adicionar atalhos de teclado
+    function addKeyboardShortcuts() {
+        ganttChart.element.addEventListener('keydown', function(event) {
+            var selectedRowIndex = ganttChart.selectedRowIndex;
+            if (selectedRowIndex >= 0) {
+                var selectedRow = ganttChart.flatData[selectedRowIndex];
+
+                // Tecla '+' ou '=' para expandir
+                if (event.key === '+' || event.key === '=') {
+                    event.preventDefault();
+                    if (selectedRow && selectedRow.hasChildRecords) {
+                        ganttChart.expandByID(selectedRow.TaskID);
+                    }
+                }
+
+                // Tecla '-' para colapsar
+                if (event.key === '-') {
+                    event.preventDefault();
+                    if (selectedRow && selectedRow.hasChildRecords) {
+                        ganttChart.collapseByID(selectedRow.TaskID);
+                    }
+                }
+
+                // Tecla '*' para expandir tudo
+                if (event.key === '*') {
+                    event.preventDefault();
+                    ganttChart.expandAll();
+                }
+
+                // Ctrl + '-' para colapsar tudo
+                if (event.ctrlKey && event.key === '-') {
+                    event.preventDefault();
+                    ganttChart.collapseAll();
+                }
+            }
+        });
+    }
+
+    // Adicionar indicadores visuais melhores
+    function addVisualIndicators() {
+        var observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList') {
+                    addTooltipsToIcons();
+                }
+            });
+        });
+
+        observer.observe(ganttChart.element, {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    // Executar melhorias
+    addTooltipsToIcons();
+    addKeyboardShortcuts();
+    addVisualIndicators();
+
+    console.log('✅ Melhorias de usabilidade aplicadas aos ícones expand/collapse');
 }
 document.addEventListener('keydown', function(event) {
     // Verifica se a tecla pressionada é F7
