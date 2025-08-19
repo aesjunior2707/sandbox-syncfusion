@@ -477,38 +477,64 @@
                    border-left: 2px solid #F57C00 !important;
                }
 
-               /* TEXTO PRETO PARA GRUPOS SELECIONADOS */
-               .e-gantt .e-row.e-active .e-treerowcell {
+               /* TEXTO PRETO PARA GRUPOS SELECIONADOS - MAIOR ESPECIFICIDADE */
+               .e-gantt .e-gridcontent .e-row.e-active .e-treerowcell {
                    background: linear-gradient(135deg, #F57C00 0%, #FF8F00 100%) !important;
                    color: #000000 !important;
                }
 
-               .e-gantt .e-row.e-active .e-treerowcell .e-treecell {
+               .e-gantt .e-gridcontent .e-row.e-active .e-treerowcell .e-treecell {
                    color: #000000 !important;
                    font-weight: 700 !important;
                    text-shadow: none !important;
+                   opacity: 1 !important;
+                   visibility: visible !important;
                }
 
-               /* Garantir que ícones expand/collapse fiquem PRETOS quando grupo selecionado */
-               .e-gantt .e-row.e-active .e-treegridexpand,
-               .e-gantt .e-row.e-active .e-treegridcollapse {
-                   background: rgba(255,255,255,0.9) !important;
-                   border: 1px solid rgba(0,0,0,0.4) !important;
+               .e-gantt .e-gridcontent .e-row.e-active .e-treecolumn-container .e-treecell {
+                   color: #000000 !important;
+                   font-weight: 700 !important;
+                   text-shadow: none !important;
+                   opacity: 1 !important;
+                   visibility: visible !important;
+               }
+
+               /* ÍCONES PRETOS PARA GRUPOS SELECIONADOS - MAIOR ESPECIFICIDADE */
+               .e-gantt .e-gridcontent .e-row.e-active .e-treegridexpand,
+               .e-gantt .e-gridcontent .e-row.e-active .e-treegridcollapse {
+                   background: rgba(255,255,255,0.95) !important;
+                   border: 2px solid rgba(0,0,0,0.6) !important;
                    color: #000000 !important;
                }
 
-               .e-gantt .e-row.e-active .e-treegridexpand::after,
-               .e-gantt .e-row.e-active .e-treegridcollapse::after {
+               .e-gantt .e-gridcontent .e-row.e-active .e-treegridexpand::after,
+               .e-gantt .e-gridcontent .e-row.e-active .e-treegridcollapse::after {
                    color: #000000 !important;
                    text-shadow: none !important;
                    font-weight: 900 !important;
+                   opacity: 1 !important;
+                   visibility: visible !important;
                }
 
-               /* Forçar cor preta nos ícones selecionados - mais específico */
-               .e-gantt .e-row.e-active .e-treecolumn-container .e-treegridexpand::after,
-               .e-gantt .e-row.e-active .e-treecolumn-container .e-treegridcollapse::after {
+               .e-gantt .e-gridcontent .e-row.e-active .e-treecolumn-container .e-treegridexpand::after,
+               .e-gantt .e-gridcontent .e-row.e-active .e-treecolumn-container .e-treegridcollapse::after {
                    color: #000000 !important;
                    text-shadow: none !important;
+                   font-weight: 900 !important;
+                   opacity: 1 !important;
+                   visibility: visible !important;
+               }
+
+               /* FALLBACK - Forçar estilos ainda mais específicos */
+               table.e-table tbody .e-row.e-active .e-treerowcell .e-treecell {
+                   color: #000000 !important;
+                   opacity: 1 !important;
+               }
+
+               table.e-table tbody .e-row.e-active .e-treegridexpand::after,
+               table.e-table tbody .e-row.e-active .e-treegridcollapse::after {
+                   color: #000000 !important;
+                   opacity: 1 !important;
                }
 
                /* ZONA DE DROP */
