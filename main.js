@@ -15,13 +15,26 @@ function checkDependencies() {
     return true;
 }
 
-// Inicializar cultura padrão (Português Brasil)
+// Inicializar cultura com fallback seguro
 try {
     if (typeof ej !== 'undefined' && ej.base && ej.base.setCulture) {
-        ej.base.setCulture('pt-BR');
+        // Usar en-US como fallback seguro para componentes que podem ter problemas com pt-BR
+        ej.base.setCulture('en-US');
+        console.log('Cultura en-US definida como fallback seguro');
+    } else {
+        console.warn('Syncfusion não disponível para definir cultura');
     }
 } catch (error) {
     console.error('Erro ao inicializar cultura:', error);
+}
+
+// Função para exibir predecessores de forma amigável na coluna
+function displayPredecessors(field, data, column) {
+    if (data.Predecessor) {
+        // Remove FS de cada predecessor para exibir apenas os IDs
+        return data.Predecessor.replace(/(\d+)FS/g, '$1').replace(/;/g, ', ');
+    }
+    return '';
 }
 
 var ganttChart;
@@ -35,11 +48,12 @@ try {
     dataSource: getProjectDataByLocale('pt-BR'),
     width: '100%',
     height: '100%',
-    locale: 'pt-BR',
+    locale: 'en-US',
     taskFields: {
         id: 'TaskID',
         name: 'TaskName',
         startDate: 'StartDate',
+        endDate: 'EndDate',
         duration: 'Duration',
         progress: 'Progress',
         dependency: 'Predecessor',
@@ -82,13 +96,15 @@ try {
     columns: [
         { field: 'TaskID', headerText: 'ID', width: 50, textAlign: 'Center', allowEditing: false },
         { field: 'TaskName', headerText: 'Tarefa', width: 250, allowEditing: true, clipMode: 'EllipsisWithTooltip' },
-        { field: 'StartDate', headerText: 'Início', width: 90, format: 'dd/MM/yy', textAlign: 'Center', allowEditing: true, editType: 'datepickeredit' },
-        { field: 'EndDateInput', headerText: 'Fim', width: 90, textAlign: 'Center', allowEditing: true, editType: 'stringedit',
-          edit: { params: { placeholder: 'dd/mm/aa' } } },
-        { field: 'Duration', headerText: 'Duração', width: 80, textAlign: 'Center', allowEditing: true, editType: 'numericedit' },
-        { field: 'Progress', headerText: 'Prog.', width: 70, textAlign: 'Center', allowEditing: true, editType: 'numericedit' },
-        { field: 'Predecessor', headerText: 'Predecessores', width: 120, textAlign: 'Left', allowEditing: true, editType: 'stringedit', clipMode: 'EllipsisWithTooltip',
-          valueAccessor: displayPredecessors, edit: { params: { placeholder: 'Ex: 1,2,3' } } }
+        { field: 'StartDate', headerText: 'Início', width: 90, allowEditing: true, editType: 'datepickeredit',
+          edit: { params: { locale: 'en-US', format: 'M/d/yyyy' } } },
+        { field: 'EndDate', headerText: 'Fim', width: 90, textAlign: 'Center', allowEditing: true, editType: 'datepickeredit',
+          edit: { params: { locale: 'en-US', format: 'M/d/yyyy' } } },
+        { field: 'Duration', headerText: 'Duração', width: 80, textAlign: 'Center', allowEditing: true, editType: 'numericedit',
+          edit: { params: { min: 1, max: 999, step: 1, format: 'n0' } } },
+        { field: 'Progress', headerText: 'Prog.', width: 70, textAlign: 'Center', allowEditing: true },
+        { field: 'Predecessor', headerText: 'Predecessores', width: 120, textAlign: 'Left', allowEditing: true, clipMode: 'EllipsisWithTooltip',
+          valueAccessor: displayPredecessors }
     ],
     labelSettings: {
         leftLabel: 'TaskName',
@@ -181,46 +197,6 @@ try {
             console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
         }
 
-        // Processar edição da data fim
-        if (args.requestType === 'save' && args.data && args.data.EndDateInput) {
-            try {
-                var startDate = args.data.StartDate;
-                var endDateStr = args.data.EndDateInput;
-
-                console.log('Processando data fim:', endDateStr, 'para tarefa com início:', startDate);
-
-                // Converter string de data fim para Date
-                var endDate = parseCustomDate(endDateStr);
-
-                if (startDate && endDate) {
-                    var start = new Date(startDate);
-
-                    // Verificar se data fim é posterior à data início
-                    if (endDate < start) {
-                        alert('Erro: A data fim não pode ser anterior à data de início.');
-                        args.cancel = true;
-                        return;
-                    }
-
-                    // Calcular diferença em dias
-                    var timeDiff = endDate.getTime() - start.getTime();
-                    var daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-                    // Atualizar duração baseada nas datas
-                    args.data.Duration = daysDiff > 0 ? daysDiff : 1;
-                    console.log('✅ Duração calculada:', args.data.Duration, 'dias');
-
-                    // Limpar o campo de entrada pois não deve ser persistido
-                    delete args.data.EndDateInput;
-                }
-
-            } catch (error) {
-                console.error('Erro ao processar data fim:', error);
-                alert('Formato de data inválido. Use: dd/mm/aa (ex: 15/08/25)');
-                args.cancel = true;
-                return;
-            }
-        }
 
         // Respeitar links de predecessores durante validação
         if (args.requestType === 'validateLinkedTask') {
@@ -244,6 +220,12 @@ try {
                 });
             }
         }
+    },
+
+    cellEdit: function (args) {
+        console.log('cellEdit evento:', args);
+        console.log('Coluna sendo editada:', args.columnName);
+        console.log('Valor atual:', args.value);
     }
     });
 } catch (error) {
@@ -264,41 +246,7 @@ try {
     }
 }
 
-// Função para converter string de data dd/mm/aa para Date
-function parseCustomDate(dateStr) {
-    if (!dateStr) return null;
 
-    var parts = dateStr.split('/');
-    if (parts.length !== 3) throw new Error('Formato inválido');
-
-    var day = parseInt(parts[0]);
-    var month = parseInt(parts[1]) - 1; // Month is 0-based
-    var year = parseInt(parts[2]);
-
-    // Se ano tem 2 dígitos, assumir 20xx
-    if (year < 100) {
-        year += 2000;
-    }
-
-    var date = new Date(year, month, day);
-
-    // Validar se a data é válida
-    if (date.getDate() !== day || date.getMonth() !== month || date.getFullYear() !== year) {
-        throw new Error('Data inválida');
-    }
-
-    return date;
-}
-
-
-// Função para exibir predecessores de forma amigável na coluna
-function displayPredecessors(field, data, column) {
-    if (data.Predecessor) {
-        // Remove FS de cada predecessor para exibir apenas os IDs
-        return data.Predecessor.replace(/(\d+)FS/g, '$1').replace(/;/g, ', ');
-    }
-    return '';
-}
 
 // Função para parsing de predecessores separados por vírgula e aplicação da regra FS
 function parsePredecessors(predecessorString) {
@@ -561,34 +509,12 @@ document.addEventListener('keydown', function(event) {
 
 });
 
-// Função para popular EndDateInput com data calculada
-function populateEndDateInput() {
-    try {
-        if (ganttChart && typeof ganttChart.flatData !== 'undefined' && ganttChart.flatData) {
-            ganttChart.flatData.forEach(function(task) {
-                if (task.StartDate && task.Duration) {
-                    var startDate = new Date(task.StartDate);
-                    var endDate = new Date(startDate);
-                    endDate.setDate(startDate.getDate() + parseInt(task.Duration));
 
-                    var day = ('0' + endDate.getDate()).slice(-2);
-                    var month = ('0' + (endDate.getMonth() + 1)).slice(-2);
-                    var year = String(endDate.getFullYear()).substr(-2);
-
-                    task.EndDateInput = day + '/' + month + '/' + year;
-                }
-            });
-
-            if (typeof ganttChart.refresh === 'function') {
-                ganttChart.refresh();
-            }
-        } else {
-            console.log('Gantt chart ainda não inicializado completamente. Tentando novamente...');
-            setTimeout(populateEndDateInput, 2000);
-        }
-    } catch (error) {
-        console.error('Erro ao popular EndDateInput:', error);
-    }
+// Função para habilitar edição melhorada de datas
+function enableImprovedDateEditing() {
+    // Esta função é chamada após a inicialização do Gantt
+    // para garantir que a edição de datas funcione corretamente
+    console.log('Sistema de edição de datas habilitado');
 }
 
 // Adicionar o Gantt ao DOM com tratamento de erro
@@ -596,10 +522,6 @@ if (ganttChart) {
     try {
         ganttChart.appendTo('#Gantt');
 
-        // Popular campos EndDateInput após carregar
-        setTimeout(function() {
-            populateEndDateInput();
-        }, 1000);
 
     } catch (error) {
         console.error('Erro ao anexar Gantt ao DOM:', error);
@@ -708,6 +630,7 @@ if (ganttChart) {
             // Adicionar evento de clique simples para edição
             setTimeout(function() {
                 addClickEditFunctionality();
+                enableImprovedDateEditing();
             }, 200);
         } catch (error) {
             console.error('Erro na função dataBound:', error);

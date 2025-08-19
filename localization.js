@@ -158,7 +158,7 @@ if (typeof ej !== 'undefined' && ej.base && ej.base.L10n) {
                 'zoomOutButton': 'Reduzir',
                 'zoomToFitButton': 'Ajustar ao Projeto',
                 'prevTimeSpanButton': 'Período Anterior',
-                'nextTimeSpanButton': 'Próximo Período',
+                'nextTimeSpanButton': 'Próximo Per��odo',
                 'criticalPathButton': 'Caminho Crítico',
                 
                 // Menu de contexto
@@ -574,21 +574,19 @@ function getProjectDataByLocale(locale) {
 // Função para trocar idioma
 function changeLanguage(newLocale) {
     if (typeof ej !== 'undefined' && ej.base && ej.base.setCulture) {
-        // Definir cultura global
-        ej.base.setCulture(newLocale);
-        
-        // Atualizar locale do Gantt
+        // Manter cultura en-US para componentes internos funcionarem
+        // Apenas atualizar dados e textos do Gantt
         if (ganttChart) {
-            ganttChart.locale = newLocale;
-            
             // Atualizar dados do projeto
             ganttChart.dataSource = getProjectDataByLocale(newLocale);
-            
+
             // Atualizar colunas com novos textos
             updateColumnHeaders(newLocale);
-            
-            // Refresh do componente
+
+            // Refresh do componente para aplicar mudanças
             ganttChart.refresh();
+
+            console.log('Gantt Chart atualizado para locale:', newLocale, '(cultura interna mantida como en-US)');
         }
     }
 }
@@ -602,7 +600,7 @@ function updateColumnHeaders(locale) {
             'TaskID': 'ID',
             'TaskName': 'Task Name',
             'StartDate': 'Start Date',
-            'EndDateInput': 'End Date',
+            'EndDate': 'End Date',
             'Duration': 'Duration',
             'Progress': 'Progress',
             'Predecessor': 'Predecessors'
@@ -611,7 +609,7 @@ function updateColumnHeaders(locale) {
             'TaskID': 'ID',
             'TaskName': 'Tarefa',
             'StartDate': 'Início',
-            'EndDateInput': 'Fim',
+            'EndDate': 'Fim',
             'Duration': 'Duração',
             'Progress': 'Prog.',
             'Predecessor': 'Predecessores'
@@ -620,7 +618,7 @@ function updateColumnHeaders(locale) {
             'TaskID': 'ID',
             'TaskName': 'Tarea',
             'StartDate': 'Inicio',
-            'EndDateInput': 'Fin',
+            'EndDate': 'Fin',
             'Duration': 'Duración',
             'Progress': 'Prog.',
             'Predecessor': 'Predecesores'
