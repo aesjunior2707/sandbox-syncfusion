@@ -365,7 +365,7 @@ function parsePredecessors(predecessorString) {
         return '';
     }
 
-    // Remove espaços e quebra em vírgulas
+    // Remove espaços e quebra em v��rgulas
     var predecessorIds = predecessorString.split(',').map(function(id) { return id.trim(); }).filter(function(id) { return id !== ''; });
 
     // Aplica a regra FS a cada predecessor se não estiver especificada
@@ -678,6 +678,56 @@ function addSubtaskActionButtons() {
 
             if (taskData) {
                 removeSubtaskFromGroup(taskData);
+            }
+        });
+
+        // FUNCIONALIDADE DROP ZONE - Tornar o botão um destino de drop
+        actionButton.setAttribute('droppable', 'true');
+        actionButton.classList.add('subtask-drop-zone');
+
+        // Eventos de drag and drop no botão
+        actionButton.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            actionButton.classList.add('drop-zone-active');
+        });
+
+        actionButton.addEventListener('dragenter', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            actionButton.classList.add('drop-zone-hover');
+        });
+
+        actionButton.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            actionButton.classList.remove('drop-zone-hover');
+            actionButton.classList.remove('drop-zone-active');
+        });
+
+        actionButton.addEventListener('drop', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            console.log('🎯 Subtask solta no botão de ação - removendo automaticamente');
+
+            // Remover classes visuais
+            actionButton.classList.remove('drop-zone-hover');
+            actionButton.classList.remove('drop-zone-active');
+
+            // Encontrar a tarefa que está sendo arrastada
+            var draggedTaskData = null;
+
+            // Usar o contexto salvo durante o drag
+            if (ganttChart._draggedSubtask) {
+                draggedTaskData = ganttChart._draggedSubtask.task;
+            }
+
+            if (draggedTaskData) {
+                // Remover sem confirmação
+                removeSubtaskFromGroupSilent(draggedTaskData);
+            } else {
+                console.warn('❌ Não foi possível identificar a tarefa sendo arrastada');
             }
         });
 
