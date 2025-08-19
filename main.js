@@ -735,7 +735,7 @@ function activateEditForSelectedRow() {
             var selectedRow = rows[selectedRowIndex];
 
             if (selectedRow) {
-                // Verificar se é linha pai (não editável na coluna TaskName)
+                // Verificar se é linha pai (grupo)
                 var isParentRow = selectedRow.querySelector('.e-treegridexpand, .e-treegridcollapse');
 
                 var cells = selectedRow.querySelectorAll('td.e-rowcell');
@@ -764,14 +764,37 @@ function activateEditForSelectedRow() {
                 }
 
                 if (targetCell) {
-                    setTimeout(function() {
-                        var dblClickEvent = new MouseEvent('dblclick', {
-                            bubbles: true,
-                            cancelable: true,
-                            view: window
-                        });
-                        targetCell.dispatchEvent(dblClickEvent);
-                    }, 50);
+                    if (isParentRow) {
+                        // Para grupos pai: simular duplo clique através do sistema de timer
+                        var cellId = 'cell_' + selectedRowIndex + '_' + Array.from(cells).indexOf(targetCell);
+
+                        console.log('Enter pressionado em grupo pai - simulando duplo clique');
+
+                        // Simular primeiro clique
+                        if (clickTimers[cellId]) {
+                            clearTimeout(clickTimers[cellId]);
+                        }
+
+                        // Simular segundo clique imediatamente (via Enter)
+                        setTimeout(function() {
+                            var dblClickEvent = new MouseEvent('dblclick', {
+                                bubbles: true,
+                                cancelable: true,
+                                view: window
+                            });
+                            targetCell.dispatchEvent(dblClickEvent);
+                        }, 50);
+                    } else {
+                        // Para subtarefas: edição normal
+                        setTimeout(function() {
+                            var dblClickEvent = new MouseEvent('dblclick', {
+                                bubbles: true,
+                                cancelable: true,
+                                view: window
+                            });
+                            targetCell.dispatchEvent(dblClickEvent);
+                        }, 50);
+                    }
                     return true;
                 }
             }
