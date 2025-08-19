@@ -208,6 +208,12 @@ try {
 
 
     rowDragStart: function (args) {
+        // Exit edit mode before starting drag to avoid conflicts
+        if (ganttChart.isEdit) {
+            console.log('Saindo do modo de edição antes do drag');
+            ganttChart.endEdit();
+        }
+
         ganttChart.element.classList.add('e-dragging');
 
         // Os botões só aparecerão via CSS na linha selecionada durante drag
@@ -381,7 +387,7 @@ function parsePredecessors(predecessorString) {
 
     // Aplica a regra FS a cada predecessor se não estiver especificada
     var processedPredecessors = predecessorIds.map(function(id) {
-        // Remove caracteres não numéricos e verifica se é um número válido
+        // Remove caracteres não numéricos e verifica se �� um número válido
         var numericId = id.replace(/[^\d]/g, '');
         if (numericId && !isNaN(numericId)) {
             // Se já contém uma regra (FS, SS, FF, SF), mantém como está
@@ -417,7 +423,7 @@ function validatePredecessors(predecessorString, currentTaskId) {
         if (!allTaskIds.includes(numericPredId)) {
             return {
                 isValid: false,
-                message: `Tarefa ${numericPredId} não existe.`
+                message: `Tarefa ${numericPredId} n��o existe.`
             };
         }
 
