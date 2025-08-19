@@ -872,6 +872,9 @@ function findNextEditableCell(currentCell, moveRight) {
     return null;
 }
 
+// Variável para controlar duplo clique em grupos
+var clickTimers = {};
+
 // Handler para clique nas células
 function handleCellClick(event) {
     var target = event.target;
@@ -888,24 +891,54 @@ function handleCellClick(event) {
     var columns = ganttChart.columns;
 
     if (columns[cellIndex] && columns[cellIndex].allowEditing !== false && columns[cellIndex].field !== 'TaskID') {
-        // Verificar se é linha pai e se estamos clicando na coluna TaskName
+        // Verificar se é linha pai (grupo)
         var isParentRow = row.querySelector('.e-treegridexpand, .e-treegridcollapse');
-        if (isParentRow && columns[cellIndex].field === 'TaskName') {
-            return; // Não permitir edição do nome em tarefas pai
-        }
+        var rowIndex = Array.from(row.parentNode.children).indexOf(row);
 
         // Selecionar a linha primeiro
-        var rowIndex = Array.from(row.parentNode.children).indexOf(row);
         ganttChart.selectRow(rowIndex);
 
-        // Ativar edição com um pequeno delay
-        setTimeout(function() {
-            var dblClickEvent = new MouseEvent('dblclick', {
-                bubbles: true,
-                cancelable: true,
-                view: window
-            });
-            cell.dispatchEvent(dblClickEvent);
-        }, 100);
+        if (isParentRow) {
+            // Para grupos pai: exigir duplo clique
+            var cellId = 'cell_' + rowIndex + '_' + cellIndex;
+
+            if (clickTimers[cellId]) {
+                // É o segundo clique - ativar edição
+                clearTimeout(clickTimers[cellId]);
+                delete clickTimers[cellId];
+
+                console.log('Duplo clique detectado em grupo pai - ativando edição');
+
+                setTimeout(function() {
+                    var dblClickEvent = new MouseEvent('dblclick', {
+                        bubbles: true,
+                        cancelable: true,
+                        view: window
+                    });
+                    cell.dispatchEvent(dblClickEvent);
+                }, 50);
+            } else {
+                // É o primeiro clique - aguardar segundo clique
+                console.log('Primeiro clique em grupo pai - aguardando segundo clique');
+
+                clickTimers[cellId] = setTimeout(function() {
+                    // Timeout - foi apenas um clique
+                    delete clickTimers[cellId];
+                    console.log('Apenas um clique em grupo pai - edição não ativada');
+                }, 300); // 300ms para detectar duplo clique
+            }
+        } else {
+            // Para subtarefas: manter clique simples
+            console.log('Clique simples em subtarefa - ativando edição');
+
+            setTimeout(function() {
+                var dblClickEvent = new MouseEvent('dblclick', {
+                    bubbles: true,
+                    cancelable: true,
+                    view: window
+                });
+                cell.dispatchEvent(dblClickEvent);
+            }, 100);
+        }
     }
 }
