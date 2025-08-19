@@ -350,24 +350,16 @@
                    transform: translateY(-50%) scale(0.95) !important;
                }
 
-               /* Mostrar botão quando subtask está selecionada ou em hover */
+               /* Esconder todos os botões por padrão */
                [class*="level1"] .subtask-action-button {
-                   display: inline-flex !important;
-                   opacity: 0.8 !important;
+                   display: none !important;
                }
 
-               [class*="level1"].e-active .subtask-action-button,
-               [class*="level1"]:hover .subtask-action-button,
-               [class*="level1"].e-focus .subtask-action-button,
-               [class*="level1"].e-selectionbackground .subtask-action-button {
+               /* Mostrar botão APENAS durante drag E na linha selecionada */
+               .e-dragging [class*="level1"].e-selectionbackground .subtask-action-button,
+               .e-dragging [class*="level1"].e-active .subtask-action-button {
                    display: inline-flex !important;
                    opacity: 1 !important;
-               }
-
-               /* Mostrar botão durante drag */
-               .e-dragging [class*="level1"] .subtask-action-button {
-                   display: inline-flex !important;
-                   opacity: 0.8 !important;
                }
 
                /* Ajustar posicionamento relativo para subtasks */
@@ -647,7 +639,7 @@
                    box-shadow: 0 0 4px rgba(245, 124, 0, 0.4) !important;
                }
 
-               /* BOTÕES PRIMÁRIOS */
+               /* BOT��ES PRIMÁRIOS */
                .e-btn.e-primary {
                    background: linear-gradient(135deg, #F57C00 0%, #E65100 100%) !important;
                    border: none !important;
