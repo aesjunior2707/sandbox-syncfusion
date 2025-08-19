@@ -210,6 +210,12 @@ try {
     rowDragStart: function (args) {
         ganttChart.element.classList.add('e-dragging');
 
+        // Mostrar botões de ação durante o drag
+        var actionButtons = ganttChart.element.querySelectorAll('.subtask-action-button');
+        actionButtons.forEach(function(button) {
+            button.style.display = 'inline-flex';
+        });
+
         // Salvar informações do drag para usar no drop
         if (args.data && args.data.length > 0) {
             var draggedTask = args.data[0];
