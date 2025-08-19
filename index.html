@@ -477,13 +477,13 @@
                    border-left: 2px solid #F57C00 !important;
                }
 
-               /* TEXTO PRETO PARA GRUPOS SELECIONADOS - MAIOR ESPECIFICIDADE */
-               .e-gantt .e-gridcontent .e-row.e-active .e-treerowcell {
+               /* TEXTO PRETO PARA GRUPOS SELECIONADOS - CLASSE ESPECÍFICA */
+               .e-gantt .e-gridcontent .e-treerowcell.e-focus.e-selectionbackground.e-active {
                    background: linear-gradient(135deg, #F57C00 0%, #FF8F00 100%) !important;
                    color: #000000 !important;
                }
 
-               .e-gantt .e-gridcontent .e-row.e-active .e-treerowcell .e-treecell {
+               .e-gantt .e-gridcontent .e-treerowcell.e-focus.e-selectionbackground.e-active .e-treecell {
                    color: #000000 !important;
                    font-weight: 700 !important;
                    text-shadow: none !important;
@@ -491,7 +491,21 @@
                    visibility: visible !important;
                }
 
-               .e-gantt .e-gridcontent .e-row.e-active .e-treecolumn-container .e-treecell {
+               .e-gantt .e-gridcontent .e-treerowcell.e-focus.e-selectionbackground.e-active .e-treecolumn-container .e-treecell {
+                   color: #000000 !important;
+                   font-weight: 700 !important;
+                   text-shadow: none !important;
+                   opacity: 1 !important;
+                   visibility: visible !important;
+               }
+
+               /* FALLBACK PARA OUTRAS CLASSES DE SELEÇÃO */
+               .e-gantt .e-gridcontent .e-row.e-active .e-treerowcell {
+                   background: linear-gradient(135deg, #F57C00 0%, #FF8F00 100%) !important;
+                   color: #000000 !important;
+               }
+
+               .e-gantt .e-gridcontent .e-row.e-active .e-treerowcell .e-treecell {
                    color: #000000 !important;
                    font-weight: 700 !important;
                    text-shadow: none !important;
