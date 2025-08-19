@@ -208,6 +208,21 @@ try {
 
 
     rowDragStart: function (args) {
+        // Force pressing ESC to cancel any active states
+        console.log('Forçando ESC durante início do drag');
+        var escEvent = new KeyboardEvent('keydown', {
+            key: 'Escape',
+            code: 'Escape',
+            keyCode: 27,
+            which: 27,
+            bubbles: true,
+            cancelable: true
+        });
+        document.dispatchEvent(escEvent);
+
+        // Also trigger ESC on the gantt element specifically
+        ganttChart.element.dispatchEvent(escEvent);
+
         // Exit edit mode before starting drag to avoid conflicts
         if (ganttChart.isEdit) {
             console.log('Saindo do modo de edição antes do drag');
@@ -264,7 +279,7 @@ try {
                 };
             }
 
-            // Botões aparecerão automaticamente via CSS apenas na linha selecionada
+            // Bot��es aparecerão automaticamente via CSS apenas na linha selecionada
         }
     },
 
@@ -387,7 +402,7 @@ function parsePredecessors(predecessorString) {
 
     // Aplica a regra FS a cada predecessor se não estiver especificada
     var processedPredecessors = predecessorIds.map(function(id) {
-        // Remove caracteres não numéricos e verifica se �� um número válido
+        // Remove caracteres não numéricos e verifica se é um número válido
         var numericId = id.replace(/[^\d]/g, '');
         if (numericId && !isNaN(numericId)) {
             // Se já contém uma regra (FS, SS, FF, SF), mantém como está
@@ -423,7 +438,7 @@ function validatePredecessors(predecessorString, currentTaskId) {
         if (!allTaskIds.includes(numericPredId)) {
             return {
                 isValid: false,
-                message: `Tarefa ${numericPredId} n��o existe.`
+                message: `Tarefa ${numericPredId} não existe.`
             };
         }
 
