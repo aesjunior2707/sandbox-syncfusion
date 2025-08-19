@@ -218,6 +218,21 @@ try {
         // Debug: Log de todos os eventos de actionBegin
         console.log('actionBegin:', args.requestType, args);
 
+        // Tratamento especial para reordenação de tarefas (drag and drop)
+        if (args.requestType === 'recordUpdate' && args.data && args.modifiedRecords) {
+            console.log('Reordenação detectada no actionBegin');
+
+            // Verificar se é uma operação de desvinculação
+            var modifiedRecord = args.modifiedRecords[0];
+            if (modifiedRecord) {
+                console.log('Registro modificado:', modifiedRecord.TaskName);
+                console.log('Dados da operação:', args.data);
+
+                // Se a tarefa estava em um grupo e agora não está mais
+                // podemos interceptar aqui também
+            }
+        }
+
         // Processa predecessores antes de salvar
         if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
             var originalValue = args.data.Predecessor;
@@ -236,7 +251,6 @@ try {
 
             console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
         }
-
 
         // Respeitar links de predecessores durante validação
         if (args.requestType === 'validateLinkedTask') {
@@ -302,7 +316,7 @@ function parsePredecessors(predecessorString) {
         // Remove caracteres não numéricos e verifica se é um número válido
         var numericId = id.replace(/[^\d]/g, '');
         if (numericId && !isNaN(numericId)) {
-            // Se já contém uma regra (FS, SS, FF, SF), mantém como está
+            // Se já contém uma regra (FS, SS, FF, SF), mant��m como está
             if (id.match(/\d+(FS|SS|FF|SF)/)) {
                 return id;
             } else {
