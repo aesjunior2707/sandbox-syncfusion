@@ -489,17 +489,26 @@
                    text-shadow: none !important;
                }
 
-               /* Garantir que ícones expand/collapse mantenham visibilidade em grupos selecionados */
+               /* Garantir que ícones expand/collapse fiquem PRETOS quando grupo selecionado */
                .e-gantt .e-row.e-active .e-treegridexpand,
                .e-gantt .e-row.e-active .e-treegridcollapse {
-                   background: rgba(0,0,0,0.15) !important;
-                   border: 1px solid rgba(0,0,0,0.3) !important;
+                   background: rgba(255,255,255,0.9) !important;
+                   border: 1px solid rgba(0,0,0,0.4) !important;
+                   color: #000000 !important;
                }
 
                .e-gantt .e-row.e-active .e-treegridexpand::after,
                .e-gantt .e-row.e-active .e-treegridcollapse::after {
                    color: #000000 !important;
-                   text-shadow: 0 1px 1px rgba(255,255,255,0.5) !important;
+                   text-shadow: none !important;
+                   font-weight: 900 !important;
+               }
+
+               /* Forçar cor preta nos ícones selecionados - mais específico */
+               .e-gantt .e-row.e-active .e-treecolumn-container .e-treegridexpand::after,
+               .e-gantt .e-row.e-active .e-treecolumn-container .e-treegridcollapse::after {
+                   color: #000000 !important;
+                   text-shadow: none !important;
                }
 
                /* ZONA DE DROP */
