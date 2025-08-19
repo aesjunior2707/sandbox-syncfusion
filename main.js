@@ -124,51 +124,71 @@ try {
         zoomToFit: true
     },
     rowDrop: function (args) {
-        if (args.dropIndex !== undefined && args.dropPosition) {
-            var draggedRecord = args.data[0];
-            var targetRecord = args.targetRecord;
+        console.log('rowDrop event:', args);
 
-            // Verificar se é uma subtarefa sendo movida para se tornar filha de outro grupo
-            if (args.dropPosition === 'child' && targetRecord) {
-                console.log('Criando subtask de:', targetRecord.TaskName);
+        // Prevenir comportamento padrão para controlar manualmente
+        args.cancel = true;
 
-                ganttChart.deleteRecord(draggedRecord);
+        var draggedRecord = args.data[0];
+        var targetRecord = args.targetRecord;
 
+        // Log para debug
+        console.log('Tarefa arrastada:', draggedRecord ? draggedRecord.TaskName : 'null');
+        console.log('Alvo:', targetRecord ? targetRecord.TaskName : 'null');
+        console.log('Posição:', args.dropPosition);
+
+        // Verificar se é uma subtarefa sendo movida para se tornar filha de outro grupo
+        if (args.dropPosition === 'child' && targetRecord && draggedRecord) {
+            console.log('Criando subtask de:', targetRecord.TaskName);
+
+            setTimeout(function() {
+                // Remover da posição atual
+                ganttChart.deleteRecord(draggedRecord.TaskID);
+
+                // Adicionar como filho do target
                 setTimeout(function() {
                     ganttChart.addRecord(draggedRecord, targetRecord.TaskID, 'Child');
-                }, 100);
-            }
-            // Verificar se é uma subtarefa sendo movida para fora do grupo (desvinculação)
-            else if (args.dropPosition === 'above' || args.dropPosition === 'below') {
-                var draggedRecord = args.data[0];
+                    console.log('Subtask criada com sucesso');
+                }, 50);
+            }, 50);
+        }
+        // Verificar se é uma subtarefa sendo movida para fora do grupo (desvinculação)
+        else if ((args.dropPosition === 'above' || args.dropPosition === 'below') && draggedRecord) {
+            // Verificar se a tarefa arrastada tem um pai (é uma subtarefa)
+            var parentRecord = ganttChart.getParentData(draggedRecord);
 
-                // Verificar se a tarefa arrastada tem um pai (é uma subtarefa)
-                var parentRecord = ganttChart.getParentData(draggedRecord);
+            if (parentRecord) {
+                console.log('Desvinculando subtarefa:', draggedRecord.TaskName, 'do grupo pai:', parentRecord.TaskName);
 
-                if (parentRecord) {
-                    console.log('Desvinculando subtarefa:', draggedRecord.TaskName, 'do grupo pai:', parentRecord.TaskName);
+                setTimeout(function() {
+                    // Remover da posição atual
+                    ganttChart.deleteRecord(draggedRecord.TaskID);
 
-                    // Remover a tarefa da posição atual
-                    ganttChart.deleteRecord(draggedRecord);
-
-                    // Adicionar como tarefa independente na nova posição
+                    // Adicionar como tarefa independente
                     setTimeout(function() {
-                        if (args.dropPosition === 'above') {
-                            ganttChart.addRecord(draggedRecord, args.dropIndex, 'Above');
+                        if (targetRecord) {
+                            if (args.dropPosition === 'above') {
+                                ganttChart.addRecord(draggedRecord, targetRecord.TaskID, 'Above');
+                            } else {
+                                ganttChart.addRecord(draggedRecord, targetRecord.TaskID, 'Below');
+                            }
                         } else {
-                            ganttChart.addRecord(draggedRecord, args.dropIndex, 'Below');
+                            // Se não há target, adicionar ao final
+                            ganttChart.addRecord(draggedRecord);
                         }
 
                         console.log('Tarefa', draggedRecord.TaskName, 'agora é independente');
-                    }, 100);
-                } else {
-                    // Se não tem pai, é uma tarefa normal sendo reordenada
-                    console.log('Reordenando tarefa pai ou independente:', draggedRecord.TaskName);
-                }
+                    }, 50);
+                }, 50);
+            } else {
+                // Se não tem pai, é uma tarefa normal sendo reordenada - permitir comportamento padrão
+                console.log('Reordenando tarefa pai ou independente:', draggedRecord.TaskName);
+                args.cancel = false;
             }
         }
-        // Criar nova tarefa quando solto em área vazia
-        else if (!args.dropIndex) {
+        // Soltar em área vazia - criar nova tarefa
+        else if (!targetRecord && draggedRecord) {
+            console.log('Soltou em área vazia');
             var newTask = {
                 TaskID: getNextTaskID(),
                 TaskName: 'Nova Tarefa',
@@ -176,16 +196,19 @@ try {
                 Duration: 1,
                 Progress: 0
             };
-            ganttChart.addRecord(newTask, null, 'Child');
 
-            // Ativar edição automaticamente na nova tarefa
             setTimeout(function() {
-                var newRowIndex = ganttChart.flatData.length - 1;
-                ganttChart.selectRow(newRowIndex);
+                ganttChart.addRecord(newTask);
+
+                // Ativar edição automaticamente na nova tarefa
                 setTimeout(function() {
-                    activateEditForSelectedRow();
-                }, 200);
-            }, 100);
+                    var newRowIndex = ganttChart.flatData.length - 1;
+                    ganttChart.selectRow(newRowIndex);
+                    setTimeout(function() {
+                        activateEditForSelectedRow();
+                    }, 200);
+                }, 100);
+            }, 50);
         }
     },
 
