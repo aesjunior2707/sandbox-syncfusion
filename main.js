@@ -926,6 +926,7 @@ if (ganttChart) {
                 enableImprovedDateEditing();
                 // Aplicar melhorias de usabilidade sempre que os dados mudarem
                 improveExpandCollapseUsability();
+                addSubtaskActionButtons();
             }, 200);
         } catch (error) {
             console.error('Erro na função dataBound:', error);
