@@ -255,8 +255,19 @@ try {
                 };
             } else {
                 console.log('É uma tarefa pai ou independente');
-                ganttChart._draggedSubtask = null;
+                // Salvar contexto mesmo para tarefas não-subtasks (pode ser útil)
+                ganttChart._draggedSubtask = {
+                    task: draggedTask,
+                    parent: null
+                };
             }
+
+            // Destacar botões de ação durante o drag
+            var actionButtons = document.querySelectorAll('.subtask-action-button');
+            actionButtons.forEach(function(btn) {
+                btn.style.opacity = '1';
+                btn.style.display = 'inline-flex';
+            });
         }
     },
 
@@ -1088,7 +1099,7 @@ function handleCellClick(event) {
     var row = cell.closest('tr.e-row');
     if (!row) return;
 
-    // Verificar se a célula é edit��vel
+    // Verificar se a célula é editável
     var cellIndex = Array.from(row.children).indexOf(cell);
     var columns = ganttChart.columns;
 
