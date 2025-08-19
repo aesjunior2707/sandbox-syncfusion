@@ -253,10 +253,10 @@
                    position: relative !important;
                }
 
-               /* PONTOS COLORIDOS PARA SUBTAREFAS - SIMPLES E LIMPO */
+               /* PONTOS COLORIDOS PARA SUBTAREFAS - TODOS OS GRUPOS */
 
                /* Pontos coloridos em bold para todas as subtarefas (nível 1) */
-               .e-gridrowindex0level1 .e-treecell::before {
+               [class*="level1"] .e-treecell::before {
                    content: '•' !important;
                    color: #F57C00 !important;
                    font-weight: bold !important;
@@ -266,7 +266,7 @@
                }
 
                /* Pontos coloridos para nível 2 (sub-subtarefas) se existirem */
-               .e-gridrowindex0level2 .e-treecell::before {
+               [class*="level2"] .e-treecell::before {
                    content: '•' !important;
                    color: #FF8F00 !important;
                    font-weight: bold !important;
@@ -276,7 +276,7 @@
                }
 
                /* Pontos coloridos para nível 3 se existirem */
-               .e-gridrowindex0level3 .e-treecell::before {
+               [class*="level3"] .e-treecell::before {
                    content: '•' !important;
                    color: #FFB74D !important;
                    font-weight: bold !important;
@@ -286,28 +286,28 @@
                }
 
                /* Leve fundo sutil apenas para melhor visualização */
-               .e-gridrowindex0level1 {
+               [class*="level1"] {
                    background: rgba(245, 124, 0, 0.02) !important;
                }
 
-               .e-gridrowindex0level2 {
+               [class*="level2"] {
                    background: rgba(255, 143, 0, 0.02) !important;
                }
 
-               .e-gridrowindex0level3 {
+               [class*="level3"] {
                    background: rgba(255, 183, 77, 0.02) !important;
                }
 
                /* Hover limpo para subtarefas */
-               .e-gridrowindex0level1:hover {
+               [class*="level1"]:hover {
                    background: rgba(245, 124, 0, 0.05) !important;
                }
 
-               .e-gridrowindex0level2:hover {
+               [class*="level2"]:hover {
                    background: rgba(255, 143, 0, 0.05) !important;
                }
 
-               .e-gridrowindex0level3:hover {
+               [class*="level3"]:hover {
                    background: rgba(255, 183, 77, 0.05) !important;
                }
 
