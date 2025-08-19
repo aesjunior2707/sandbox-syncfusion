@@ -351,11 +351,17 @@
                }
 
                /* Mostrar botão quando subtask está selecionada ou em hover */
+               [class*="level1"] .subtask-action-button {
+                   display: inline-flex !important;
+                   opacity: 0.8 !important;
+               }
+
                [class*="level1"].e-active .subtask-action-button,
                [class*="level1"]:hover .subtask-action-button,
                [class*="level1"].e-focus .subtask-action-button,
                [class*="level1"].e-selectionbackground .subtask-action-button {
                    display: inline-flex !important;
+                   opacity: 1 !important;
                }
 
                /* Mostrar botão durante drag */
