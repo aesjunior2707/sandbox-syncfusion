@@ -124,81 +124,61 @@ try {
         zoomToFit: true
     },
     rowDrop: function (args) {
-        console.log('rowDrop event triggered:', args);
-
-        if (!args.data || args.data.length === 0) {
-            console.log('No data in drop event');
-            return;
-        }
-
-        var draggedRecord = args.data[0];
-        var targetRecord = args.targetRecord;
-
-        console.log('Dragged:', draggedRecord ? draggedRecord.TaskName : 'null');
-        console.log('Target:', targetRecord ? targetRecord.TaskName : 'null');
+        console.log('=== ROW DROP EVENT ===');
+        console.log('Args:', args);
+        console.log('Data:', args.data);
+        console.log('Target:', args.targetRecord);
         console.log('Position:', args.dropPosition);
 
-        // Se a tarefa arrastada é uma subtarefa
-        var parentData = null;
-        try {
-            parentData = ganttChart.getParentData(draggedRecord);
-        } catch (e) {
-            console.log('Error getting parent data:', e);
-        }
+        // Verificar se temos contexto de subtarefa sendo arrastada
+        if (ganttChart._draggedSubtask &&
+            (args.dropPosition === 'above' || args.dropPosition === 'below')) {
 
-        console.log('Parent:', parentData ? parentData.TaskName : 'none');
+            var draggedTask = ganttChart._draggedSubtask.task;
+            var parentTask = ganttChart._draggedSubtask.parent;
 
-        // Caso especial: Desvincular subtarefa
-        if (parentData && (args.dropPosition === 'above' || args.dropPosition === 'below')) {
-            console.log('DESVINCULANDO subtarefa:', draggedRecord.TaskName);
+            console.log('🔄 DESVINCULANDO subtarefa:', draggedTask.TaskName, 'do pai:', parentTask.TaskName);
 
-            // Cancelar drop padrão
+            // Cancelar o comportamento padrão
             args.cancel = true;
 
-            // Executar operação manual
+            // Fazer a desvinculação manualmente
             setTimeout(function() {
-                console.log('Executando desvinculação...');
+                console.log('Removendo tarefa da posição atual...');
 
-                // Clonar dados da tarefa
-                var newTaskData = {
-                    TaskID: draggedRecord.TaskID,
-                    TaskName: draggedRecord.TaskName,
-                    StartDate: draggedRecord.StartDate,
-                    EndDate: draggedRecord.EndDate,
-                    Duration: draggedRecord.Duration,
-                    Progress: draggedRecord.Progress,
-                    Predecessor: draggedRecord.Predecessor
-                };
+                // Criar cópia dos dados da tarefa
+                var taskCopy = JSON.parse(JSON.stringify(draggedTask));
 
-                // Remover da posição atual
-                ganttChart.deleteRecord(draggedRecord.TaskID);
+                // Remover tarefa atual
+                ganttChart.deleteRecord(draggedTask.TaskID);
 
-                // Aguardar um pouco e adicionar novamente
+                // Aguardar remoção e adicionar como independente
                 setTimeout(function() {
+                    console.log('Adicionando como tarefa independente...');
+
                     try {
-                        if (targetRecord && args.dropPosition === 'above') {
-                            ganttChart.addRecord(newTaskData, targetRecord.TaskID, 'Above');
-                            console.log('Adicionado acima de:', targetRecord.TaskName);
-                        } else if (targetRecord && args.dropPosition === 'below') {
-                            ganttChart.addRecord(newTaskData, targetRecord.TaskID, 'Below');
-                            console.log('Adicionado abaixo de:', targetRecord.TaskName);
+                        if (args.targetRecord) {
+                            if (args.dropPosition === 'above') {
+                                ganttChart.addRecord(taskCopy, args.targetRecord.TaskID, 'Above');
+                            } else {
+                                ganttChart.addRecord(taskCopy, args.targetRecord.TaskID, 'Below');
+                            }
                         } else {
-                            ganttChart.addRecord(newTaskData);
-                            console.log('Adicionado ao final');
+                            ganttChart.addRecord(taskCopy);
                         }
 
-                        console.log('✅ Desvinculação concluída:', newTaskData.TaskName);
+                        console.log('✅ DESVINCULAÇÃO CONCLUÍDA!', taskCopy.TaskName, 'agora é independente');
                     } catch (error) {
-                        console.error('Erro ao adicionar tarefa:', error);
+                        console.error('❌ Erro na desvinculação:', error);
                     }
-                }, 150);
-            }, 50);
+                }, 200);
+            }, 100);
 
             return;
         }
 
-        // Comportamento padrão para outros casos
-        console.log('Permitindo comportamento padrão');
+        // Para outros casos, deixar comportamento padrão
+        console.log('Permitindo comportamento padrão do Syncfusion');
     },
 
 
