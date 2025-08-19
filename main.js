@@ -630,10 +630,89 @@ if (ganttChart) {
         // Melhorar usabilidade dos ícones expand/collapse após inicialização
         setTimeout(function() {
             improveExpandCollapseUsability();
+            addSubtaskActionButtons();
         }, 1000);
 
     } catch (error) {
         console.error('Erro ao anexar Gantt ao DOM:', error);
+    }
+}
+
+// Função para adicionar botões de ação nas subtasks
+function addSubtaskActionButtons() {
+    if (!ganttChart || !ganttChart.element) return;
+
+    console.log('Adicionando botões de ação para subtasks...');
+
+    // Encontrar todas as subtasks
+    var subtaskRows = ganttChart.element.querySelectorAll('[class*="level1"]');
+
+    subtaskRows.forEach(function(row) {
+        // Verificar se já tem botão
+        if (row.querySelector('.subtask-action-button')) return;
+
+        var treecell = row.querySelector('.e-treecell');
+        if (!treecell) return;
+
+        // Criar botão de ação
+        var actionButton = document.createElement('button');
+        actionButton.className = 'subtask-action-button';
+        actionButton.innerHTML = '<i class="fas fa-arrow-left"></i>';
+        actionButton.title = 'Remover do grupo';
+        actionButton.setAttribute('aria-label', 'Remover subtarefa do grupo');
+
+        // Adicionar evento de clique
+        actionButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            // Encontrar dados da tarefa
+            var rowIndex = Array.from(row.parentNode.children).indexOf(row);
+            var taskData = ganttChart.flatData[rowIndex];
+
+            if (taskData) {
+                removeSubtaskFromGroup(taskData);
+            }
+        });
+
+        // Adicionar o botão à célula
+        treecell.appendChild(actionButton);
+    });
+
+    console.log('✅ Botões de ação adicionados para', subtaskRows.length, 'subtasks');
+}
+
+// Função para remover subtask do grupo
+function removeSubtaskFromGroup(taskData) {
+    console.log('🔄 Removendo subtask do grupo:', taskData.TaskName);
+
+    // Confirmar ação
+    if (!confirm('Deseja remover "' + taskData.TaskName + '" do grupo e torná-la uma tarefa independente?')) {
+        return;
+    }
+
+    try {
+        // Criar cópia dos dados da tarefa
+        var taskCopy = JSON.parse(JSON.stringify(taskData));
+
+        // Remover a tarefa atual
+        ganttChart.deleteRecord(taskData.TaskID);
+
+        // Adicionar como tarefa independente
+        setTimeout(function() {
+            ganttChart.addRecord(taskCopy);
+
+            console.log('✅ Subtask removida do grupo com sucesso:', taskCopy.TaskName);
+
+            // Recriar os botões após a operação
+            setTimeout(function() {
+                addSubtaskActionButtons();
+            }, 200);
+        }, 100);
+
+    } catch (error) {
+        console.error('❌ Erro ao remover subtask do grupo:', error);
+        alert('Erro ao remover a tarefa do grupo. Tente novamente.');
     }
 }
 
