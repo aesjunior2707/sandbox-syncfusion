@@ -130,16 +130,38 @@ try {
         console.log('Target:', args.targetRecord);
         console.log('Position:', args.dropPosition);
 
-        // Verificar se temos contexto de subtarefa sendo arrastada
+        // Verificar se temos dados válidos
+        if (!args.data || args.data.length === 0) {
+            console.log('❌ Sem dados válidos - cancelando');
+            return;
+        }
+
+        var draggedTask = args.data[0];
+        var targetRecord = args.targetRecord;
+
+        // CASO 1: Dropar como filho de um grupo (child)
+        if (args.dropPosition === 'child' && targetRecord) {
+            console.log('📂 Movendo para dentro do grupo:', targetRecord.TaskName);
+            // Deixar o Syncfusion tratar - comportamento padrão
+            return;
+        }
+
+        // CASO 2: Desvincular subtarefa (above/below fora do grupo pai)
         if (ganttChart._draggedSubtask &&
             (args.dropPosition === 'above' || args.dropPosition === 'below')) {
 
-            var draggedTask = ganttChart._draggedSubtask.task;
             var parentTask = ganttChart._draggedSubtask.parent;
+
+            // Verificar se está soltando no mesmo grupo pai
+            if (targetRecord && targetRecord.TaskID === parentTask.TaskID) {
+                console.log('🔄 Reordenando dentro do mesmo grupo pai');
+                // Deixar comportamento padrão para reordenação
+                return;
+            }
 
             console.log('🔄 DESVINCULANDO subtarefa:', draggedTask.TaskName, 'do pai:', parentTask.TaskName);
 
-            // Cancelar o comportamento padrão
+            // Cancelar o comportamento padrão para desvinculação
             args.cancel = true;
 
             // Fazer a desvinculação manualmente
@@ -157,11 +179,11 @@ try {
                     console.log('Adicionando como tarefa independente...');
 
                     try {
-                        if (args.targetRecord) {
+                        if (targetRecord) {
                             if (args.dropPosition === 'above') {
-                                ganttChart.addRecord(taskCopy, args.targetRecord.TaskID, 'Above');
+                                ganttChart.addRecord(taskCopy, targetRecord.TaskID, 'Above');
                             } else {
-                                ganttChart.addRecord(taskCopy, args.targetRecord.TaskID, 'Below');
+                                ganttChart.addRecord(taskCopy, targetRecord.TaskID, 'Below');
                             }
                         } else {
                             ganttChart.addRecord(taskCopy);
@@ -170,6 +192,9 @@ try {
                         console.log('✅ DESVINCULAÇÃO CONCLUÍDA!', taskCopy.TaskName, 'agora é independente');
                     } catch (error) {
                         console.error('❌ Erro na desvinculação:', error);
+                        // Se falhar, tentar restaurar a tarefa
+                        console.log('🔄 Tentando restaurar tarefa...');
+                        ganttChart.addRecord(taskCopy);
                     }
                 }, 200);
             }, 100);
@@ -177,8 +202,8 @@ try {
             return;
         }
 
-        // Para outros casos, deixar comportamento padrão
-        console.log('Permitindo comportamento padrão do Syncfusion');
+        // CASO 3: Outros casos - comportamento padrão
+        console.log('✅ Permitindo comportamento padrão do Syncfusion');
     },
 
 
