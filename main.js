@@ -114,6 +114,7 @@ try {
     splitterSettings: {
         columnIndex: 3
     },
+    rowHeight: 36,
     projectStartDate: new Date('08/01/2025'),
     projectEndDate: new Date('08/31/2025'),
     zoomSettings: {
@@ -691,7 +692,7 @@ function addSubtaskActionButtons() {
         var treecell = row.querySelector('.e-treecell');
         if (!treecell) return;
 
-        // Criar botão de ação
+        // Criar botão de aç��o
         var actionButton = document.createElement('button');
         actionButton.className = 'subtask-action-button';
         actionButton.innerHTML = '<i class="fas fa-arrow-left"></i>';
