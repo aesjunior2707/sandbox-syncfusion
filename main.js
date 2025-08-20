@@ -279,7 +279,7 @@ try {
                 };
             }
 
-            // Bot��es aparecerão automaticamente via CSS apenas na linha selecionada
+            // Botões aparecerão automaticamente via CSS apenas na linha selecionada
         }
     },
 
@@ -1014,11 +1014,9 @@ if (ganttChart) {
                 }, 100);
             }
 
-            // Adicionar evento de clique simples para edição
+            // Aplicar melhorias de usabilidade sempre que os dados mudarem
             setTimeout(function() {
-                addClickEditFunctionality();
                 enableImprovedDateEditing();
-                // Aplicar melhorias de usabilidade sempre que os dados mudarem
                 improveExpandCollapseUsability();
                 addSubtaskActionButtons();
             }, 200);
