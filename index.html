@@ -77,11 +77,30 @@
                    line-height: 24px !important;
                }
 
-               /* LINHAS COMPACTAS */
+               /* LINHAS COMPACTAS - ALTURA UNIFORME PARA TODOS OS TIPOS */
                .e-gantt .e-row {
                    border: none !important;
                    background: #ffffff !important;
                    height: 28px !important;
+                   min-height: 28px !important;
+                   max-height: 28px !important;
+                   line-height: 28px !important;
+               }
+
+               /* Forçar altura uniforme para grupos pai */
+               .e-gantt .e-row .e-treerowcell {
+                   height: 28px !important;
+                   min-height: 28px !important;
+                   max-height: 28px !important;
+                   line-height: 28px !important;
+               }
+
+               /* Forçar altura uniforme para subtarefas */
+               .e-gantt .e-row[class*="level"] {
+                   height: 28px !important;
+                   min-height: 28px !important;
+                   max-height: 28px !important;
+                   line-height: 28px !important;
                }
 
                .e-gantt .e-row:hover {
