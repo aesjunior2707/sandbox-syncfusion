@@ -828,13 +828,35 @@
                    opacity: 0.9 !important;
                }
 
-               /* DENSIDADE COMPACTA GERAL */
+               /* DENSIDADE COMPACTA GERAL - ALTURA UNIFORME CHART E GRID */
                .e-gantt .e-chart-row {
                    height: 28px !important;
+                   min-height: 28px !important;
+                   max-height: 28px !important;
+                   line-height: 28px !important;
                }
 
                .e-gantt .e-chart-row-cell {
                    height: 28px !important;
+                   min-height: 28px !important;
+                   max-height: 28px !important;
+                   line-height: 28px !important;
+               }
+
+               /* Forçar altura uniforme para todas as linhas da tabela */
+               .e-gantt .e-table tbody tr {
+                   height: 28px !important;
+                   min-height: 28px !important;
+                   max-height: 28px !important;
+               }
+
+               /* Container da grid com altura controlada */
+               .e-gantt .e-gridcontent .e-content {
+                   line-height: normal !important;
+               }
+
+               .e-gantt .e-gridcontent .e-content table {
+                   line-height: normal !important;
                }
 
                /* TOOLTIPS PROFISSIONAIS */
