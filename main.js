@@ -722,13 +722,10 @@ function addSubtaskActionButtons() {
             e.stopPropagation();
             e.preventDefault();
 
-            console.log('🔧 DEBUG: Botão de desacoplar clicado');
-
             // Método mais robusto para encontrar a task data
             function findTaskData() {
                 // Método 1: Index da row
                 var rowIndex = Array.from(row.parentNode.children).indexOf(row);
-                console.log('🔧 DEBUG: Método 1 - rowIndex:', rowIndex);
 
                 if (rowIndex >= 0 && rowIndex < ganttChart.flatData.length) {
                     return { data: ganttChart.flatData[rowIndex], index: rowIndex };
@@ -739,7 +736,6 @@ function addSubtaskActionButtons() {
                 if (currentRow) {
                     var allRows = ganttChart.element.querySelectorAll('.e-row');
                     var altIndex = Array.from(allRows).indexOf(currentRow);
-                    console.log('🔧 DEBUG: Método 2 - altIndex:', altIndex);
 
                     if (altIndex >= 0 && altIndex < ganttChart.flatData.length) {
                         return { data: ganttChart.flatData[altIndex], index: altIndex };
@@ -752,7 +748,6 @@ function addSubtaskActionButtons() {
                     for (var i = 0; i < ganttChart.flatData.length; i++) {
                         if (ganttChart.flatData[i].ganttProperties &&
                             ganttChart.flatData[i].ganttProperties.rowUniqueID === taskId) {
-                            console.log('🔧 DEBUG: Método 3 - encontrado por UID:', i);
                             return { data: ganttChart.flatData[i], index: i };
                         }
                     }
@@ -764,18 +759,15 @@ function addSubtaskActionButtons() {
             var result = findTaskData();
 
             if (result && result.data) {
-                console.log('🔧 DEBUG: Task encontrada:', result.data.TaskName, 'ID:', result.data.TaskID, 'Index:', result.index);
-
                 // Garantir que a linha esteja selecionada antes da operação
                 ganttChart.selectRow(result.index);
 
                 // Pequeno delay para garantir que a seleção foi aplicada
                 setTimeout(function() {
-                    console.log('🔧 DEBUG: Chamando removeSubtaskFromGroup...');
                     removeSubtaskFromGroup(result.data);
                 }, 50);
             } else {
-                console.error('🔧 DEBUG: Não foi possível encontrar taskData!');
+                console.error('Erro: Não foi possível encontrar os dados da tarefa');
                 alert('Erro: Não foi possível encontrar os dados da tarefa. Tente recarregar a página.');
             }
         });
