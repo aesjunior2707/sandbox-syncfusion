@@ -865,9 +865,35 @@ function removeSubtaskFromGroupSilent(taskData) {
             if (ganttChart.flatData[i].TaskID === taskData.TaskID) {
                 currentIndex = i;
                 wasCurrentTaskSelected = (i === currentSelectedIndex);
-                // Encontrar o registro pai
-                if (ganttChart.flatData[i].parentItem) {
-                    parentRecord = ganttChart.flatData[i].parentItem;
+
+                // Métodos para encontrar o registro pai
+                var currentItem = ganttChart.flatData[i];
+
+                if (currentItem.parentItem) {
+                    parentRecord = currentItem.parentItem;
+                    console.log('🔧 DEBUG: Pai encontrado via parentItem:', parentRecord.TaskName);
+                } else if (currentItem.ganttProperties && currentItem.ganttProperties.parentItem) {
+                    parentRecord = currentItem.ganttProperties.parentItem;
+                    console.log('🔧 DEBUG: Pai encontrado via ganttProperties.parentItem:', parentRecord.TaskName);
+                } else {
+                    // Buscar o pai baseado no nível hierárquico
+                    var currentLevel = currentItem.ganttProperties ? currentItem.ganttProperties.level : 0;
+                    console.log('🔧 DEBUG: Nível atual da task:', currentLevel);
+
+                    if (currentLevel > 0) {
+                        // Procurar para trás pelo primeiro item com nível menor
+                        for (var j = i - 1; j >= 0; j--) {
+                            var checkItem = ganttChart.flatData[j];
+                            var itemLevel = checkItem.ganttProperties ? checkItem.ganttProperties.level : 0;
+                            console.log('🔧 DEBUG: Verificando item', checkItem.TaskName, 'nível:', itemLevel);
+
+                            if (itemLevel < currentLevel) {
+                                parentRecord = checkItem;
+                                console.log('🔧 DEBUG: Pai encontrado por nível hierárquico:', parentRecord.TaskName);
+                                break;
+                            }
+                        }
+                    }
                 }
                 break;
             }
