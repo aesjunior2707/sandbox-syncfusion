@@ -661,19 +661,37 @@ function enableImprovedDateEditing() {
 }
 
 // Adicionar o Gantt ao DOM com tratamento de erro
-if (ganttChart) {
-    try {
-        ganttChart.appendTo('#Gantt');
+function initializeGanttDOM() {
+    if (ganttChart && ganttChart.appendTo) {
+        try {
+            console.log('Anexando Gantt ao DOM...');
+            ganttChart.appendTo('#Gantt');
 
-        // Melhorar usabilidade dos ícones expand/collapse após inicialização
-        setTimeout(function() {
-            improveExpandCollapseUsability();
-            addSubtaskActionButtons();
-        }, 1000);
+            // Melhorar usabilidade dos ícones expand/collapse após inicialização
+            setTimeout(function() {
+                if (typeof improveExpandCollapseUsability === 'function') {
+                    improveExpandCollapseUsability();
+                }
+                if (typeof addSubtaskActionButtons === 'function') {
+                    addSubtaskActionButtons();
+                }
+            }, 1000);
 
-    } catch (error) {
-        console.error('Erro ao anexar Gantt ao DOM:', error);
+            console.log('Gantt inicializado com sucesso');
+        } catch (error) {
+            console.error('Erro ao anexar Gantt ao DOM:', error);
+            alert('Erro ao inicializar o gráfico Gantt: ' + error.message);
+        }
+    } else {
+        console.error('ganttChart não está disponível ou não tem método appendTo');
     }
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeGanttDOM);
+} else {
+    initializeGanttDOM();
 }
 
 // Função para adicionar botões de ação nas subtasks
@@ -751,7 +769,7 @@ function addSubtaskActionButtons() {
             }
         });
 
-        // Adicionar o botão �� célula
+        // Adicionar o botão à célula
         treecell.appendChild(actionButton);
     });
 
@@ -771,7 +789,7 @@ function removeSubtaskFromGroup(taskData) {
     removeSubtaskFromGroupSilent(taskData);
 }
 
-// Função para remover subtask do grupo (sem confirmação - para drop zone)
+// Função para remover subtask do grupo (sem confirmaç��o - para drop zone)
 function removeSubtaskFromGroupSilent(taskData) {
     console.log('🎯 Removendo subtask automaticamente:', taskData.TaskName);
 
