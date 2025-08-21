@@ -382,7 +382,7 @@ try {
             dataSource: [],
             width: '100%',
             height: '100%',
-            locale: 'pt-BR'
+            locale: 'en-US'
         });
     } catch (fallbackError) {
         console.error('Falha na reinicialização:', fallbackError);
@@ -751,7 +751,7 @@ function addSubtaskActionButtons() {
             }
         });
 
-        // Adicionar o botão à célula
+        // Adicionar o botão �� célula
         treecell.appendChild(actionButton);
     });
 
