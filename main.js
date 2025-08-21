@@ -64,11 +64,6 @@ try {
     allowReordering: true,
     treeColumnIndex: 1,
     showColumnMenu: false,
-    sortSettings: {
-        columns: [
-            { field: 'TaskID', direction: 'Ascending' }
-        ]
-    },
     allowExcelExport: true,
     allowPdfExport: true,
     allowRowDragAndDrop: true,
