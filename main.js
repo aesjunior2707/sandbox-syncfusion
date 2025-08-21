@@ -794,6 +794,10 @@ function removeSubtaskFromGroupSilent(taskData) {
     console.log('🎯 Removendo subtask automaticamente:', taskData.TaskName);
 
     try {
+        // Salvar a linha atualmente selecionada
+        var currentSelectedIndex = ganttChart.selectedRowIndex;
+        var wasCurrentTaskSelected = false;
+
         // Encontrar a posição atual da subtask e do grupo pai
         var currentIndex = -1;
         var parentRecord = null;
@@ -802,6 +806,7 @@ function removeSubtaskFromGroupSilent(taskData) {
         for (var i = 0; i < ganttChart.flatData.length; i++) {
             if (ganttChart.flatData[i].TaskID === taskData.TaskID) {
                 currentIndex = i;
+                wasCurrentTaskSelected = (i === currentSelectedIndex);
                 // Encontrar o registro pai
                 if (ganttChart.flatData[i].parentItem) {
                     parentRecord = ganttChart.flatData[i].parentItem;
@@ -812,6 +817,7 @@ function removeSubtaskFromGroupSilent(taskData) {
 
         console.log('Posição atual da subtask:', currentIndex);
         console.log('Grupo pai:', parentRecord ? parentRecord.TaskName : 'Nenhum');
+        console.log('Task estava selecionada:', wasCurrentTaskSelected);
 
         // Criar cópia dos dados da tarefa
         var taskCopy = JSON.parse(JSON.stringify(taskData));
@@ -841,15 +847,43 @@ function removeSubtaskFromGroupSilent(taskData) {
 
                 console.log('✅ Subtask removida automaticamente com sucesso:', taskCopy.TaskName);
 
-                // Recriar os botões após a operação
+                // Restaurar o foco na task desacoplada
                 setTimeout(function() {
+                    if (wasCurrentTaskSelected) {
+                        // Encontrar a nova posição da task desacoplada
+                        for (var j = 0; j < ganttChart.flatData.length; j++) {
+                            if (ganttChart.flatData[j].TaskID === taskCopy.TaskID) {
+                                console.log('🎯 Restaurando foco na linha:', j);
+                                ganttChart.selectRow(j);
+                                break;
+                            }
+                        }
+                    } else if (currentSelectedIndex >= 0 && currentSelectedIndex < ganttChart.flatData.length) {
+                        // Manter a seleção original se não era a task que foi desacoplada
+                        ganttChart.selectRow(currentSelectedIndex);
+                    }
+
+                    // Recriar os botões após a operação
                     addSubtaskActionButtons();
-                }, 300);
+                }, 400);
 
             } catch (addError) {
                 console.error('❌ Erro ao adicionar tarefa:', addError);
                 // Fallback simples
                 ganttChart.addRecord(taskCopy);
+
+                // Tentar restaurar foco mesmo no fallback
+                setTimeout(function() {
+                    if (wasCurrentTaskSelected) {
+                        for (var j = 0; j < ganttChart.flatData.length; j++) {
+                            if (ganttChart.flatData[j].TaskID === taskCopy.TaskID) {
+                                ganttChart.selectRow(j);
+                                break;
+                            }
+                        }
+                    }
+                    addSubtaskActionButtons();
+                }, 400);
             }
         }, 150);
 
@@ -860,12 +894,23 @@ function removeSubtaskFromGroupSilent(taskData) {
         // Fallback: tentar apenas remover e adicionar
         try {
             var taskCopyFallback = JSON.parse(JSON.stringify(taskData));
+            var wasSelectedFallback = ganttChart.selectedRowIndex === currentIndex;
+
             ganttChart.deleteRecord(taskData.TaskID);
             setTimeout(function() {
                 ganttChart.addRecord(taskCopyFallback);
                 setTimeout(function() {
+                    // Restaurar foco no fallback também
+                    if (wasSelectedFallback) {
+                        for (var k = 0; k < ganttChart.flatData.length; k++) {
+                            if (ganttChart.flatData[k].TaskID === taskCopyFallback.TaskID) {
+                                ganttChart.selectRow(k);
+                                break;
+                            }
+                        }
+                    }
                     addSubtaskActionButtons();
-                }, 200);
+                }, 300);
             }, 100);
         } catch (fallbackError) {
             console.error('❌ Fallback também falhou:', fallbackError);
