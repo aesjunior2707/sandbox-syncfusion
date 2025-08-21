@@ -727,7 +727,13 @@ function addSubtaskActionButtons() {
             var taskData = ganttChart.flatData[rowIndex];
 
             if (taskData) {
-                removeSubtaskFromGroup(taskData);
+                // Garantir que a linha esteja selecionada antes da operação
+                ganttChart.selectRow(rowIndex);
+
+                // Pequeno delay para garantir que a seleção foi aplicada
+                setTimeout(function() {
+                    removeSubtaskFromGroup(taskData);
+                }, 50);
             }
         });
 
