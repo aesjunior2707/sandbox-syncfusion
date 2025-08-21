@@ -347,16 +347,23 @@
                    transform: translateY(-50%) scale(0.95) !important;
                }
 
-               /* Esconder todos os botões por padrão */
+               /* Mostrar botão sempre visível para subtasks */
                [class*="level1"] .subtask-action-button {
-                   display: none !important;
+                   display: inline-flex !important;
+                   opacity: 0.7 !important;
+                   transition: opacity 0.2s ease !important;
                }
 
-               /* Mostrar botão APENAS durante drag E na linha selecionada */
+               /* Destacar botão ao passar o mouse na linha */
+               [class*="level1"]:hover .subtask-action-button {
+                   opacity: 1 !important;
+               }
+
+               /* Destacar botão durante drag */
                .e-dragging [class*="level1"].e-selectionbackground .subtask-action-button,
                .e-dragging [class*="level1"].e-active .subtask-action-button {
-                   display: inline-flex !important;
                    opacity: 1 !important;
+                   background: linear-gradient(135deg, #E65100 0%, #D84315 100%) !important;
                }
 
                /* Ajustar posicionamento relativo para subtasks */
