@@ -913,6 +913,30 @@
                    }
                }
            </style>
+           <script>
+               // Add global error handler to catch script errors
+               window.addEventListener('error', function(e) {
+                   console.error('Script Error Details:', {
+                       message: e.message,
+                       filename: e.filename,
+                       lineno: e.lineno,
+                       colno: e.colno,
+                       error: e.error
+                   });
+
+                   // Show user-friendly error message
+                   if (e.filename && e.filename.includes('main.js')) {
+                       console.error('Error in main.js at line', e.lineno, ':', e.message);
+                   }
+               });
+
+               // Check if essential libraries are loaded
+               document.addEventListener('DOMContentLoaded', function() {
+                   console.log('DOM loaded, checking dependencies...');
+                   console.log('ej available:', typeof ej !== 'undefined');
+                   console.log('getProjectDataByLocale available:', typeof getProjectDataByLocale !== 'undefined');
+               });
+           </script>
            <script src="main.js" type="text/javascript"></script>
       </body>
  </html>
