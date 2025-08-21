@@ -794,23 +794,64 @@ function removeSubtaskFromGroupSilent(taskData) {
     console.log('🎯 Removendo subtask automaticamente:', taskData.TaskName);
 
     try {
+        // Encontrar a posição atual da subtask e do grupo pai
+        var currentIndex = -1;
+        var parentRecord = null;
+
+        // Buscar na estrutura flat do gantt para encontrar posição
+        for (var i = 0; i < ganttChart.flatData.length; i++) {
+            if (ganttChart.flatData[i].TaskID === taskData.TaskID) {
+                currentIndex = i;
+                // Encontrar o registro pai
+                if (ganttChart.flatData[i].parentItem) {
+                    parentRecord = ganttChart.flatData[i].parentItem;
+                }
+                break;
+            }
+        }
+
+        console.log('Posição atual da subtask:', currentIndex);
+        console.log('Grupo pai:', parentRecord ? parentRecord.TaskName : 'Nenhum');
+
         // Criar cópia dos dados da tarefa
         var taskCopy = JSON.parse(JSON.stringify(taskData));
+
+        // Limpar referências de pai na cópia
+        delete taskCopy.parentItem;
+        delete taskCopy.parentUniqueID;
+        if (taskCopy.hasChildRecords) {
+            taskCopy.hasChildRecords = false;
+        }
 
         // Remover a tarefa atual
         ganttChart.deleteRecord(taskData.TaskID);
 
-        // Adicionar como tarefa independente
+        // Adicionar como tarefa independente na posição correta
         setTimeout(function() {
-            ganttChart.addRecord(taskCopy);
+            try {
+                if (parentRecord && currentIndex >= 0) {
+                    // Adicionar após o grupo pai
+                    ganttChart.addRecord(taskCopy, parentRecord.TaskID, 'Below');
+                    console.log('✅ Subtask adicionada após o grupo pai');
+                } else {
+                    // Fallback: adicionar no final
+                    ganttChart.addRecord(taskCopy);
+                    console.log('✅ Subtask adicionada no final (fallback)');
+                }
 
-            console.log('✅ Subtask removida automaticamente com sucesso:', taskCopy.TaskName);
+                console.log('✅ Subtask removida automaticamente com sucesso:', taskCopy.TaskName);
 
-            // Recriar os botões após a operação
-            setTimeout(function() {
-                addSubtaskActionButtons();
-            }, 200);
-        }, 100);
+                // Recriar os botões após a operação
+                setTimeout(function() {
+                    addSubtaskActionButtons();
+                }, 300);
+
+            } catch (addError) {
+                console.error('❌ Erro ao adicionar tarefa:', addError);
+                // Fallback simples
+                ganttChart.addRecord(taskCopy);
+            }
+        }, 150);
 
     } catch (error) {
         console.error('❌ Erro ao remover subtask do grupo automaticamente:', error);
@@ -818,9 +859,13 @@ function removeSubtaskFromGroupSilent(taskData) {
 
         // Fallback: tentar apenas remover e adicionar
         try {
+            var taskCopyFallback = JSON.parse(JSON.stringify(taskData));
             ganttChart.deleteRecord(taskData.TaskID);
             setTimeout(function() {
-                ganttChart.addRecord(taskData);
+                ganttChart.addRecord(taskCopyFallback);
+                setTimeout(function() {
+                    addSubtaskActionButtons();
+                }, 200);
             }, 100);
         } catch (fallbackError) {
             console.error('❌ Fallback também falhou:', fallbackError);
