@@ -814,13 +814,22 @@ function addSubtaskActionButtons() {
 
 // Função para remover subtask do grupo (com confirmação)
 function removeSubtaskFromGroup(taskData) {
+    console.log('🔄 DEBUG: removeSubtaskFromGroup chamada com:', taskData);
+
+    if (!taskData) {
+        console.error('🔄 DEBUG: taskData é null/undefined!');
+        return;
+    }
+
     console.log('🔄 Removendo subtask do grupo:', taskData.TaskName);
 
     // Confirmar ação
     if (!confirm('Deseja remover "' + taskData.TaskName + '" do grupo e torná-la uma tarefa independente?')) {
+        console.log('🔄 DEBUG: Usuário cancelou a operação');
         return;
     }
 
+    console.log('🔄 DEBUG: Usuário confirmou, chamando função silenciosa...');
     // Chamar função silenciosa
     removeSubtaskFromGroupSilent(taskData);
 }
