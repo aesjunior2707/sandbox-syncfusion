@@ -722,18 +722,48 @@ function addSubtaskActionButtons() {
             e.stopPropagation();
             e.preventDefault();
 
+            console.log('🔧 DEBUG: Botão de desacoplar clicado');
+
             // Encontrar dados da tarefa
             var rowIndex = Array.from(row.parentNode.children).indexOf(row);
             var taskData = ganttChart.flatData[rowIndex];
 
+            console.log('🔧 DEBUG: rowIndex:', rowIndex);
+            console.log('🔧 DEBUG: taskData:', taskData);
+            console.log('🔧 DEBUG: ganttChart.flatData.length:', ganttChart.flatData.length);
+
             if (taskData) {
+                console.log('🔧 DEBUG: Task encontrada:', taskData.TaskName, 'ID:', taskData.TaskID);
+
                 // Garantir que a linha esteja selecionada antes da operação
                 ganttChart.selectRow(rowIndex);
 
                 // Pequeno delay para garantir que a seleção foi aplicada
                 setTimeout(function() {
+                    console.log('🔧 DEBUG: Chamando removeSubtaskFromGroup...');
                     removeSubtaskFromGroup(taskData);
                 }, 50);
+            } else {
+                console.error('🔧 DEBUG: taskData é null ou undefined!');
+                console.log('🔧 DEBUG: Tentando método alternativo...');
+
+                // Método alternativo: buscar pela classe level1
+                var parentRow = actionButton.closest('[class*="level1"]');
+                if (parentRow) {
+                    var allRows = ganttChart.element.querySelectorAll('.e-row');
+                    var altRowIndex = Array.from(allRows).indexOf(parentRow);
+                    var altTaskData = ganttChart.flatData[altRowIndex];
+
+                    console.log('🔧 DEBUG: Método alternativo - rowIndex:', altRowIndex);
+                    console.log('🔧 DEBUG: Método alternativo - taskData:', altTaskData);
+
+                    if (altTaskData) {
+                        ganttChart.selectRow(altRowIndex);
+                        setTimeout(function() {
+                            removeSubtaskFromGroup(altTaskData);
+                        }, 50);
+                    }
+                }
             }
         });
 
