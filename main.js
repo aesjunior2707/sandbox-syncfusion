@@ -594,7 +594,7 @@ document.addEventListener('keydown', function(event) {
                         }
                     }, 50);
                 }
-                // Se não está em edição e está na última linha
+                // Se não est�� em edição e está na última linha
                 else if (selectedRowIndex >= totalRows - 1) {
                     event.preventDefault();
                     createNewEmptyTask();
@@ -819,10 +819,8 @@ function addSubtaskActionButtons() {
 
 // Função para remover subtask do grupo (com confirmação)
 function removeSubtaskFromGroup(taskData) {
-    console.log('🔄 DEBUG: removeSubtaskFromGroup chamada com:', taskData);
-
     if (!taskData) {
-        console.error('🔄 DEBUG: taskData é null/undefined!');
+        console.error('Erro: taskData é null/undefined!');
         return;
     }
 
@@ -830,11 +828,9 @@ function removeSubtaskFromGroup(taskData) {
 
     // Confirmar ação
     if (!confirm('Deseja remover "' + taskData.TaskName + '" do grupo e torná-la uma tarefa independente?')) {
-        console.log('🔄 DEBUG: Usuário cancelou a operação');
         return;
     }
 
-    console.log('🔄 DEBUG: Usuário confirmou, chamando função silenciosa...');
     // Chamar função silenciosa
     removeSubtaskFromGroupSilent(taskData);
 }
