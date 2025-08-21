@@ -114,7 +114,7 @@ try {
     splitterSettings: {
         columnIndex: 3
     },
-    rowHeight: 40,
+    rowHeight: 36,
     projectStartDate: new Date('08/01/2025'),
     projectEndDate: new Date('08/31/2025'),
     zoomSettings: {
