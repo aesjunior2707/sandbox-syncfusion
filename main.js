@@ -196,7 +196,7 @@ try {
     }
 }
 
-// FUNÇÕES DE PREDECESSOR - MANTIDAS
+// FUNÇ��ES DE PREDECESSOR - MANTIDAS
 // Função para parsing de predecessores separados por vírgula e aplicação da regra FS
 function parsePredecessors(predecessorString) {
     if (!predecessorString || predecessorString.trim() === '') {
@@ -514,6 +514,25 @@ function setupEnterKeyEditing() {
                             // Se já estamos editando, deixar o comportamento padrão
                             return;
                         }
+                    }
+
+                    // Suporte para navegação por setas (atualizar linha selecionada)
+                    else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+                        setTimeout(function() {
+                            // Atualizar linha selecionada após navegação
+                            var selectedRow = document.querySelector('.e-treegrid .e-row.e-active, .e-treegrid .e-row[aria-selected="true"]');
+                            if (selectedRow) {
+                                var rows = Array.from(selectedRow.parentElement.children);
+                                var rowIndex = rows.indexOf(selectedRow);
+                                if (rowIndex > 0) rowIndex -= 1; // Ajustar para data source
+                                currentSelectedRowIndex = rowIndex;
+                            }
+                        }, 50);
+                        return; // Não processar Enter para setas
+                    }
+
+                    // Processar Enter apenas se foi pressionado
+                    if (event.key === 'Enter' || event.keyCode === 13) {
                         try {
                             var rowIndexToEdit = -1;
                             var taskData = null;
