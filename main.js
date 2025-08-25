@@ -876,7 +876,7 @@ function setupEnterKeyEditing() {
                             var domRows = document.querySelectorAll('.e-treegrid .e-row');
                             if (domRows.length === 1 && currentSelectedRowIndex < 0) {
                                 currentSelectedRowIndex = 0;
-                                console.log('🎯 LINHA ��NICA: Clique em área vazia, mantendo seleção da linha única');
+                                console.log('🎯 LINHA ÚNICA: Clique em área vazia, mantendo seleção da linha única');
                             }
                         }
                     } catch (clickError) {
@@ -1042,7 +1042,7 @@ window.testEditCurrentRow = function() {
         }
     } else {
         console.log('❌ Nenhuma linha selecionada');
-        console.log('�� Clique em uma linha primeiro ou use: currentSelectedRowIndex = 0');
+        console.log('📋 Clique em uma linha primeiro ou use: currentSelectedRowIndex = 0');
     }
 };
 
@@ -1107,7 +1107,7 @@ window.checkEditState = function() {
     if (ganttChart && ganttChart.treeGrid) {
         console.log('📈 ESTADO DO TREEGRID:');
         console.log('- TreeGrid disponível:', !!ganttChart.treeGrid);
-        console.log('- isEdit (se dispon��vel):', ganttChart.treeGrid.isEdit);
+        console.log('- isEdit (se disponível):', ganttChart.treeGrid.isEdit);
     }
 };
 
@@ -1513,6 +1513,64 @@ window.restoreDoubleClickEdit = function() {
     } catch (error) {
         console.log('❌ Erro ao restaurar duplo clique:', error);
     }
+};
+
+// Função para mapear linha visual para dados corretos
+window.getTaskDataFromVisualRow = function(visualRowIndex) {
+    console.log('🔍 MAPEANDO LINHA VISUAL:', visualRowIndex);
+
+    if (!ganttChart) {
+        console.log('❌ ganttChart não disponível');
+        return null;
+    }
+
+    var taskData = null;
+
+    // Método 1: flatData (melhor para hierarquia)
+    if (ganttChart.flatData && visualRowIndex < ganttChart.flatData.length) {
+        taskData = ganttChart.flatData[visualRowIndex];
+        console.log('✅ Método 1 - flatData:', taskData.TaskName);
+        return taskData;
+    }
+
+    // Método 2: treeGrid getCurrentViewRecords
+    if (ganttChart.treeGrid && ganttChart.treeGrid.getCurrentViewRecords) {
+        try {
+            var viewRecords = ganttChart.treeGrid.getCurrentViewRecords();
+            if (viewRecords && visualRowIndex < viewRecords.length) {
+                taskData = viewRecords[visualRowIndex];
+                console.log('✅ Método 2 - getCurrentViewRecords:', taskData.TaskName);
+                return taskData;
+            }
+        } catch (error) {
+            console.log('⚠️ Erro no método getCurrentViewRecords:', error);
+        }
+    }
+
+    // Método 3: mapear por nome via DOM
+    var domRows = document.querySelectorAll('.e-treegrid .e-row');
+    if (visualRowIndex < domRows.length) {
+        var targetRow = domRows[visualRowIndex];
+        var taskNameCell = targetRow.querySelector('.e-treecell');
+        if (taskNameCell) {
+            var taskNameFromDOM = taskNameCell.textContent.trim();
+            console.log('📋 Nome da tarefa do DOM:', taskNameFromDOM);
+
+            // Buscar nos dados por nome
+            if (ganttChart.flatData) {
+                taskData = ganttChart.flatData.find(function(item) {
+                    return item.TaskName === taskNameFromDOM;
+                });
+                if (taskData) {
+                    console.log('✅ Método 3 - Encontrado por nome:', taskData.TaskID);
+                    return taskData;
+                }
+            }
+        }
+    }
+
+    console.log('❌ Não foi possível mapear linha visual para dados');
+    return null;
 };
 
 // Função para forçar edição usando múltiplas abordagens
