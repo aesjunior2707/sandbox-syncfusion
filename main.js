@@ -62,6 +62,10 @@ try {
     allowSelection: true,
     allowResizing: true,
     allowReordering: true,
+    selectionSettings: {
+        mode: 'Row',
+        type: 'Single'
+    },
     treeColumnIndex: 1,
     showColumnMenu: false,
     allowExcelExport: true,
