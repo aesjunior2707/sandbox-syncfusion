@@ -308,6 +308,37 @@ function clearAllTasks() {
                 // Atualizar o componente
                 ganttChart.refresh();
 
+                // Aguardar um momento para o refresh completar e então adicionar nova linha
+                setTimeout(function() {
+                    try {
+                        // Criar uma nova tarefa vazia
+                        var newTask = {
+                            TaskID: 1,
+                            TaskName: '',
+                            StartDate: new Date(),
+                            Duration: 1,
+                            Progress: 0
+                        };
+
+                        // Adicionar a nova tarefa
+                        ganttChart.addRecord(newTask);
+
+                        // Aguardar um pouco mais e então iniciar edição na primeira linha
+                        setTimeout(function() {
+                            try {
+                                // Iniciar edição na linha recém-criada (índice 0)
+                                ganttChart.startEdit();
+                                console.log('Nova linha criada e colocada em modo de edição');
+                            } catch (editError) {
+                                console.error('Erro ao iniciar edição:', editError);
+                            }
+                        }, 200);
+
+                    } catch (addError) {
+                        console.error('Erro ao adicionar nova linha:', addError);
+                    }
+                }, 300);
+
                 console.log('Todas as tarefas foram removidas do data source');
                 alert(msgs.clearSuccess);
             }
