@@ -122,6 +122,23 @@ try {
         console.log('Row drop:', args.data[0] ? args.data[0].TaskName : 'Unknown');
     },
 
+    // EVENTO DE SELEÇÃO DE LINHA
+    rowSelected: function (args) {
+        // Armazenar índice da linha selecionada
+        if (args.rowIndex !== undefined) {
+            currentSelectedRowIndex = args.rowIndex;
+            console.log('Linha selecionada:', args.rowIndex, 'TaskID:', args.data ? args.data.TaskID : 'N/A');
+        }
+    },
+
+    rowDeselected: function (args) {
+        // Resetar seleção se linha foi desselecionada
+        if (args.rowIndex === currentSelectedRowIndex) {
+            currentSelectedRowIndex = -1;
+            console.log('Linha desselecionada:', args.rowIndex);
+        }
+    },
+
     actionBegin: function (args) {
         // Processa predecessores antes de salvar
         if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
@@ -357,7 +374,7 @@ function clearAllTasks() {
                                 // Aguardar um pouco mais para focar no campo TaskName
                                 setTimeout(function() {
                                     try {
-                                        // Tentar focar no campo TaskName com múltiplos seletores
+                                        // Tentar focar no campo TaskName com m��ltiplos seletores
                                         var taskNameInput = document.querySelector(
                                             '.e-treegrid .e-editedbatchcell input, ' +
                                             '.e-treegrid .e-inline-edit input[aria-label*="Task"], ' +
