@@ -40,7 +40,7 @@ var ganttChart;
 try {
     // Verificar se as dependências estão carregadas
     if (!checkDependencies()) {
-        throw new Error('Dependências não carregadas. Verifique se todos os scripts foram carregados.');
+        throw new Error('Depend��ncias não carregadas. Verifique se todos os scripts foram carregados.');
     }
 
     ganttChart = new ej.gantt.Gantt({
@@ -584,18 +584,23 @@ function setupEnterKeyEditing() {
                             var ariaRowIndex = targetRow.getAttribute('aria-rowindex');
                             if (ariaRowIndex !== null) {
                                 targetRowIndex = parseInt(ariaRowIndex);
+                                console.log('Índice obtido via aria-rowindex:', targetRowIndex);
                             } else {
                                 // Fallback: calcular índice manualmente
                                 var allRows = Array.from(document.querySelectorAll('.e-treegrid .e-row'));
                                 targetRowIndex = allRows.indexOf(targetRow);
+                                console.log('Índice calculado manualmente:', targetRowIndex);
                             }
+
+                            console.log('Linha final detectada - Índice:', targetRowIndex);
+                            console.log('Total de linhas no dataSource:', ganttChart ? ganttChart.dataSource.length : 'N/A');
 
                             // Verificar se temos dados para esta linha
                             if (ganttChart && ganttChart.dataSource && targetRowIndex >= 0 && targetRowIndex < ganttChart.dataSource.length) {
                                 var taskData = ganttChart.dataSource[targetRowIndex];
                                 var taskId = taskData.TaskID;
 
-                                console.log('Enter - Editando linha:', targetRowIndex, 'TaskID:', taskId, 'TaskName:', taskData.TaskName);
+                                console.log('✅ EDITANDO - Linha:', targetRowIndex, 'TaskID:', taskId, 'TaskName:', taskData.TaskName);
 
                                 // Prevenir comportamento padrão
                                 event.preventDefault();
