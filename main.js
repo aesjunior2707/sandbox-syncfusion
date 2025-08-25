@@ -652,35 +652,37 @@ function setupEnterKeyEditing() {
                 console.log('Event listeners configurados (Enter + Click)');
             }
 
-            // Event listener adicional no document como backup
+            // Event listener super simples no document (captura Enter globalmente)
             document.addEventListener('keydown', function(event) {
-                if ((event.key === 'Enter' || event.keyCode === 13) && !event.ctrlKey && !event.altKey && !event.shiftKey) {
-                    // Verificar se o foco está no Gantt
-                    var activeElement = document.activeElement;
-                    var isInGantt = activeElement && (activeElement.closest('#Gantt') || activeElement.id === 'Gantt');
+                if (event.key === 'Enter' || event.keyCode === 13) {
+                    console.log('🌍 GLOBAL Enter detectado!');
 
-                    if (isInGantt) {
-                        console.log('🔥 BACKUP Enter detectado no document!');
+                    // Verificar se não estamos editando
+                    var isEditing = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid input, .e-treegrid textarea');
+                    if (!isEditing && currentSelectedRowIndex >= 0) {
+                        console.log('🎯 GLOBAL: Linha selecionada disponível:', currentSelectedRowIndex);
 
-                        // Verificar se não estamos editando
-                        var isEditing = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid input, .e-treegrid textarea');
-                        if (!isEditing && currentSelectedRowIndex >= 0) {
-                            console.log('🚀 BACKUP: Tentando editar linha:', currentSelectedRowIndex);
+                        if (ganttChart && ganttChart.dataSource && currentSelectedRowIndex < ganttChart.dataSource.length) {
+                            var taskData = ganttChart.dataSource[currentSelectedRowIndex];
 
-                            if (ganttChart && ganttChart.dataSource && currentSelectedRowIndex < ganttChart.dataSource.length) {
-                                var taskData = ganttChart.dataSource[currentSelectedRowIndex];
+                            console.log('🚀 GLOBAL: Iniciando edição da linha:', currentSelectedRowIndex, 'TaskName:', taskData.TaskName);
 
-                                event.preventDefault();
-                                event.stopPropagation();
+                            event.preventDefault();
+                            event.stopPropagation();
 
-                                // Tentar edição
-                                if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
-                                    ganttChart.treeGrid.editCell(currentSelectedRowIndex, 'TaskName');
-                                    console.log('🎯 BACKUP: Edição iniciada!');
-                                    focusTaskNameField();
-                                }
+                            // Edição direta
+                            try {
+                                ganttChart.treeGrid.editCell(currentSelectedRowIndex, 'TaskName');
+                                console.log('✅ GLOBAL: Edição iniciada com sucesso!');
+                                focusTaskNameField();
+                            } catch (error) {
+                                console.log('❌ GLOBAL: Erro na edição:', error);
                             }
                         }
+                    } else if (isEditing) {
+                        console.log('⏸️ GLOBAL: Já em modo de edição, ignorando');
+                    } else {
+                        console.log('⏸️ GLOBAL: Nenhuma linha selecionada');
                     }
                 }
             }, true);
