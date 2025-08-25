@@ -590,10 +590,27 @@ function setupEnterKeyEditing() {
                     }
                 });
 
-                console.log('Event listener para Enter configurado');
+                // Event listener para clicks em linhas (para rastreamento)
+                ganttElement.addEventListener('click', function(event) {
+                    try {
+                        var clickedRow = event.target.closest('.e-treegrid .e-row');
+                        if (clickedRow) {
+                            var ariaRowIndex = clickedRow.getAttribute('aria-rowindex');
+                            if (ariaRowIndex !== null) {
+                                var rowIndex = parseInt(ariaRowIndex);
+                                currentSelectedRowIndex = rowIndex;
+                                console.log('Clique na linha:', rowIndex);
+                            }
+                        }
+                    } catch (clickError) {
+                        console.log('Erro ao processar clique:', clickError);
+                    }
+                });
+
+                console.log('Event listeners configurados (Enter + Click)');
             }
         } catch (error) {
-            console.error('Erro ao configurar event listener Enter:', error);
+            console.error('Erro ao configurar event listeners:', error);
         }
     }, 500);
 }
