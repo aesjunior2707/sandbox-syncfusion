@@ -380,7 +380,8 @@ function clearAllTasks() {
             var msgs = getMessages(currentLanguage);
             console.error('Erro ao limpar tasks:', error);
             alert(msgs.clearError + error.message);
-        }
+            }
+        }, 800);
     } else {
         var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
         var msgs = getMessages(currentLanguage);
