@@ -432,6 +432,51 @@ function reconfigureEditingAfterClear() {
                 ganttChart.addRecord(newTask);
                 
                 console.log('✅ Nova tarefa criada após limpar');
+                
+                // Iniciar edição automática da nova tarefa
+                setTimeout(function() {
+                    try {
+                        // Encontrar o índice da nova tarefa
+                        var newRowIndex = -1;
+                        if (ganttChart.flatData) {
+                            for (var i = 0; i < ganttChart.flatData.length; i++) {
+                                if (ganttChart.flatData[i].TaskID === 1) {
+                                    newRowIndex = i;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (newRowIndex >= 0) {
+                            // Selecionar a nova linha
+                            if (ganttChart.selectRow) {
+                                ganttChart.selectRow(newRowIndex);
+                                currentSelectedRowIndex = newRowIndex;
+                            }
+
+                            // Iniciar edição do campo TaskName
+                            setTimeout(function() {
+                                if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                                    ganttChart.treeGrid.editCell(newRowIndex, 'TaskName');
+                                    console.log('✅ Edição iniciada automaticamente para nova tarefa');
+                                    
+                                    // Focar e limpar o campo
+                                    setTimeout(function() {
+                                        var input = document.querySelector('.e-treegrid .e-rowcell input, .e-treegrid .e-editedbatchcell input');
+                                        if (input) {
+                                            input.value = '';
+                                            input.focus();
+                                            input.select();
+                                            console.log('✅ Campo TaskName focado e limpo');
+                                        }
+                                    }, 200);
+                                }
+                            }, 300);
+                        }
+                    } catch (error) {
+                        console.error('Erro ao iniciar edição automática:', error);
+                    }
+                }, 500);
             } catch (error) {
                 console.error('Erro ao criar nova tarefa:', error);
                 
@@ -440,6 +485,33 @@ function reconfigureEditingAfterClear() {
                     ganttChart.dataSource = [newTask];
                     ganttChart.refresh();
                     console.log('✅ Nova tarefa criada via fallback');
+                    
+                    // Iniciar edição automática também no fallback
+                    setTimeout(function() {
+                        try {
+                            if (ganttChart.selectRow) {
+                                ganttChart.selectRow(0);
+                                currentSelectedRowIndex = 0;
+                            }
+                            
+                            setTimeout(function() {
+                                if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                                    ganttChart.treeGrid.editCell(0, 'TaskName');
+                                    
+                                    setTimeout(function() {
+                                        var input = document.querySelector('.e-treegrid .e-rowcell input, .e-treegrid .e-editedbatchcell input');
+                                        if (input) {
+                                            input.value = '';
+                                            input.focus();
+                                            input.select();
+                                        }
+                                    }, 200);
+                                }
+                            }, 300);
+                        } catch (error) {
+                            console.error('Erro ao iniciar edição no fallback:', error);
+                        }
+                    }, 500);
                 } catch (fallbackError) {
                     console.error('Erro no fallback:', fallbackError);
                 }
