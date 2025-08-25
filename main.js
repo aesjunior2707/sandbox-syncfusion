@@ -320,7 +320,7 @@ function getMessages(locale) {
             newTaskName: 'New Task'
         },
         'pt-BR': {
-            confirmClear: 'Tem certeza que deseja limpar todas as tarefas? Esta ação não pode ser desfeita.',
+            confirmClear: 'Tem certeza que deseja limpar todas as tarefas? Esta aç��o não pode ser desfeita.',
             confirmRestore: 'Deseja restaurar os dados padrão do projeto?',
             clearSuccess: 'Todas as tarefas foram removidas com sucesso!',
             restoreSuccess: 'Dados padrão restaurados com sucesso!',
@@ -512,6 +512,75 @@ function focusTaskNameField() {
             taskNameInput.select();
         }
     }, 100);
+}
+
+// Função para criar nova tarefa em modo de edição
+function createNewTaskInEdit() {
+    if (!ganttChart) {
+        console.log('Gantt Chart não disponível');
+        return;
+    }
+
+    try {
+        // Obter o próximo TaskID disponível
+        var nextTaskId = 1;
+        if (ganttChart.flatData && ganttChart.flatData.length > 0) {
+            var maxId = Math.max.apply(Math, ganttChart.flatData.map(function(item) { return item.TaskID; }));
+            nextTaskId = maxId + 1;
+        } else if (ganttChart.dataSource && ganttChart.dataSource.length > 0) {
+            var maxId = Math.max.apply(Math, ganttChart.dataSource.map(function(item) { return item.TaskID; }));
+            nextTaskId = maxId + 1;
+        }
+
+        // Criar nova tarefa com dados básicos
+        var newTask = {
+            TaskID: nextTaskId,
+            TaskName: 'Nova Tarefa',
+            StartDate: new Date(),
+            Duration: 1,
+            Progress: 0,
+            Predecessor: ''
+        };
+
+        console.log('Criando nova tarefa:', newTask);
+
+        // Adicionar a nova tarefa ao Gantt
+        ganttChart.addRecord(newTask);
+
+        // Aguardar um momento para o registro ser adicionado e então iniciar edição
+        setTimeout(function() {
+            try {
+                // Obter o índice da nova linha (última linha)
+                var newRowIndex = -1;
+                if (ganttChart.flatData) {
+                    newRowIndex = ganttChart.flatData.length - 1;
+                } else if (ganttChart.dataSource) {
+                    newRowIndex = ganttChart.dataSource.length - 1;
+                }
+
+                if (newRowIndex >= 0) {
+                    // Atualizar o índice da linha selecionada
+                    currentSelectedRowIndex = newRowIndex;
+
+                    // Iniciar edição na nova linha
+                    if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                        ganttChart.treeGrid.editCell(newRowIndex, 'TaskName');
+                        console.log('Edição iniciada para nova tarefa na linha:', newRowIndex);
+
+                        // Focar no campo TaskName
+                        setTimeout(function() {
+                            focusTaskNameField();
+                        }, 200);
+                    }
+                }
+            } catch (editError) {
+                console.log('Erro ao iniciar edição da nova tarefa:', editError);
+            }
+        }, 300);
+
+    } catch (error) {
+        console.log('Erro ao criar nova tarefa:', error);
+    }
 }
 
 // Função para configurar evento Enter para edição e garantir duplo clique
