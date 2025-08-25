@@ -76,7 +76,8 @@ try {
         allowEditing: true,
         allowDeleting: true,
         allowTaskbarEditing: true,
-        mode: 'Auto'
+        mode: 'Cell', // Mudando para Cell para garantir edição inline
+        showDeleteConfirmDialog: false // Evitar diálogos que podem interferir
     },
     toolbar: ['Update', 'Delete', 'Cancel', 'ExpandAll', 'CollapseAll', 'ExcelExport', 'PdfExport', 'Search', 'ZoomIn', 'ZoomOut', 'ZoomToFit'],
     highlightWeekends: true,
