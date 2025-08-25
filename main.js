@@ -1238,7 +1238,7 @@ function setupSingleRowForEdit() {
         console.log('- currentSelectedRowIndex:', currentSelectedRowIndex);
 
         if (domRows.length === 1 && currentSelectedRowIndex < 0) {
-            console.log('🎯 AUTO-SETUP: Configurando linha única para edição');
+            console.log('�� AUTO-SETUP: Configurando linha única para edição');
             currentSelectedRowIndex = 0;
 
             // Garantir que a linha está visualmente selecionada
@@ -1777,23 +1777,21 @@ if (ganttChart) {
         // Mostrar instruções de debug
         setTimeout(function() {
             console.log('🎯 GANTT CHART CARREGADO COM SUCESSO!');
-            console.log('💡 FUNÇÃO DE CORREÇÃO AUTOMÁTICA:');
-            console.log('🩺 diagnoseAndFix() - Diagnostica e corrige automaticamente todos os problemas');
+            console.log('🚑 FUNÇÃO DE RECOVERY COMPLETA:');
+            console.log('🩺 fullRecovery() - Restaura TUDO se algo quebrou');
             console.log('');
-            console.log('💡 OUTRAS FUNÇÕES DE DEBUG DISPONÍVEIS:');
+            console.log('💡 OUTRAS FUNÇÕES ÚTEIS:');
+            console.log('- diagnoseAndFix() - Diagnóstico automático');
+            console.log('- restoreDoubleClickEdit() - Restaurar duplo clique');
+            console.log('- getTaskDataFromVisualRow(index) - Mapear linha visual');
             console.log('- debugQuick() - Debug rápido');
             console.log('- testEditCurrentRow() - Testar edição');
-            console.log('- testSingleRowEdit() - Testar linha única');
-            console.log('- forceEditRow(index) - Forçar edição com múltiplas abordagens');
-            console.log('- checkEditConfiguration() - Verificar configurações de edição');
-            console.log('- fixEditConfiguration() - Corrigir configurações de edição');
-            console.log('- forceSingleRowSetup() - Forçar setup linha única');
-            console.log('- inspectGanttProperties() - Inspeção completa');
-            console.log('- checkEditState() - Verificar estado de edição');
-            console.log('- resetGanttState() - Reset completo');
+            console.log('- forceEditRow(index) - Forçar edição');
+            console.log('- checkEditConfiguration() - Verificar configurações');
+            console.log('- resetGanttState() - Reset estado');
             console.log('📋 COMO USAR: Clique em uma linha e pressione Enter para editar');
-            console.log('🎯 LINHA ÚNICA: Se há apenas uma tarefa, ela será configurada automaticamente');
-            console.log('🆘 SE NÃO FUNCIONAR: diagnoseAndFix() - resolve automaticamente!');
+            console.log('🔧 ESTRUTURA HIERÁRQUICA: Sistema agora mapeia corretamente');
+            console.log('🆘 SE QUEBROU ALGO: fullRecovery() - restaura tudo!');
         }, 1000);
 
     } catch (error) {
