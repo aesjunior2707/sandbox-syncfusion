@@ -605,8 +605,10 @@ function setupEnterKeyEditing() {
                                             // Iniciar edição
                                             if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
                                                 ganttChart.treeGrid.editCell(rowIndex, 'TaskName');
+                                                focusTaskNameField();
                                             } else if (ganttChart.startEdit) {
                                                 ganttChart.startEdit(taskData.TaskID);
+                                                focusTaskNameField();
                                             }
                                         }
                                     } catch (cellEditError) {
