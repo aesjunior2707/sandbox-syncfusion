@@ -40,7 +40,7 @@ var ganttChart;
 try {
     // Verificar se as dependências estão carregadas
     if (!checkDependencies()) {
-        throw new Error('Dependências não carregadas. Verifique se todos os scripts foram carregados.');
+        throw new Error('Depend��ncias não carregadas. Verifique se todos os scripts foram carregados.');
     }
 
     ganttChart = new ej.gantt.Gantt({
@@ -62,6 +62,10 @@ try {
     allowSelection: true,
     allowResizing: true,
     allowReordering: true,
+    selectionSettings: {
+        mode: 'Row',
+        type: 'Single'
+    },
     treeColumnIndex: 1,
     showColumnMenu: false,
     allowExcelExport: true,
@@ -72,7 +76,8 @@ try {
         allowEditing: true,
         allowDeleting: true,
         allowTaskbarEditing: true,
-        mode: 'Auto'
+        mode: 'Cell',
+        showDeleteConfirmDialog: true
     },
     toolbar: ['Update', 'Delete', 'Cancel', 'ExpandAll', 'CollapseAll', 'ExcelExport', 'PdfExport', 'Search', 'ZoomIn', 'ZoomOut', 'ZoomToFit'],
     highlightWeekends: true,
@@ -122,6 +127,47 @@ try {
         console.log('Row drop:', args.data[0] ? args.data[0].TaskName : 'Unknown');
     },
 
+    // EVENTO DE SELEÇÃO DE LINHA
+    rowSelected: function (args) {
+        if (args.rowIndex !== undefined) {
+            currentSelectedRowIndex = args.rowIndex;
+            console.log('Linha selecionada:', args.rowIndex);
+        }
+    },
+
+    rowDeselected: function (args) {
+        if (args.rowIndex === currentSelectedRowIndex) {
+            currentSelectedRowIndex = -1;
+            console.log('Linha desselecionada:', args.rowIndex);
+        }
+    },
+
+    actionBegin: function (args) {
+        // Processa predecessores antes de salvar
+        if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
+            var originalValue = args.data.Predecessor;
+
+            // Validar predecessores
+            var validation = validatePredecessors(originalValue, args.data.TaskID);
+            if (!validation.isValid) {
+                args.cancel = true;
+                alert('Erro nos predecessores: ' + validation.message);
+                return;
+            }
+
+            // Processar predecessores com regra FS
+            var processedPredecessors = parsePredecessors(originalValue);
+            args.data.Predecessor = processedPredecessors;
+
+            console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
+        }
+
+        // Respeitar links de predecessores durante validação
+        if (args.requestType === 'validateLinkedTask') {
+            args.validateMode = { respectLink: true };
+        }
+    },
+
     actionBegin: function (args) {
         // Processa predecessores antes de salvar
         if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
@@ -149,12 +195,66 @@ try {
     },
 
     actionComplete: function (args) {
-        // Log para acompanhar alterações
-        if (args.requestType === 'save' && args.data) {
-            if (args.data.Predecessor !== undefined) {
-                console.log('Predecessores salvos para tarefa', args.data.TaskID + ':', args.data.Predecessor);
-            }
+        // Log para acompanhar alterações de predecessores
+        if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
+            console.log('Predecessores salvos para tarefa', args.data.TaskID + ':', args.data.Predecessor);
         }
+
+        // Detectar quando uma nova tarefa foi adicionada
+        if (args.requestType === 'add' && args.data) {
+            console.log('Nova tarefa adicionada via evento:', args.data.TaskID);
+
+            // Aguardar um pouco e então iniciar edição se for nossa nova tarefa
+            setTimeout(function() {
+                if (window.shouldEditNewTask && args.data.TaskID === window.newTaskIdToEdit) {
+                    window.shouldEditNewTask = false;
+
+                    // Encontrar o índice da nova tarefa
+                    var newRowIndex = -1;
+                    if (ganttChart.flatData) {
+                        for (var i = 0; i < ganttChart.flatData.length; i++) {
+                            if (ganttChart.flatData[i].TaskID === args.data.TaskID) {
+                                newRowIndex = i;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (newRowIndex >= 0) {
+                        console.log('Iniciando edição da nova tarefa na linha:', newRowIndex);
+                        currentSelectedRowIndex = newRowIndex;
+
+                        // Selecionar e editar
+                        if (ganttChart.selectRow) {
+                            ganttChart.selectRow(newRowIndex);
+                        }
+
+                        setTimeout(function() {
+                            if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                                ganttChart.treeGrid.editCell(newRowIndex, 'TaskName');
+
+                                // Limpar o campo
+                                setTimeout(function() {
+                                    var input = document.querySelector('.e-treegrid .e-rowcell input');
+                                    if (input) {
+                                        input.value = '';
+                                        input.focus();
+                                        input.select();
+                                        console.log('✅ Nova tarefa em edição com campo limpo');
+                                    }
+                                }, 100);
+                            }
+                        }, 200);
+                    }
+                }
+            }, 100);
+        }
+    },
+
+    // Evento para garantir que células sejam editáveis por duplo clique
+    cellEdit: function (args) {
+        // Permitir edição de todas as células editáveis
+        return true;
     }
     });
 } catch (error) {
@@ -256,15 +356,504 @@ function getAllTaskIds() {
     return taskIds;
 }
 
+// Função para obter mensagens traduzidas
+function getMessages(locale) {
+    const messages = {
+        'en-US': {
+            confirmClear: 'Are you sure you want to clear all tasks? This action cannot be undone.',
+            confirmRestore: 'Do you want to restore the default project data?',
+            clearSuccess: 'All tasks have been removed successfully!',
+            restoreSuccess: 'Default data restored successfully!',
+            clearError: 'Error clearing tasks: ',
+            restoreError: 'Error restoring data: ',
+            ganttNotAvailable: 'Gantt Chart is not available',
+            newTaskName: 'New Task'
+        },
+        'pt-BR': {
+            confirmClear: 'Tem certeza que deseja limpar todas as tarefas? Esta ação não pode ser desfeita.',
+            confirmRestore: 'Deseja restaurar os dados padrão do projeto?',
+            clearSuccess: 'Todas as tarefas foram removidas com sucesso!',
+            restoreSuccess: 'Dados padrão restaurados com sucesso!',
+            clearError: 'Erro ao limpar tarefas: ',
+            restoreError: 'Erro ao restaurar dados: ',
+            ganttNotAvailable: 'Gantt Chart não está disponível',
+            newTaskName: 'Nova Tarefa'
+        },
+        'es-ES': {
+            confirmClear: '¿Está seguro de que desea limpiar todas las tareas? Esta acción no se puede deshacer.',
+            confirmRestore: '¿Desea restaurar los datos por defecto del proyecto?',
+            clearSuccess: '¡Todas las tareas han sido eliminadas con éxito!',
+            restoreSuccess: '¡Datos por defecto restaurados con éxito!',
+            clearError: 'Error al limpiar tareas: ',
+            restoreError: 'Error al restaurar datos: ',
+            ganttNotAvailable: 'Gantt Chart no está disponible',
+            newTaskName: 'Nueva Tarea'
+        }
+    };
+    return messages[locale] || messages['en-US'];
+}
+
+// Função para limpar todas as tasks do data source
+function clearAllTasks() {
+    if (ganttChart) {
+        try {
+            // Obter idioma atual
+            var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+            var msgs = getMessages(currentLanguage);
+
+            // Confirmar ação com o usuário
+            var confirmClear = confirm(msgs.confirmClear);
+
+            if (confirmClear) {
+                // Limpar o data source
+                ganttChart.dataSource = [];
+
+                // Atualizar o componente
+                ganttChart.refresh();
+
+                // Aguardar um momento para o refresh completar e então adicionar nova linha
+                setTimeout(function() {
+                    try {
+                        // Criar uma nova tarefa com nome traduzido
+                        var newTask = {
+                            TaskID: 1,
+                            TaskName: msgs.newTaskName,
+                            StartDate: new Date(),
+                            Duration: 1,
+                            Progress: 0
+                        };
+
+                        // Adicionar a nova tarefa
+                        ganttChart.addRecord(newTask);
+                        console.log('Nova tarefa adicionada:', newTask);
+
+                        // Aguardar um pouco mais e então iniciar edição na primeira linha
+                        setTimeout(function() {
+                            try {
+                                // Verificar se a linha foi realmente adicionada
+                                if (!ganttChart.dataSource || ganttChart.dataSource.length === 0) {
+                                    console.log('Nenhuma linha encontrada para editar');
+                                    return;
+                                }
+
+                                console.log('Tentando iniciar edição. Linhas disponíveis:', ganttChart.dataSource.length);
+
+                                // Método correto 1: usar treeGrid.editCell para editar célula específica
+                                if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                                    ganttChart.treeGrid.editCell(0, 'TaskName');
+                                    console.log('Edição iniciada via treeGrid.editCell');
+                                }
+                                // Método correto 2: usar startEdit com taskId
+                                else if (ganttChart.startEdit) {
+                                    ganttChart.startEdit(1); // ID da nova tarefa criada
+                                    console.log('Edição iniciada via startEdit com taskId');
+                                }
+                                // Método correto 3: usar beginEdit com o registro
+                                else if (ganttChart.beginEdit && ganttChart.dataSource && ganttChart.dataSource.length > 0) {
+                                    ganttChart.beginEdit(ganttChart.dataSource[0]);
+                                    console.log('Edição iniciada via beginEdit com record');
+                                }
+
+                                // Aguardar um pouco mais para focar no campo TaskName
+                                setTimeout(function() {
+                                    try {
+                                        // Tentar focar no campo TaskName com múltiplos seletores
+                                        var taskNameInput = document.querySelector(
+                                            '.e-treegrid .e-editedbatchcell input, ' +
+                                            '.e-treegrid .e-inline-edit input[aria-label*="Task"], ' +
+                                            '.e-treegrid .e-inline-edit input[name="TaskName"], ' +
+                                            '.e-treegrid .e-editedrow input, ' +
+                                            '.e-treegrid td[aria-describedby*="TaskName"] input, ' +
+                                            '.e-treegrid .e-rowcell input[aria-label*="TaskName"], ' +
+                                            'input[aria-label*="Task Name"]'
+                                        );
+                                        if (taskNameInput) {
+                                            taskNameInput.focus();
+                                            taskNameInput.select(); // Selecionar o texto para facilitar edição
+                                            console.log('Campo TaskName focado automaticamente');
+                                        } else {
+                                            console.log('Campo TaskName não encontrado para foco automático');
+                                        }
+                                    } catch (focusError) {
+                                        console.log('Não foi possível focar no campo TaskName automaticamente:', focusError);
+                                    }
+                                }, 200);
+
+                                console.log('Nova linha criada e colocada em modo de edição');
+                            } catch (editError) {
+                                console.error('Erro ao iniciar edição:', editError);
+                                console.log('Métodos de edição disponíveis:', {
+                                    'treeGrid.editCell': !!(ganttChart.treeGrid && ganttChart.treeGrid.editCell),
+                                    'startEdit': !!(ganttChart.startEdit),
+                                    'beginEdit': !!(ganttChart.beginEdit)
+                                });
+                            }
+                        }, 300);
+
+                    } catch (addError) {
+                        console.error('Erro ao adicionar nova linha:', addError);
+                    }
+                }, 300);
+
+                console.log('Todas as tarefas foram removidas do data source');
+                alert(msgs.clearSuccess);
+            }
+        } catch (error) {
+            var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+            var msgs = getMessages(currentLanguage);
+            console.error('Erro ao limpar tasks:', error);
+            alert(msgs.clearError + error.message);
+        }
+    } else {
+        var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+        var msgs = getMessages(currentLanguage);
+        console.error('Gantt Chart não está inicializado');
+        alert(msgs.ganttNotAvailable);
+    }
+}
+
+// Função para restaurar dados padrão baseado no idioma atual
+function restoreDefaultTasks() {
+    if (ganttChart) {
+        try {
+            // Obter idioma atual do seletor
+            var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+            var msgs = getMessages(currentLanguage);
+
+            // Confirmar ação com o usuário
+            var confirmRestore = confirm(msgs.confirmRestore);
+
+            if (confirmRestore) {
+                // Restaurar dados padrão
+                ganttChart.dataSource = getProjectDataByLocale(currentLanguage);
+
+                // Atualizar o componente
+                ganttChart.refresh();
+
+                // Ajustar zoom após carregar dados
+                setTimeout(function() {
+                    if (ganttChart && ganttChart.fitToProject) {
+                        ganttChart.fitToProject();
+                    }
+                }, 200);
+
+                console.log('Dados padrão restaurados para idioma:', currentLanguage);
+                alert(msgs.restoreSuccess);
+            }
+        } catch (error) {
+            var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+            var msgs = getMessages(currentLanguage);
+            console.error('Erro ao restaurar dados padrão:', error);
+            alert(msgs.restoreError + error.message);
+        }
+    }
+}
+
+// Variável para armazenar a linha atualmente selecionada
+var currentSelectedRowIndex = -1;
+
+
+// Função utilitária para focar no campo TaskName após iniciar ediç��o
+function focusTaskNameField() {
+    setTimeout(function() {
+        var taskNameInput = document.querySelector('.e-treegrid .e-rowcell input');
+        if (taskNameInput) {
+            taskNameInput.focus();
+            taskNameInput.select();
+            console.log('✅ Campo TaskName focado e selecionado');
+        } else {
+            console.log('❌ Campo TaskName não encontrado para foco');
+            // Tentar novamente após um tempo
+            setTimeout(function() {
+                var input = document.querySelector('.e-treegrid .e-rowcell input');
+                if (input) {
+                    input.focus();
+                    input.select();
+                    console.log('✅ Campo TaskName focado na segunda tentativa');
+                }
+            }, 200);
+        }
+    }, 100);
+}
+
+// Função para verificar se está na última linha visível
+function isLastVisibleRow() {
+    if (currentSelectedRowIndex < 0 || !ganttChart) {
+        console.log('isLastVisibleRow: linha não selecionada ou gantt não disponível');
+        return false;
+    }
+
+    try {
+        // Método 1: Usar getCurrentViewRecords para obter linhas visíveis
+        if (ganttChart.treeGrid && ganttChart.treeGrid.getCurrentViewRecords) {
+            var viewRecords = ganttChart.treeGrid.getCurrentViewRecords();
+            if (viewRecords && viewRecords.length > 0) {
+                var isLast = currentSelectedRowIndex === viewRecords.length - 1;
+                console.log('isLastVisibleRow (método 1): linha', currentSelectedRowIndex, 'de', viewRecords.length, '= última?', isLast);
+                return isLast;
+            }
+        }
+
+        // Método 2: Contar linhas DOM visíveis
+        var visibleRows = document.querySelectorAll('.e-treegrid .e-row:not(.e-hide)');
+        if (visibleRows.length > 0) {
+            var isLast = currentSelectedRowIndex === visibleRows.length - 1;
+            console.log('isLastVisibleRow (método 2): linha', currentSelectedRowIndex, 'de', visibleRows.length, '= última?', isLast);
+            return isLast;
+        }
+
+        // Método 3: Fallback - usar flatData
+        if (ganttChart.flatData) {
+            var isLast = currentSelectedRowIndex === ganttChart.flatData.length - 1;
+            console.log('isLastVisibleRow (método 3): linha', currentSelectedRowIndex, 'de', ganttChart.flatData.length, '= última?', isLast);
+            return isLast;
+        }
+
+        // Método 4: Fallback final - usar dataSource
+        if (ganttChart.dataSource) {
+            var isLast = currentSelectedRowIndex === ganttChart.dataSource.length - 1;
+            console.log('isLastVisibleRow (método 4): linha', currentSelectedRowIndex, 'de', ganttChart.dataSource.length, '= última?', isLast);
+            return isLast;
+        }
+
+    } catch (error) {
+        console.log('Erro ao verificar última linha:', error);
+    }
+
+    console.log('isLastVisibleRow: nenhum método funcionou');
+    return false;
+}
+
+// Função para criar nova tarefa em modo de edição
+function createNewTaskInEdit() {
+    if (!ganttChart) {
+        console.log('Gantt Chart não disponível');
+        return;
+    }
+
+    try {
+        // Obter o próximo TaskID disponível
+        var nextTaskId = 1;
+        if (ganttChart.flatData && ganttChart.flatData.length > 0) {
+            var maxId = Math.max.apply(Math, ganttChart.flatData.map(function(item) { return item.TaskID; }));
+            nextTaskId = maxId + 1;
+        } else if (ganttChart.dataSource && ganttChart.dataSource.length > 0) {
+            var maxId = Math.max.apply(Math, ganttChart.dataSource.map(function(item) { return item.TaskID; }));
+            nextTaskId = maxId + 1;
+        }
+
+        // Determinar data de início baseada na data fim da última tarefa
+        var startDate = new Date();
+        try {
+            var lastEndDate = null;
+
+            // Buscar a data fim mais tarde de todas as tarefas
+            var allTasks = [];
+            if (ganttChart.flatData && ganttChart.flatData.length > 0) {
+                allTasks = ganttChart.flatData;
+            } else if (ganttChart.dataSource && ganttChart.dataSource.length > 0) {
+                allTasks = ganttChart.dataSource;
+            }
+
+            if (allTasks.length > 0) {
+                for (var i = 0; i < allTasks.length; i++) {
+                    var task = allTasks[i];
+                    var taskEndDate = null;
+
+                    if (task.EndDate) {
+                        taskEndDate = new Date(task.EndDate);
+                    } else if (task.StartDate && task.Duration) {
+                        taskEndDate = new Date(task.StartDate);
+                        taskEndDate.setDate(taskEndDate.getDate() + (task.Duration || 1));
+                    }
+
+                    if (taskEndDate && (!lastEndDate || taskEndDate > lastEndDate)) {
+                        lastEndDate = taskEndDate;
+                    }
+                }
+
+                if (lastEndDate) {
+                    startDate = new Date(lastEndDate);
+                    console.log('Nova tarefa iniciará em:', startDate.toDateString());
+                } else {
+                    console.log('Não foi possível encontrar data fim, usando data atual');
+                }
+            }
+        } catch (dateError) {
+            console.log('Erro no cálculo da data:', dateError);
+            startDate = new Date();
+        }
+
+        // Criar nova tarefa com dados básicos
+        var newTask = {
+            TaskID: nextTaskId,
+            TaskName: 'Nova Tarefa',
+            StartDate: startDate,
+            Duration: 1,
+            Progress: 0,
+            Predecessor: ''
+        };
+
+        console.log('Criando nova tarefa:', newTask);
+
+        // Configurar flags para o evento actionComplete
+        window.shouldEditNewTask = true;
+        window.newTaskIdToEdit = nextTaskId;
+
+        // Usar o método oficial do Gantt para adicionar tarefa
+        ganttChart.addRecord(newTask);
+
+    } catch (error) {
+        console.log('Erro ao criar nova tarefa:', error);
+        window.shouldEditNewTask = false;
+    }
+}
+
+// Função para configurar evento Enter para edição e garantir duplo clique
+function setupEnterKeyEditing() {
+    setTimeout(function() {
+        if (ganttChart && ganttChart.treeGrid) {
+            // Garantir que o TreeGrid permite edição
+            ganttChart.treeGrid.editSettings = {
+                allowEditing: true,
+                allowAdding: true,
+                allowDeleting: true,
+                mode: 'Cell'
+            };
+
+            // Garantir que colunas são editáveis
+            if (ganttChart.treeGrid.columns) {
+                ganttChart.treeGrid.columns.forEach(function(col) {
+                    if (col.field === 'TaskName' || col.field === 'Duration' || col.field === 'StartDate' || col.field === 'EndDate' || col.field === 'Progress' || col.field === 'Predecessor') {
+                        col.allowEditing = true;
+                    }
+                });
+            }
+
+            console.log('TreeGrid configurado para edição');
+        }
+
+        var ganttElement = document.getElementById('Gantt');
+        if (ganttElement) {
+            ganttElement.addEventListener('keydown', function(event) {
+                // Funcionalidade Enter para edição
+                if (event.key === 'Enter' || event.keyCode === 13) {
+                    // Verificar se já está em modo de edição
+                    var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
+                    if (isInEditMode) {
+                        return; // Deixar comportamento padrão se já editando
+                    }
+
+                    // Verificar se há linha selecionada
+                    if (currentSelectedRowIndex >= 0) {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        // Iniciar edição usando treeGrid.editCell
+                        try {
+                            if (ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                                ganttChart.treeGrid.editCell(currentSelectedRowIndex, 'TaskName');
+                                console.log('Edição iniciada via Enter para linha:', currentSelectedRowIndex);
+                                focusTaskNameField();
+                            }
+                        } catch (error) {
+                            console.log('Erro ao iniciar edição:', error);
+                        }
+                    }
+                }
+
+                // Funcionalidade seta para baixo - criar nova tarefa na última linha
+                if (event.key === 'ArrowDown' || event.keyCode === 40) {
+                    console.log('Seta para baixo detectada. Linha atual:', currentSelectedRowIndex);
+
+                    // Verificar se não está em modo de edição
+                    var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
+                    if (isInEditMode) {
+                        console.log('Em modo de edição, ignorando');
+                        return; // Deixar comportamento padrão se já editando
+                    }
+
+                    // Verificar se está na última linha visível
+                    var isLast = isLastVisibleRow();
+                    console.log('É última linha?', isLast);
+
+                    if (currentSelectedRowIndex >= 0 && isLast) {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        console.log('🎯 Última linha detectada, criando nova tarefa...');
+                        createNewTaskInEdit();
+                    }
+                }
+            });
+
+            // Event listener para clicks em linhas
+            ganttElement.addEventListener('click', function(event) {
+                var clickedRow = event.target.closest('.e-treegrid .e-row');
+                if (clickedRow) {
+                    var ariaRowIndex = clickedRow.getAttribute('aria-rowindex');
+                    if (ariaRowIndex !== null) {
+                        currentSelectedRowIndex = parseInt(ariaRowIndex);
+                        console.log('Clique na linha:', currentSelectedRowIndex);
+                    }
+                }
+            });
+
+            console.log('Event listeners configurados');
+            console.log('Funcionalidade ativa: Pressione ↓ na última linha para criar nova tarefa');
+        }
+    }, 1000);
+}
+
+
 // Adicionar o Gantt ao DOM
 if (ganttChart) {
     try {
         ganttChart.appendTo('#Gantt');
         console.log('Gantt inicializado com sucesso');
+
+        // Configurar foco no elemento Gantt
+        var ganttElement = document.getElementById('Gantt');
+        if (ganttElement) {
+            ganttElement.setAttribute('tabindex', '0');
+            ganttElement.style.outline = 'none';
+        }
+
+        // Configurar event listener para Enter
+        setupEnterKeyEditing();
+
+        // Garantir configurações de edição após inicialização
+        setTimeout(function() {
+            if (ganttChart && ganttChart.treeGrid) {
+                // Forçar configurações de edição no TreeGrid
+                if (ganttChart.treeGrid.editSettings) {
+                    ganttChart.treeGrid.editSettings.allowEditing = true;
+                    ganttChart.treeGrid.editSettings.mode = 'Cell';
+                }
+
+                // Garantir que todas as colunas editáveis estão configuradas
+                if (ganttChart.columns) {
+                    ganttChart.columns.forEach(function(col) {
+                        if (col.field === 'TaskName' || col.field === 'Duration' || col.field === 'StartDate' || col.field === 'EndDate' || col.field === 'Progress' || col.field === 'Predecessor') {
+                            col.allowEditing = true;
+                        }
+                    });
+                }
+
+                console.log('Configurações de edição aplicadas');
+            }
+        }, 1500);
+
     } catch (error) {
         console.error('Erro ao anexar Gantt ao DOM:', error);
     }
 }
+
+// Função de teste para criar nova tarefa manualmente (pode ser chamada no console)
+window.testCreateNewTask = function() {
+    console.log('Testando criação de nova tarefa...');
+    createNewTaskInEdit();
+};
 
 // Configurar função dataBound
 if (ganttChart) {
@@ -272,11 +861,37 @@ if (ganttChart) {
         try {
             if (!ganttChart.isInitialLoad) {
                 ganttChart.isInitialLoad = true;
+
+                // Garantir configurações de edição
+                if (ganttChart.treeGrid) {
+                    ganttChart.treeGrid.editSettings = ganttChart.treeGrid.editSettings || {};
+                    ganttChart.treeGrid.editSettings.allowEditing = true;
+                    ganttChart.treeGrid.editSettings.allowAdding = true;
+                    ganttChart.treeGrid.editSettings.mode = 'Cell';
+                }
+
+                // Garantir que colunas são editáveis
+                if (ganttChart.columns) {
+                    ganttChart.columns.forEach(function(col) {
+                        if (col.field === 'TaskName' || col.field === 'Duration' || col.field === 'StartDate' || col.field === 'EndDate' || col.field === 'Progress' || col.field === 'Predecessor') {
+                            col.allowEditing = true;
+                        }
+                    });
+                }
+
+                // Inicializar textos dos botões com idioma padrão
+                var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+                if (typeof updateButtonTexts !== 'undefined') {
+                    updateButtonTexts(currentLanguage);
+                }
+
                 setTimeout(function() {
                     if (ganttChart && ganttChart.fitToProject) {
                         ganttChart.fitToProject();
                     }
                 }, 100);
+
+                console.log('Gantt carregado - edição habilitada');
             }
         } catch (error) {
             console.error('Erro na função dataBound:', error);
