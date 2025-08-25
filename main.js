@@ -1096,7 +1096,7 @@ window.debugQuick = function() {
             if (method.value) {
                 console.log('✅', method.name + ':', method.value.length, 'itens');
                 if (method.value.length > 0) {
-                    console.log('  └── Primeira tarefa:', method.value[0].TaskName);
+                    console.log('  └─��� Primeira tarefa:', method.value[0].TaskName);
                 }
             } else {
                 console.log('❌', method.name + ':', 'não disponível');
@@ -1108,7 +1108,80 @@ window.debugQuick = function() {
     console.log('📋 Linhas no DOM:', domRows.length);
 
     console.log('🔧 Para testar edição: testEditCurrentRow()');
+    console.log('🎯 Para testar linha única: testSingleRowEdit()');
     console.log('🔍 Para debug completo: inspectGanttProperties()');
+};
+
+// Função específica para testar edição de linha única
+window.testSingleRowEdit = function() {
+    console.log('🎯 TESTE ESPECÍFICO PARA LINHA ÚNICA');
+
+    var domRows = document.querySelectorAll('.e-treegrid .e-row');
+    console.log('Linhas no DOM:', domRows.length);
+
+    if (domRows.length === 0) {
+        console.log('❌ Nenhuma linha encontrada no DOM');
+        return;
+    }
+
+    // Forçar seleção da primeira linha
+    var targetRowIndex = 0;
+    currentSelectedRowIndex = 0;
+    console.log('🔧 Forçando seleção da linha 0');
+
+    // Tentar diferentes métodos de edição
+    var methods = [
+        {
+            name: 'treeGrid.editCell',
+            func: function() {
+                if (ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                    ganttChart.treeGrid.editCell(0, 'TaskName');
+                    return true;
+                }
+                return false;
+            }
+        },
+        {
+            name: 'startEdit com ID 1',
+            func: function() {
+                if (ganttChart && ganttChart.startEdit) {
+                    ganttChart.startEdit(1);
+                    return true;
+                }
+                return false;
+            }
+        },
+        {
+            name: 'beginEdit com dados',
+            func: function() {
+                if (ganttChart && ganttChart.beginEdit) {
+                    var taskData = { TaskID: 1, TaskName: 'Nova Tarefa' };
+                    ganttChart.beginEdit(taskData);
+                    return true;
+                }
+                return false;
+            }
+        }
+    ];
+
+    for (var i = 0; i < methods.length; i++) {
+        var method = methods[i];
+        console.log('🧪 Testando método:', method.name);
+
+        try {
+            if (method.func()) {
+                console.log('✅ SUCESSO com método:', method.name);
+                focusTaskNameField();
+                return;
+            } else {
+                console.log('❌ Método não disponível:', method.name);
+            }
+        } catch (error) {
+            console.log('❌ Erro no método', method.name + ':', error);
+        }
+    }
+
+    console.log('💥 Todos os métodos falharam');
 };
 
 // Adicionar o Gantt ao DOM
