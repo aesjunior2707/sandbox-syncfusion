@@ -1034,7 +1034,7 @@ window.inspectGanttProperties = function() {
         if (Array.isArray(value)) {
             console.log('  └── length:', value.length);
             if (value.length > 0) {
-                console.log('  └── primeiro item:', value[0]);
+                console.log('  └��─ primeiro item:', value[0]);
             }
         }
     });
@@ -1159,7 +1159,7 @@ function setupSingleRowForEdit() {
                 }
             }
         }
-    }, 500);
+    }, 1500); // Timeout maior para garantir que tudo esteja carregado
 }
 
 // Função específica para testar edição de linha única
@@ -1259,7 +1259,7 @@ if (ganttChart) {
             console.log('🎯 GANTT CHART CARREGADO COM SUCESSO!');
             console.log('💡 FUNÇÕES DE DEBUG DISPONÍVEIS:');
             console.log('- debugQuick() - Debug rápido');
-            console.log('- testEditCurrentRow() - Testar edição');
+            console.log('- testEditCurrentRow() - Testar ediç��o');
             console.log('- testSingleRowEdit() - Testar linha única');
             console.log('- inspectGanttProperties() - Inspeção completa');
             console.log('- checkEditState() - Verificar estado de edição');
