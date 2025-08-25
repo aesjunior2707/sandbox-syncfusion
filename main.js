@@ -561,6 +561,9 @@ function setupEnterKeyEditing() {
                         // Método 2: Se não temos célula específica, usar linha com foco
                         if (!targetRow) {
                             targetRow = document.querySelector('.e-treegrid .e-row.e-active, .e-treegrid .e-row[aria-selected="true"]');
+                            if (targetRow) {
+                                console.log('Método 2: Linha ativa encontrada no DOM');
+                            }
                         }
 
                         // Método 3: Usar API do Gantt para obter linha selecionada
@@ -571,6 +574,7 @@ function setupEnterKeyEditing() {
                                 var allRows = document.querySelectorAll('.e-treegrid .e-row');
                                 if (targetRowIndex < allRows.length) {
                                     targetRow = allRows[targetRowIndex];
+                                    console.log('Método 3: Linha encontrada via API Gantt, índice:', targetRowIndex);
                                 }
                             }
                         }
