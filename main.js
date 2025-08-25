@@ -586,6 +586,21 @@ if (ganttChart) {
     }
 }
 
+// Função simples para testar edição (pode ser chamada no console)
+window.testEdit = function() {
+    console.log('Testando edição...');
+    if (currentSelectedRowIndex >= 0) {
+        try {
+            ganttChart.treeGrid.editCell(currentSelectedRowIndex, 'TaskName');
+            console.log('Edição iniciada para linha:', currentSelectedRowIndex);
+        } catch (error) {
+            console.log('Erro ao iniciar edição:', error);
+        }
+    } else {
+        console.log('Nenhuma linha selecionada. Clique em uma linha primeiro.');
+    }
+};
+
 // Configurar função dataBound
 if (ganttChart) {
     ganttChart.dataBound = function() {
