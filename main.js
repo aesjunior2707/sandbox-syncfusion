@@ -326,7 +326,7 @@ function getMessages(locale) {
             restoreSuccess: 'Dados padrão restaurados com sucesso!',
             clearError: 'Erro ao limpar tarefas: ',
             restoreError: 'Erro ao restaurar dados: ',
-            ganttNotAvailable: 'Gantt Chart não está disponível',
+            ganttNotAvailable: 'Gantt Chart não est�� disponível',
             newTaskName: 'Nova Tarefa'
         },
         'es-ES': {
@@ -570,21 +570,46 @@ function createNewTaskInEdit() {
             nextTaskId = maxId + 1;
         }
 
-        // Determinar data de início inteligente baseada na última tarefa
+        // Determinar data de início baseada na data fim da última tarefa
         var startDate = new Date();
         try {
+            var lastEndDate = null;
+
+            // Buscar a data fim mais tarde de todas as tarefas
+            var allTasks = [];
             if (ganttChart.flatData && ganttChart.flatData.length > 0) {
-                var lastTask = ganttChart.flatData[ganttChart.flatData.length - 1];
-                if (lastTask.EndDate) {
-                    startDate = new Date(lastTask.EndDate);
-                    startDate.setDate(startDate.getDate() + 1); // Começar no dia seguinte
-                } else if (lastTask.StartDate) {
-                    startDate = new Date(lastTask.StartDate);
-                    startDate.setDate(startDate.getDate() + 1);
+                allTasks = ganttChart.flatData;
+            } else if (ganttChart.dataSource && ganttChart.dataSource.length > 0) {
+                allTasks = ganttChart.dataSource;
+            }
+
+            if (allTasks.length > 0) {
+                for (var i = 0; i < allTasks.length; i++) {
+                    var task = allTasks[i];
+                    var taskEndDate = null;
+
+                    if (task.EndDate) {
+                        taskEndDate = new Date(task.EndDate);
+                    } else if (task.StartDate && task.Duration) {
+                        taskEndDate = new Date(task.StartDate);
+                        taskEndDate.setDate(taskEndDate.getDate() + (task.Duration || 1));
+                    }
+
+                    if (taskEndDate && (!lastEndDate || taskEndDate > lastEndDate)) {
+                        lastEndDate = taskEndDate;
+                    }
+                }
+
+                if (lastEndDate) {
+                    startDate = new Date(lastEndDate);
+                    // Não adicionar dia extra - começar na data fim da última tarefa
+                    console.log('Nova tarefa iniciará em:', startDate.toDateString());
+                } else {
+                    console.log('Não foi possível encontrar data fim, usando data atual');
                 }
             }
         } catch (dateError) {
-            console.log('Usando data atual como fallback');
+            console.log('Erro no cálculo da data:', dateError);
             startDate = new Date();
         }
 
