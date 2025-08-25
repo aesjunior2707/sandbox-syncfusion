@@ -447,7 +447,7 @@ function restoreDefaultTasks() {
                 // Atualizar o componente
                 ganttChart.refresh();
 
-                // Ajustar zoom ap��s carregar dados
+                // Ajustar zoom após carregar dados
                 setTimeout(function() {
                     if (ganttChart && ganttChart.fitToProject) {
                         ganttChart.fitToProject();
@@ -547,7 +547,52 @@ function setupEnterKeyEditing() {
                     }
                 });
 
-                console.log('Event listener para Enter configurado no Gantt');
+                // Event listener adicional com delegação para células
+                ganttElement.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter' || event.keyCode === 13) {
+                        var targetElement = event.target;
+
+                        // Verificar se o Enter foi pressionado em uma célula da treegrid
+                        var cell = targetElement.closest('.e-treegrid .e-rowcell');
+                        if (cell) {
+                            var row = cell.closest('.e-row');
+                            if (row) {
+                                // Verificar se não estamos em modo de edição
+                                var isInEditMode = row.querySelector('.e-editedrow, .e-editedbatchcell, input, textarea');
+                                if (!isInEditMode) {
+                                    try {
+                                        // Obter índice da linha
+                                        var rows = Array.from(row.parentElement.children);
+                                        var rowIndex = rows.indexOf(row);
+
+                                        // Ajustar para o índice do data source (sem contar header)
+                                        if (rowIndex > 0) rowIndex -= 1;
+
+                                        if (rowIndex >= 0 && ganttChart && ganttChart.dataSource && ganttChart.dataSource.length > rowIndex) {
+                                            var taskData = ganttChart.dataSource[rowIndex];
+
+                                            console.log('Enter em célula - Linha:', rowIndex, 'TaskID:', taskData.TaskID);
+
+                                            event.preventDefault();
+                                            event.stopPropagation();
+
+                                            // Iniciar edição
+                                            if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                                                ganttChart.treeGrid.editCell(rowIndex, 'TaskName');
+                                            } else if (ganttChart.startEdit) {
+                                                ganttChart.startEdit(taskData.TaskID);
+                                            }
+                                        }
+                                    } catch (cellEditError) {
+                                        console.error('Erro ao editar célula:', cellEditError);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }, true); // useCapture = true para capturar antes do bubbling
+
+                console.log('Event listeners para Enter configurados no Gantt');
             }
         } catch (error) {
             console.error('Erro ao configurar event listener Enter:', error);
