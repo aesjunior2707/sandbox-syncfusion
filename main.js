@@ -825,7 +825,7 @@ function setupEnterKeyEditing() {
                         if (dataSource && currentSelectedRowIndex < dataLength) {
                             var taskData = dataSource[currentSelectedRowIndex];
 
-                            console.log('🚀 GLOBAL: Iniciando edição da linha:', currentSelectedRowIndex, 'TaskName:', taskData.TaskName);
+                            console.log('🚀 GLOBAL: Iniciando edi��ão da linha:', currentSelectedRowIndex, 'TaskName:', taskData.TaskName);
 
                             event.preventDefault();
                             event.stopPropagation();
@@ -1121,6 +1121,29 @@ window.debugQuick = function() {
     console.log('🎯 Para testar linha única: testSingleRowEdit()');
     console.log('🔍 Para debug completo: inspectGanttProperties()');
 };
+
+// Função para configurar automaticamente linha única para edição
+function setupSingleRowForEdit() {
+    setTimeout(function() {
+        var domRows = document.querySelectorAll('.e-treegrid .e-row');
+        if (domRows.length === 1 && currentSelectedRowIndex < 0) {
+            console.log('🎯 AUTO-SETUP: Configurando linha única para edição');
+            currentSelectedRowIndex = 0;
+
+            // Garantir que a linha está visualmente selecionada
+            var firstRow = domRows[0];
+            if (firstRow && !firstRow.classList.contains('e-active')) {
+                // Simular clique para garantir seleção
+                try {
+                    firstRow.click();
+                    console.log('✅ AUTO-SETUP: Linha única clicada para seleção');
+                } catch (error) {
+                    console.log('⚠️ AUTO-SETUP: Erro ao clicar na linha:', error);
+                }
+            }
+        }
+    }, 500);
+}
 
 // Função específica para testar edição de linha única
 window.testSingleRowEdit = function() {
