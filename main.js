@@ -176,6 +176,47 @@ try {
                 console.log('Predecessores salvos para tarefa', args.data.TaskID + ':', args.data.Predecessor);
             }
         }
+
+        // Debug para detectar cancelamento de edição
+        if (args.requestType === 'beginEdit') {
+            console.log('🎯 EVENTO: beginEdit disparado para TaskID:', args.data ? args.data.TaskID : 'N/A');
+        } else if (args.requestType === 'cancel') {
+            console.log('⚠️ EVENTO: Edição CANCELADA pelo sistema');
+        }
+    },
+
+    // EVENTO para detectar quando edição é cancelada/bloqueada
+    actionBegin: function (args) {
+        // Processa predecessores antes de salvar
+        if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
+            var originalValue = args.data.Predecessor;
+
+            // Validar predecessores
+            var validation = validatePredecessors(originalValue, args.data.TaskID);
+            if (!validation.isValid) {
+                args.cancel = true;
+                alert('Erro nos predecessores: ' + validation.message);
+                return;
+            }
+
+            // Processar predecessores com regra FS
+            var processedPredecessors = parsePredecessors(originalValue);
+            args.data.Predecessor = processedPredecessors;
+
+            console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
+        }
+
+        // Respeitar links de predecessores durante validação
+        if (args.requestType === 'validateLinkedTask') {
+            args.validateMode = { respectLink: true };
+        }
+
+        // Debug para edição
+        if (args.requestType === 'beginEdit') {
+            console.log('🚀 EVENTO: Tentativa de iniciar edição para TaskID:', args.data ? args.data.TaskID : 'N/A');
+        } else if (args.requestType === 'cancel') {
+            console.log('🛑 EVENTO: Sistema está tentando cancelar operação:', args.requestType);
+        }
     }
     });
 } catch (error) {
