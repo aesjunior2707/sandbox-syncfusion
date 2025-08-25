@@ -568,7 +568,7 @@ function setupEnterKeyEditing() {
 
                         // Debug específico para linha única
                         var domRows = document.querySelectorAll('.e-treegrid .e-row');
-                        console.log('🔍 CENÁRIO LINHA ��NICA - Linhas no DOM:', domRows.length);
+                        console.log('🔍 CENÁRIO LINHA ÚNICA - Linhas no DOM:', domRows.length);
 
                         var targetRowIndex = -1;
                         var taskData = null;
@@ -1232,6 +1232,39 @@ window.testSingleRowEdit = function() {
     }
 
     console.log('💥 Todos os métodos falharam');
+};
+
+// Função de conveniência para forçar setup de linha única
+window.forceSingleRowSetup = function() {
+    console.log('🔧 FORÇANDO SETUP DE LINHA ÚNICA');
+
+    var domRows = document.querySelectorAll('.e-treegrid .e-row');
+    console.log('Linhas encontradas:', domRows.length);
+
+    if (domRows.length >= 1) {
+        // Forçar seleção da primeira linha
+        currentSelectedRowIndex = 0;
+
+        var firstRow = domRows[0];
+        if (firstRow) {
+            // Marcar como ativa
+            firstRow.classList.add('e-active');
+            firstRow.setAttribute('aria-selected', 'true');
+
+            // Remover ativo de outras linhas (se houver)
+            domRows.forEach(function(row, index) {
+                if (index !== 0) {
+                    row.classList.remove('e-active');
+                    row.setAttribute('aria-selected', 'false');
+                }
+            });
+
+            console.log('✅ Linha 0 configurada como ativa');
+            console.log('📋 Agora tente pressionar Enter para editar');
+        }
+    } else {
+        console.log('❌ Nenhuma linha encontrada');
+    }
 };
 
 // Adicionar o Gantt ao DOM
