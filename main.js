@@ -547,395 +547,57 @@ function focusTaskNameField() {
 
 // Função para configurar evento Enter para edição
 function setupEnterKeyEditing() {
-    // Aguardar o componente estar totalmente carregado
     setTimeout(function() {
-        try {
-            var ganttElement = document.getElementById('Gantt');
-            if (ganttElement) {
-                // Event listener único e simplificado
-                ganttElement.addEventListener('keydown', function(event) {
-                    console.log('Tecla pressionada:', event.key, 'Código:', event.keyCode);
-
-                    // Processar Enter ou F2 (atalho alternativo para edição)
-                    if (event.key !== 'Enter' && event.keyCode !== 13 && event.key !== 'F2' && event.keyCode !== 113) {
-                        return;
-                    }
-
-                    var keyPressed = event.key === 'F2' || event.keyCode === 113 ? 'F2' : 'Enter';
-                    console.log('🎯 ' + keyPressed + ' DETECTADO! Processando...');
-
-                    // Verificar se já estamos em modo de edição (excluindo campo de busca)
-                    var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid .e-rowcell input, .e-treegrid .e-rowcell textarea');
-
-                    // Debug: mostrar todos os inputs encontrados
-                    var allInputs = document.querySelectorAll('.e-treegrid input, .e-treegrid textarea');
-                    var editInputs = document.querySelectorAll('.e-treegrid .e-rowcell input, .e-treegrid .e-rowcell textarea');
-
-                    console.log('🔍 DEBUG EDIÇÃO:');
-                    console.log('- Total inputs no treegrid:', allInputs.length);
-                    console.log('- Inputs de edição em células:', editInputs.length);
-                    console.log('- Detectado como editando:', !!isInEditMode);
-
+        var ganttElement = document.getElementById('Gantt');
+        if (ganttElement) {
+            ganttElement.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter' || event.keyCode === 13) {
+                    // Verificar se já está em modo de edição
+                    var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
                     if (isInEditMode) {
-                        console.log('- Elemento que causa detecção:', isInEditMode);
-                        console.log('Já em modo de edição, ignorando Enter');
-                        return; // Deixar comportamento padrão
+                        return; // Deixar comportamento padrão se já editando
                     }
 
-                    console.log('✅ Não está em modo de edição, prosseguindo...');
+                    // Verificar se há linha selecionada
+                    if (currentSelectedRowIndex >= 0) {
+                        event.preventDefault();
+                        event.stopPropagation();
 
-                    try {
-                        console.log('🔄 Processando Enter...');
-                        console.log('currentSelectedRowIndex:', currentSelectedRowIndex);
-
-                        // Debug específico para linha única
-                        var domRows = document.querySelectorAll('.e-treegrid .e-row');
-                        console.log('🔍 CENÁRIO LINHA ÚNICA - Linhas no DOM:', domRows.length);
-
-                        var targetRowIndex = -1;
-                        var taskData = null;
-
-                        // Método 1: Usar linha selecionada rastreada (mais confiável)
-                        if (currentSelectedRowIndex >= 0) {
-                            targetRowIndex = currentSelectedRowIndex;
-                            console.log('✅ Usando linha rastreada:', targetRowIndex);
-                        }
-                        // Método 2: Usar API do Gantt
-                        else if (ganttChart && ganttChart.getSelectedRowIndexes) {
-                            var selectedIndexes = ganttChart.getSelectedRowIndexes();
-                            if (selectedIndexes && selectedIndexes.length > 0) {
-                                targetRowIndex = selectedIndexes[0];
-                                console.log('✅ Usando API Gantt:', targetRowIndex);
-                            }
-                        }
-                        // Método 3: ESPECIAL - Se há apenas uma linha e nenhuma seleção, usar a primeira
-                        if (targetRowIndex < 0 && domRows.length === 1) {
-                            targetRowIndex = 0;
-                            currentSelectedRowIndex = 0; // Atualizar rastreamento
-                            console.log('🎯 CENÁRIO LINHA ÚNICA: Forçando seleção da primeira linha (índice 0)');
-                        }
-                        // Método 4: Se há poucas linhas (<=3) e linha ativa no DOM
-                        else if (targetRowIndex < 0 && domRows.length <= 3) {
-                            var activeRow = document.querySelector('.e-treegrid .e-row.e-active, .e-treegrid .e-row[aria-selected="true"]');
-                            if (activeRow) {
-                                var ariaRowIndex = activeRow.getAttribute('aria-rowindex');
-                                if (ariaRowIndex !== null) {
-                                    targetRowIndex = parseInt(ariaRowIndex);
-                                    currentSelectedRowIndex = targetRowIndex;
-                                    console.log('🎯 POUCAS LINHAS: Usando linha ativa do DOM (índice ' + targetRowIndex + ')');
-                                }
-                            }
-                        }
-
-                        // Verificar se temos dados válidos com mapeamento correto para hierarquia
-                        var dataSource = null;
-                        var dataLength = 0;
-                        var actualTaskData = null;
-
-                        console.log('🔍 MAPEAMENTO HIERÁRQUICO:');
-                        console.log('- targetRowIndex (visual):', targetRowIndex);
-
-                        // Método PREFERIDO: usar flatData para hierarquia
-                        if (ganttChart && ganttChart.flatData) {
-                            dataSource = ganttChart.flatData;
-                            dataLength = dataSource ? dataSource.length : 0;
-                            console.log('📊 Método HIERÁRQUICO - flatData:', dataLength, 'itens');
-
-                            if (targetRowIndex >= 0 && targetRowIndex < dataLength) {
-                                actualTaskData = dataSource[targetRowIndex];
-                                console.log('✅ Dados encontrados via flatData:', actualTaskData.TaskName);
-                            }
-                        }
-
-                        // Método ALTERNATIVO: usar treeGrid getCurrentViewRecords
-                        if (!actualTaskData && ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.getCurrentViewRecords) {
-                            try {
-                                var viewRecords = ganttChart.treeGrid.getCurrentViewRecords();
-                                if (viewRecords && targetRowIndex < viewRecords.length) {
-                                    actualTaskData = viewRecords[targetRowIndex];
-                                    console.log('✅ Dados encontrados via treeGrid.getCurrentViewRecords:', actualTaskData.TaskName);
-                                }
-                            } catch (error) {
-                                console.log('⚠️ Erro ao acessar getCurrentViewRecords:', error);
-                            }
-                        }
-
-                        // Método FALLBACK: mapear através do DOM
-                        if (!actualTaskData) {
-                            console.log('🔧 FALLBACK: Tentando mapear via DOM...');
-                            var domRows = document.querySelectorAll('.e-treegrid .e-row');
-                            if (targetRowIndex < domRows.length) {
-                                var targetRow = domRows[targetRowIndex];
-                                var taskNameCell = targetRow.querySelector('.e-treecell');
-                                if (taskNameCell) {
-                                    var taskNameFromDOM = taskNameCell.textContent.trim();
-                                    console.log('���� Nome da tarefa do DOM:', taskNameFromDOM);
-
-                                    // Tentar encontrar tarefa nos dados por nome
-                                    if (ganttChart.flatData) {
-                                        actualTaskData = ganttChart.flatData.find(function(item) {
-                                            return item.TaskName === taskNameFromDOM;
-                                        });
-                                        if (actualTaskData) {
-                                            console.log('✅ Tarefa encontrada por nome:', actualTaskData.TaskID);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        if (actualTaskData) {
-                            taskData = actualTaskData;
-                            var taskId = taskData.TaskID;
-
-                            console.log('🎯 DADOS ENCONTRADOS! INICIANDO EDIÇÃO:');
-                            console.log('- Linha visual:', targetRowIndex);
-                            console.log('- TaskID:', taskId);
-                            console.log('- TaskName:', taskData.TaskName);
-                            console.log('- Fonte dos dados:', 'mapeamento hierárquico correto');
-
-                            // Prevenir comportamento padrão
-                            event.preventDefault();
-                            event.stopPropagation();
-
-                            // Iniciar edição - tentar diferentes métodos
-                            var editSuccess = false;
-
-                            if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
-                                try {
-                                    console.log('🔧 Tentando treeGrid.editCell...');
-                                    console.log('- Parâmetros:', 'rowIndex=' + targetRowIndex, 'field=TaskName');
-
-                                    ganttChart.treeGrid.editCell(targetRowIndex, 'TaskName');
-                                    console.log('✅ treeGrid.editCell executado');
-
-                                    // Verificar imediatamente se a edição está ativa
-                                    setTimeout(function() {
-                                        var isEditingNow = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid .e-rowcell input, .e-treegrid .e-rowcell textarea');
-                                        console.log('🔍 VERIFICAÇÃO PÓS-EDIÇÃO:', !!isEditingNow);
-                                        if (isEditingNow) {
-                                            console.log('✅ Modo de edição ATIVO após editCell');
-                                        } else {
-                                            console.log('❌ Modo de edição NÃO ATIVO - algo cancelou a edição');
-                                            console.log('🚀 Ativando solução alternativa automática...');
-
-                                            // Usar função de força edição
-                                            if (typeof forceEditRow !== 'undefined') {
-                                                forceEditRow(targetRowIndex);
-                                            } else {
-                                                // Tentar método alternativo imediato
-                                                console.log('🔄 Tentando startEdit...');
-                                                if (ganttChart.startEdit && taskId) {
-                                                    ganttChart.startEdit(taskId);
-                                                    console.log('🔧 startEdit executado como alternativa');
-                                                }
-                                            }
-                                        }
-                                    }, 100);
-
-                                    editSuccess = true;
-                                } catch (editError) {
-                                    console.log('❌ Erro treeGrid.editCell:', editError);
-                                }
-                            }
-
-                            if (!editSuccess && ganttChart.startEdit && taskId) {
-                                try {
-                                    ganttChart.startEdit(taskId);
-                                    console.log('✅ Edição via startEdit');
-                                    editSuccess = true;
-                                } catch (editError) {
-                                    console.log('❌ Erro startEdit:', editError);
-                                }
-                            }
-
-                            if (!editSuccess && ganttChart.beginEdit && taskData) {
-                                try {
-                                    ganttChart.beginEdit(taskData);
-                                    console.log('✅ Edição via beginEdit');
-                                    editSuccess = true;
-                                } catch (editError) {
-                                    console.log('❌ Erro beginEdit:', editError);
-                                }
-                            }
-
-                            if (editSuccess) {
-                                console.log('🎉 SUCESSO! Edição iniciada com sucesso!');
-                                // Focar campo TaskName
-                                focusTaskNameField();
-                            } else {
-                                console.log('💥 FALHA TOTAL! Nenhum método de edição funcionou');
-                                console.log('🆘 Tente usar: forceExitEditMode() e depois testEditCurrentRow()');
-                            }
-                        } else {
-                            console.log('❌ ERRO DE MAPEAMENTO HIERÁRQUICO:');
-                            console.log('- Linha visual selecionada:', targetRowIndex);
-                            console.log('- Linhas no DOM:', document.querySelectorAll('.e-treegrid .e-row').length);
-                            console.log('- flatData disponível:', ganttChart.flatData ? ganttChart.flatData.length : 'N/A');
-                            console.log('- Problema: Mapeamento entre linha visual e dados falhou');
-
-                            // FALLBACK ESPECIAL para linha única - tentar edição direta
-                            if (domRows.length === 1 && targetRowIndex >= 0) {
-                                console.log('🚀 FALLBACK LINHA ÚNICA: Tentando edição direta sem dados...');
-                                try {
-                                    if (ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
-                                        ganttChart.treeGrid.editCell(targetRowIndex, 'TaskName');
-                                        console.log('✅ FALLBACK: Edição direta bem-sucedida!');
-                                        focusTaskNameField();
-                                        return; // Sair para evitar mais processamento
-                                    }
-                                } catch (fallbackError) {
-                                    console.log('❌ FALLBACK: Erro na edição direta:', fallbackError);
-                                }
-                            }
-
-                            // Debug adicional - tentar diferentes propriedades do Gantt
-                            if (ganttChart) {
-                                console.log('🔍 DEBUG GANTT PROPRIEDADES:');
-                                console.log('- ganttChart.dataSource:', !!ganttChart.dataSource, ganttChart.dataSource ? ganttChart.dataSource.length : 'null');
-                                console.log('- ganttChart.treeGrid:', !!ganttChart.treeGrid);
-                                if (ganttChart.treeGrid) {
-                                    console.log('- ganttChart.treeGrid.dataSource:', !!ganttChart.treeGrid.dataSource, ganttChart.treeGrid.dataSource ? ganttChart.treeGrid.dataSource.length : 'null');
-                                }
-                                console.log('- ganttChart.flatData:', !!ganttChart.flatData, ganttChart.flatData ? ganttChart.flatData.length : 'null');
-                                console.log('- ganttChart.getCurrentViewRecords:', !!ganttChart.getCurrentViewRecords);
-
-                                // Tentar método alternativo - obter dados da linha diretamente do DOM
-                                var domRows = document.querySelectorAll('.e-treegrid .e-row');
-                                console.log('- Linhas no DOM:', domRows.length);
-
-                                if (targetRowIndex >= 0 && targetRowIndex < domRows.length) {
-                                    var targetDomRow = domRows[targetRowIndex];
-                                    var cells = targetDomRow.querySelectorAll('.e-rowcell');
-                                    console.log('- Células na linha DOM:', cells.length);
-                                    if (cells.length > 1) {
-                                        var taskNameCell = cells[1]; // Assumindo que TaskName é a segunda coluna
-                                        var taskNameText = taskNameCell.textContent.trim();
-                                        console.log('- Nome da tarefa do DOM:', taskNameText);
-
-                                        // Tentar edição direta pelo DOM
-                                        console.log('🔧 Tentando edição alternativa via DOM...');
-                                        try {
-                                            if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
-                                                ganttChart.treeGrid.editCell(targetRowIndex, 'TaskName');
-                                                console.log('✅ Edição DOM iniciada!');
-                                                focusTaskNameField();
-                                                return; // Sair para evitar mais processamento
-                                            }
-                                        } catch (domEditError) {
-                                            console.log('❌ Erro na edição DOM:', domEditError);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } catch (editError) {
-                        console.error('Erro ao processar Enter:', editError);
-                    }
-                });
-
-                // Event listener para clicks em linhas (para rastreamento)
-                ganttElement.addEventListener('click', function(event) {
-                    try {
-                        var clickedRow = event.target.closest('.e-treegrid .e-row');
-                        if (clickedRow) {
-                            var ariaRowIndex = clickedRow.getAttribute('aria-rowindex');
-                            if (ariaRowIndex !== null) {
-                                var rowIndex = parseInt(ariaRowIndex);
-                                currentSelectedRowIndex = rowIndex;
-                                console.log('Clique na linha:', rowIndex);
-
-                                // Debug específico para linha única
-                                var domRows = document.querySelectorAll('.e-treegrid .e-row');
-                                if (domRows.length === 1) {
-                                    console.log('🎯 LINHA ÚNICA: Clique registrado, linha preparada para edição');
-                                }
-                            }
-                        } else {
-                            // Se clicou em área vazia mas há apenas uma linha, manter seleção
-                            var domRows = document.querySelectorAll('.e-treegrid .e-row');
-                            if (domRows.length === 1 && currentSelectedRowIndex < 0) {
-                                currentSelectedRowIndex = 0;
-                                console.log('🎯 LINHA ÚNICA: Clique em área vazia, mantendo seleção da linha única');
-                            }
-                        }
-                    } catch (clickError) {
-                        console.log('Erro ao processar clique:', clickError);
-                    }
-                });
-
-                console.log('Event listeners configurados (Enter + Click)');
-            }
-
-            // Event listener super simples no document (captura Enter/F2 globalmente)
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Enter' || event.keyCode === 13 || event.key === 'F2' || event.keyCode === 113) {
-                    var keyPressed = event.key === 'F2' || event.keyCode === 113 ? 'F2' : 'Enter';
-                    console.log('🌍 GLOBAL ' + keyPressed + ' detectado!');
-
-                    // Verificar se não estamos editando (excluindo campo de busca)
-                    var isEditing = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid .e-rowcell input, .e-treegrid .e-rowcell textarea');
-
-                    console.log('🔍 GLOBAL DEBUG EDIÇÃO:', !!isEditing);
-
-                    // Verificar cenário de linha única
-                    var domRows = document.querySelectorAll('.e-treegrid .e-row');
-                    console.log('🔍 GLOBAL: Linhas no DOM:', domRows.length);
-
-                    // Se há apenas uma linha e não temos seleção, forçar primeira linha
-                    if (!isEditing && currentSelectedRowIndex < 0 && domRows.length === 1) {
-                        currentSelectedRowIndex = 0;
-                        console.log('🎯 GLOBAL: Linha única detectada, forçando seleção da linha 0');
-                    }
-
-                    if (!isEditing && currentSelectedRowIndex >= 0) {
-                        console.log('🎯 GLOBAL: Linha selecionada disponível:', currentSelectedRowIndex);
-
-                        // Usar mesma lógica de acesso a dados do event listener principal
-                        var dataSource = null;
-                        var dataLength = 0;
-
-                        if (ganttChart && ganttChart.dataSource) {
-                            dataSource = ganttChart.dataSource;
-                            dataLength = dataSource.length;
-                        } else if (ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.dataSource) {
-                            dataSource = ganttChart.treeGrid.dataSource;
-                            dataLength = dataSource.length;
-                        } else if (ganttChart && ganttChart.getCurrentViewRecords) {
-                            dataSource = ganttChart.getCurrentViewRecords();
-                            dataLength = dataSource ? dataSource.length : 0;
-                        } else if (ganttChart && ganttChart.flatData) {
-                            dataSource = ganttChart.flatData;
-                            dataLength = dataSource ? dataSource.length : 0;
-                        }
-
-                        if (dataSource && currentSelectedRowIndex < dataLength) {
-                            var taskData = dataSource[currentSelectedRowIndex];
-
-                            console.log('🚀 GLOBAL: Iniciando edição da linha:', currentSelectedRowIndex, 'TaskName:', taskData.TaskName);
-
-                            event.preventDefault();
-                            event.stopPropagation();
-
-                            // Edição direta
-                            try {
+                        // Iniciar edição usando treeGrid.editCell
+                        try {
+                            if (ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
                                 ganttChart.treeGrid.editCell(currentSelectedRowIndex, 'TaskName');
-                                console.log('✅ GLOBAL: Edição iniciada com sucesso!');
-                                focusTaskNameField();
-                            } catch (error) {
-                                console.log('❌ GLOBAL: Erro na edição:', error);
+                                console.log('Edição iniciada via Enter para linha:', currentSelectedRowIndex);
+
+                                // Focar no campo após um pequeno delay
+                                setTimeout(function() {
+                                    var input = document.querySelector('.e-treegrid .e-rowcell input[name="TaskName"], .e-treegrid .e-rowcell input');
+                                    if (input) {
+                                        input.focus();
+                                        input.select();
+                                    }
+                                }, 100);
                             }
+                        } catch (error) {
+                            console.log('Erro ao iniciar edição:', error);
                         }
-                    } else if (isEditing) {
-                        console.log('⏸️ GLOBAL: Já em modo de edição, ignorando');
-                    } else {
-                        console.log('⏸️ GLOBAL: Nenhuma linha selecionada');
                     }
                 }
-            }, true);
+            });
 
-        } catch (error) {
-            console.error('Erro ao configurar event listeners:', error);
+            // Event listener para clicks em linhas
+            ganttElement.addEventListener('click', function(event) {
+                var clickedRow = event.target.closest('.e-treegrid .e-row');
+                if (clickedRow) {
+                    var ariaRowIndex = clickedRow.getAttribute('aria-rowindex');
+                    if (ariaRowIndex !== null) {
+                        currentSelectedRowIndex = parseInt(ariaRowIndex);
+                        console.log('Clique na linha:', currentSelectedRowIndex);
+                    }
+                }
+            });
+
+            console.log('Event listeners configurados para Enter');
         }
     }, 500);
 }
@@ -1326,7 +988,7 @@ window.checkEditConfiguration = function() {
             console.log('📌 ganttChart.' + prop + ':', ganttChart[prop]);
         }
         if (ganttChart.treeGrid && ganttChart.treeGrid.hasOwnProperty(prop)) {
-            console.log('📌 treeGrid.' + prop + ':', ganttChart.treeGrid[prop]);
+            console.log('��� treeGrid.' + prop + ':', ganttChart.treeGrid[prop]);
         }
     });
 
@@ -1660,7 +1322,7 @@ window.forceEditRow = function(rowIndex) {
                         focusTaskNameField();
                         return;
                     } else {
-                        console.log('❌ Duplo clique não ativou edi��ão, tentando método 2...');
+                        console.log('❌ Duplo clique não ativou edição, tentando método 2...');
                         tryMethod2();
                     }
                 }, 200);
