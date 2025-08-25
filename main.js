@@ -601,6 +601,28 @@ if (ganttChart) {
         // Configurar event listener para Enter
         setupEnterKeyEditing();
 
+        // Garantir configurações de edição após inicialização
+        setTimeout(function() {
+            if (ganttChart && ganttChart.treeGrid) {
+                // Forçar configurações de edição no TreeGrid
+                if (ganttChart.treeGrid.editSettings) {
+                    ganttChart.treeGrid.editSettings.allowEditing = true;
+                    ganttChart.treeGrid.editSettings.mode = 'Cell';
+                }
+
+                // Garantir que todas as colunas editáveis estão configuradas
+                if (ganttChart.columns) {
+                    ganttChart.columns.forEach(function(col) {
+                        if (col.field === 'TaskName' || col.field === 'Duration' || col.field === 'StartDate' || col.field === 'EndDate' || col.field === 'Progress' || col.field === 'Predecessor') {
+                            col.allowEditing = true;
+                        }
+                    });
+                }
+
+                console.log('Configurações de edição aplicadas');
+            }
+        }, 1500);
+
     } catch (error) {
         console.error('Erro ao anexar Gantt ao DOM:', error);
     }
