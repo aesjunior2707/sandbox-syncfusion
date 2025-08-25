@@ -570,11 +570,29 @@ function createNewTaskInEdit() {
             nextTaskId = maxId + 1;
         }
 
+        // Determinar data de início inteligente baseada na última tarefa
+        var startDate = new Date();
+        try {
+            if (ganttChart.flatData && ganttChart.flatData.length > 0) {
+                var lastTask = ganttChart.flatData[ganttChart.flatData.length - 1];
+                if (lastTask.EndDate) {
+                    startDate = new Date(lastTask.EndDate);
+                    startDate.setDate(startDate.getDate() + 1); // Começar no dia seguinte
+                } else if (lastTask.StartDate) {
+                    startDate = new Date(lastTask.StartDate);
+                    startDate.setDate(startDate.getDate() + 1);
+                }
+            }
+        } catch (dateError) {
+            console.log('Usando data atual como fallback');
+            startDate = new Date();
+        }
+
         // Criar nova tarefa com dados básicos
         var newTask = {
             TaskID: nextTaskId,
             TaskName: 'Nova Tarefa',
-            StartDate: new Date(),
+            StartDate: startDate,
             Duration: 1,
             Progress: 0,
             Predecessor: ''
