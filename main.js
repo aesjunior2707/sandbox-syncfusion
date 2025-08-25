@@ -614,54 +614,10 @@ if (ganttChart) {
         if (ganttElement) {
             ganttElement.setAttribute('tabindex', '0');
             ganttElement.style.outline = 'none';
-            console.log('Foco configurado no elemento Gantt');
         }
 
         // Configurar event listener para Enter
         setupEnterKeyEditing();
-
-        // Configurar linha única se necess��rio
-        setupSingleRowForEdit();
-
-        // Verificação adicional após mais tempo
-        setTimeout(function() {
-            var domRows = document.querySelectorAll('.e-treegrid .e-row');
-            if (domRows.length === 1 && currentSelectedRowIndex < 0) {
-                console.log('🔄 VERIFICAÇÃO TARDIA: Configurando linha única...');
-                currentSelectedRowIndex = 0;
-
-                // Tentar garantir que a linha esteja selecionada
-                var firstRow = domRows[0];
-                if (firstRow) {
-                    firstRow.classList.add('e-active');
-                    firstRow.setAttribute('aria-selected', 'true');
-                    console.log('✅ VERIFICAÇÃO TARDIA: Linha única marcada como ativa');
-                }
-            }
-        }, 3000);
-
-        // Mostrar instruções de debug
-        setTimeout(function() {
-            console.log('🎯 GANTT CHART CARREGADO COM SUCESSO!');
-            console.log('⚡ TESTE RÁPIDO: quickTest() - verificar se tudo funciona');
-            console.log('🚑 RECOVERY: fullRecovery() - restaurar se algo quebrou');
-            console.log('');
-            console.log('💡 PRINCIPAIS FUNÇÕES:');
-            console.log('- quickTest() - Teste completo de funcionalidade');
-            console.log('- fullRecovery() - Recovery completa');
-            console.log('- testEditCurrentRow() - Testar edição da linha selecionada');
-            console.log('- getTaskDataFromVisualRow(index) - Mapear linha visual');
-            console.log('- restoreDoubleClickEdit() - Restaurar duplo clique');
-            console.log('');
-            console.log('💡 OUTRAS FUNÇÕES:');
-            console.log('- diagnoseAndFix() - Diagnóstico automático');
-            console.log('- debugQuick() - Debug rápido');
-            console.log('- forceEditRow(index) - Forçar edição');
-            console.log('- checkEditConfiguration() - Verificar configurações');
-            console.log('📋 COMO USAR: Clique em uma linha e pressione Enter para editar');
-            console.log('🔧 HIERARQUIA: Sistema mapeia corretamente linhas expandidas');
-            console.log('🆘 PROBLEMAS? Use: quickTest() depois fullRecovery()');
-        }, 1000);
 
     } catch (error) {
         console.error('Erro ao anexar Gantt ao DOM:', error);
