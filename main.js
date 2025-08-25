@@ -876,7 +876,7 @@ function setupEnterKeyEditing() {
                             var domRows = document.querySelectorAll('.e-treegrid .e-row');
                             if (domRows.length === 1 && currentSelectedRowIndex < 0) {
                                 currentSelectedRowIndex = 0;
-                                console.log('🎯 LINHA ÚNICA: Clique em área vazia, mantendo seleção da linha única');
+                                console.log('🎯 LINHA ��NICA: Clique em área vazia, mantendo seleção da linha única');
                             }
                         }
                     } catch (clickError) {
@@ -1042,7 +1042,7 @@ window.testEditCurrentRow = function() {
         }
     } else {
         console.log('❌ Nenhuma linha selecionada');
-        console.log('📋 Clique em uma linha primeiro ou use: currentSelectedRowIndex = 0');
+        console.log('�� Clique em uma linha primeiro ou use: currentSelectedRowIndex = 0');
     }
 };
 
@@ -1107,7 +1107,7 @@ window.checkEditState = function() {
     if (ganttChart && ganttChart.treeGrid) {
         console.log('📈 ESTADO DO TREEGRID:');
         console.log('- TreeGrid disponível:', !!ganttChart.treeGrid);
-        console.log('- isEdit (se disponível):', ganttChart.treeGrid.isEdit);
+        console.log('- isEdit (se dispon��vel):', ganttChart.treeGrid.isEdit);
     }
 };
 
@@ -1467,6 +1467,54 @@ window.diagnoseAndFix = function() {
     console.log('🎯 Diagnóstico completo! Aguarde 1 segundo...');
 };
 
+// Função para restaurar funcionalidade de duplo clique nativa
+window.restoreDoubleClickEdit = function() {
+    console.log('🔄 RESTAURANDO FUNCIONALIDADE DE DUPLO CLIQUE');
+
+    if (!ganttChart) {
+        console.log('❌ ganttChart não disponível');
+        return;
+    }
+
+    try {
+        // Restaurar configurações originais que podem ter sido alteradas
+        if (ganttChart.editSettings) {
+            ganttChart.editSettings.allowEditing = true;
+            ganttChart.editSettings.mode = 'Cell';
+            console.log('✅ Configurações de edição restauradas');
+        }
+
+        // Garantir que TreeGrid permite edição por duplo clique
+        if (ganttChart.treeGrid) {
+            if (ganttChart.treeGrid.editSettings) {
+                ganttChart.treeGrid.editSettings.allowEditing = true;
+                ganttChart.treeGrid.editSettings.mode = 'Cell';
+                console.log('✅ TreeGrid configurado para edição por duplo clique');
+            }
+
+            // Verificar se o evento de duplo clique está funcionando
+            if (ganttChart.treeGrid.element) {
+                var testElement = ganttChart.treeGrid.element.querySelector('.e-rowcell');
+                if (testElement) {
+                    console.log('✅ Elementos editáveis encontrados');
+                }
+            }
+        }
+
+        // Refresh do componente para aplicar mudanças
+        if (ganttChart.refresh) {
+            ganttChart.refresh();
+            console.log('✅ Componente atualizado');
+        }
+
+        console.log('🎉 Funcionalidade de duplo clique restaurada!');
+        console.log('📋 Teste: duplo clique em qualquer célula TaskName');
+
+    } catch (error) {
+        console.log('❌ Erro ao restaurar duplo clique:', error);
+    }
+};
+
 // Função para forçar edição usando múltiplas abordagens
 window.forceEditRow = function(rowIndex) {
     if (rowIndex === undefined) {
@@ -1537,7 +1585,7 @@ window.forceEditRow = function(rowIndex) {
                 console.log('✅ treeGrid.editCell executado com proteção');
             }
         } catch (error) {
-            console.log('❌ Erro no m��todo 2:', error);
+            console.log('❌ Erro no método 2:', error);
         }
 
         // Restaurar eventos após um tempo
