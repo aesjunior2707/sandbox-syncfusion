@@ -714,12 +714,18 @@ function setupEnterKeyEditing() {
                                             console.log('✅ Modo de edição ATIVO após editCell');
                                         } else {
                                             console.log('❌ Modo de edição NÃO ATIVO - algo cancelou a edição');
+                                            console.log('🚀 Ativando solução alternativa automática...');
 
-                                            // Tentar método alternativo imediato
-                                            console.log('🔄 Tentando método alternativo...');
-                                            if (ganttChart.startEdit && taskId) {
-                                                ganttChart.startEdit(taskId);
-                                                console.log('🔧 startEdit executado como alternativa');
+                                            // Usar função de força edição
+                                            if (typeof forceEditRow !== 'undefined') {
+                                                forceEditRow(targetRowIndex);
+                                            } else {
+                                                // Tentar método alternativo imediato
+                                                console.log('🔄 Tentando startEdit...');
+                                                if (ganttChart.startEdit && taskId) {
+                                                    ganttChart.startEdit(taskId);
+                                                    console.log('🔧 startEdit executado como alternativa');
+                                                }
                                             }
                                         }
                                     }, 100);
