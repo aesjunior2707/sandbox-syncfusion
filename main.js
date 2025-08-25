@@ -656,6 +656,25 @@ function setupEnterKeyEditing() {
     }, 500);
 }
 
+// Função global para debug manual (pode ser chamada no console)
+window.debugGanttSelection = function() {
+    console.log('🔍 DIAGNÓSTICO MANUAL GANTT SELECTION');
+    debugRowInfo();
+
+    // Informações adicionais
+    var focusedElement = document.activeElement;
+    console.log('Elemento com foco:', focusedElement.tagName, focusedElement.className);
+
+    var clickedRows = document.querySelectorAll('.e-treegrid .e-row:hover, .e-treegrid .e-row.e-active');
+    console.log('Linhas com hover/active:', clickedRows.length);
+
+    if (ganttChart) {
+        console.log('Gantt Chart carregado:', !!ganttChart);
+        console.log('DataSource disponível:', !!ganttChart.dataSource);
+        console.log('TreeGrid disponível:', !!ganttChart.treeGrid);
+    }
+};
+
 // Adicionar o Gantt ao DOM
 if (ganttChart) {
     try {
