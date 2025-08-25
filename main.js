@@ -637,7 +637,7 @@ function setupEnterKeyEditing() {
                             if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
                                 try {
                                     ganttChart.treeGrid.editCell(targetRowIndex, 'TaskName');
-                                    console.log('✅ Edição via treeGrid.editCell');
+                                    console.log('✅ Edi��ão via treeGrid.editCell');
                                     editSuccess = true;
                                 } catch (editError) {
                                     console.log('❌ Erro treeGrid.editCell:', editError);
@@ -1090,6 +1090,19 @@ if (ganttChart) {
 
         // Configurar event listener para Enter
         setupEnterKeyEditing();
+
+        // Mostrar instruções de debug
+        setTimeout(function() {
+            console.log('🎯 GANTT CHART CARREGADO COM SUCESSO!');
+            console.log('💡 FUNÇÕES DE DEBUG DISPONÍVEIS:');
+            console.log('- debugQuick() - Debug rápido');
+            console.log('- testEditCurrentRow() - Testar edição');
+            console.log('- inspectGanttProperties() - Inspeção completa');
+            console.log('- checkEditState() - Verificar estado de edição');
+            console.log('- resetGanttState() - Reset completo');
+            console.log('📋 COMO USAR: Clique em uma linha e pressione Enter para editar');
+        }, 1000);
+
     } catch (error) {
         console.error('Erro ao anexar Gantt ao DOM:', error);
     }
