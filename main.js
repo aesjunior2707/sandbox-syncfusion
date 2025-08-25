@@ -366,10 +366,24 @@ function clearAllTasks() {
                 // Atualizar o componente
                 ganttChart.refresh();
 
-                // Aguardar o refresh completar e então criar nova tarefa em edição
+                // Aguardar o refresh completar e reconfigurar edição
                 setTimeout(function() {
-                    createNewTaskAfterClear(msgs.newTaskName);
-                }, 500);
+                    // Reconfigurar edição após limpar
+                    reconfigureEditingAfterClear();
+                    
+                    // Criar nova tarefa simples
+                    var newTask = {
+                        TaskID: 1,
+                        TaskName: msgs.newTaskName || 'Nova Tarefa',
+                        StartDate: new Date(),
+                        Duration: 1,
+                        Progress: 0,
+                        Predecessor: ''
+                    };
+                    
+                    ganttChart.addRecord(newTask);
+                    console.log('Nova tarefa adicionada após limpar');
+                }, 800);
 
                 console.log('Todas as tarefas foram removidas do data source');
                 alert(msgs.clearSuccess);
@@ -388,82 +402,59 @@ function clearAllTasks() {
     }
 }
 
-// Função específica para criar nova tarefa após limpar
-function createNewTaskAfterClear(taskName) {
+// Função para reconfigurar edição após limpar dados
+function reconfigureEditingAfterClear() {
     try {
-        // Criar nova tarefa com dados básicos
-        var newTask = {
-            TaskID: 1,
-            TaskName: taskName || 'Nova Tarefa',
-            StartDate: new Date(),
-            Duration: 1,
-            Progress: 0,
-            Predecessor: ''
-        };
-
-        console.log('Criando nova tarefa após limpar:', newTask);
-
-        // Adicionar a nova tarefa primeiro
-        ganttChart.addRecord(newTask);
-
-        // Aguardar a tarefa ser adicionada e então forçar edição
-        setTimeout(function() {
-            try {
-                // Selecionar a primeira linha (índice 0)
-                if (ganttChart.selectRow) {
-                    ganttChart.selectRow(0);
-                    currentSelectedRowIndex = 0;
-                }
-
-                // Aguardar seleção e então iniciar edição
-                setTimeout(function() {
-                    // Método 1: Usar editCell diretamente
-                    if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
-                        ganttChart.treeGrid.editCell(0, 'TaskName');
-                        console.log('✅ Edição iniciada via editCell');
-                        
-                        // Limpar e focar no campo
-                        setTimeout(function() {
-                            var input = document.querySelector('.e-treegrid .e-rowcell input, .e-treegrid .e-editedbatchcell input');
-                            if (input) {
-                                input.value = '';
-                                input.focus();
-                                input.select();
-                                console.log('✅ Campo limpo e focado');
-                            } else {
-                                // Método alternativo: simular duplo clique
-                                console.log('Tentando método alternativo...');
-                                var taskNameCell = document.querySelector('.e-treegrid .e-rowcell[aria-describedby*="TaskName"]');
-                                if (taskNameCell) {
-                                    // Simular duplo clique na célula
-                                    var dblClickEvent = new MouseEvent('dblclick', {
-                                        bubbles: true,
-                                        cancelable: true,
-                                        view: window
-                                    });
-                                    taskNameCell.dispatchEvent(dblClickEvent);
-                                    
-                                    setTimeout(function() {
-                                        var input = document.querySelector('.e-treegrid .e-rowcell input');
-                                        if (input) {
-                                            input.value = '';
-                                            input.focus();
-                                            input.select();
-                                            console.log('✅ Campo focado via duplo clique simulado');
-                                        }
-                                    }, 200);
-                                }
-                            }
-                        }, 300);
+        console.log('Reconfigurando edição após limpar...');
+        
+        // Reconfigurar editSettings do Gantt
+        if (ganttChart.editSettings) {
+            ganttChart.editSettings.allowEditing = true;
+            ganttChart.editSettings.allowAdding = true;
+            ganttChart.editSettings.allowDeleting = true;
+            ganttChart.editSettings.allowTaskbarEditing = true;
+            ganttChart.editSettings.mode = 'Cell';
+        }
+        
+        // Reconfigurar TreeGrid editSettings
+        if (ganttChart.treeGrid) {
+            ganttChart.treeGrid.editSettings = ganttChart.treeGrid.editSettings || {};
+            ganttChart.treeGrid.editSettings.allowEditing = true;
+            ganttChart.treeGrid.editSettings.allowAdding = true;
+            ganttChart.treeGrid.editSettings.allowDeleting = true;
+            ganttChart.treeGrid.editSettings.mode = 'Cell';
+            
+            // Reconfigurar colunas como editáveis
+            if (ganttChart.treeGrid.columns) {
+                ganttChart.treeGrid.columns.forEach(function(col) {
+                    if (col.field === 'TaskName' || col.field === 'Duration' || col.field === 'StartDate' || 
+                        col.field === 'EndDate' || col.field === 'Progress' || col.field === 'Predecessor') {
+                        col.allowEditing = true;
                     }
-                }, 200);
-            } catch (error) {
-                console.error('Erro ao iniciar edição:', error);
+                });
             }
-        }, 800);
-
+        }
+        
+        // Reconfigurar colunas do Gantt
+        if (ganttChart.columns) {
+            ganttChart.columns.forEach(function(col) {
+                if (col.field === 'TaskName' || col.field === 'Duration' || col.field === 'StartDate' || 
+                    col.field === 'EndDate' || col.field === 'Progress' || col.field === 'Predecessor') {
+                    col.allowEditing = true;
+                }
+            });
+        }
+        
+        // Forçar refresh das configurações
+        if (ganttChart.refresh) {
+            setTimeout(function() {
+                ganttChart.refresh();
+                console.log('✅ Configurações de edição reestabelecidas');
+            }, 100);
+        }
+        
     } catch (error) {
-        console.error('Erro ao criar nova tarefa após limpar:', error);
+        console.error('Erro ao reconfigurar edição:', error);
     }
 }
 
