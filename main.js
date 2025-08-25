@@ -626,7 +626,7 @@ function createNewTaskInEdit() {
         // Criar nova tarefa com dados básicos
         var newTask = {
             TaskID: nextTaskId,
-            TaskName: 'Nova Tarefa',
+            TaskName: '',  // Nome vazio para forçar edição
             StartDate: startDate,
             Duration: 1,
             Progress: 0,
