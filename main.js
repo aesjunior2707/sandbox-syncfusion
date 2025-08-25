@@ -791,6 +791,16 @@ function setupEnterKeyEditing() {
 
                     console.log('🔍 GLOBAL DEBUG EDIÇÃO:', !!isEditing);
 
+                    // Verificar cenário de linha única
+                    var domRows = document.querySelectorAll('.e-treegrid .e-row');
+                    console.log('🔍 GLOBAL: Linhas no DOM:', domRows.length);
+
+                    // Se há apenas uma linha e não temos seleção, forçar primeira linha
+                    if (!isEditing && currentSelectedRowIndex < 0 && domRows.length === 1) {
+                        currentSelectedRowIndex = 0;
+                        console.log('🎯 GLOBAL: Linha única detectada, forçando seleção da linha 0');
+                    }
+
                     if (!isEditing && currentSelectedRowIndex >= 0) {
                         console.log('🎯 GLOBAL: Linha selecionada disponível:', currentSelectedRowIndex);
 
@@ -1096,7 +1106,7 @@ window.debugQuick = function() {
             if (method.value) {
                 console.log('✅', method.name + ':', method.value.length, 'itens');
                 if (method.value.length > 0) {
-                    console.log('  └─��� Primeira tarefa:', method.value[0].TaskName);
+                    console.log('  └── Primeira tarefa:', method.value[0].TaskName);
                 }
             } else {
                 console.log('❌', method.name + ':', 'não disponível');
