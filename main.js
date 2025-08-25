@@ -1313,7 +1313,7 @@ window.checkEditConfiguration = function() {
         return;
     }
 
-    console.log('📋 CONFIGURAÇÕES ATUAIS:');
+    console.log('���� CONFIGURAÇÕES ATUAIS:');
 
     // Verificar editSettings
     if (ganttChart.editSettings) {
@@ -1568,13 +1568,18 @@ if (ganttChart) {
             console.log('- testEditCurrentRow() - Testar edição');
             console.log('- testSingleRowEdit() - Testar linha única');
             console.log('- forceEditRow(index) - Forçar edição com múltiplas abordagens');
+            console.log('- checkEditConfiguration() - Verificar configurações de edição');
+            console.log('- fixEditConfiguration() - Corrigir configurações de edição');
             console.log('- forceSingleRowSetup() - Forçar setup linha única');
             console.log('- inspectGanttProperties() - Inspeção completa');
             console.log('- checkEditState() - Verificar estado de edição');
             console.log('- resetGanttState() - Reset completo');
             console.log('📋 COMO USAR: Clique em uma linha e pressione Enter para editar');
             console.log('🎯 LINHA ÚNICA: Se há apenas uma tarefa, ela será configurada automaticamente');
-            console.log('🆘 SE NÃO FUNCIONAR: forceEditRow() - força edição usando duplo clique');
+            console.log('🆘 SE NÃO FUNCIONAR:');
+            console.log('  1. checkEditConfiguration() - verificar configurações');
+            console.log('  2. fixEditConfiguration() - corrigir configurações');
+            console.log('  3. forceEditRow() - forçar edição com duplo clique');
         }, 1000);
 
     } catch (error) {
