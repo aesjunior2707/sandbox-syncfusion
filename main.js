@@ -245,7 +245,7 @@ function parsePredecessors(predecessorString) {
         return '';
     }
 
-    // Remove espaços e quebra em vírgulas
+    // Remove espa��os e quebra em vírgulas
     var predecessorIds = predecessorString.split(',').map(function(id) { return id.trim(); }).filter(function(id) { return id !== ''; });
 
     // Aplica a regra FS a cada predecessor se não estiver especificada
@@ -1102,7 +1102,7 @@ window.inspectGanttProperties = function() {
         var value = ganttChart[prop];
         console.log('- ' + prop + ':', !!value, typeof value);
         if (Array.isArray(value)) {
-            console.log('  └── length:', value.length);
+            console.log('  └─�� length:', value.length);
             if (value.length > 0) {
                 console.log('  └── primeiro item:', value[0]);
             }
@@ -1510,7 +1510,7 @@ window.forceEditRow = function(rowIndex) {
         try {
             if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
                 ganttChart.treeGrid.editCell(rowIndex, 'TaskName');
-                console.log('✅ treeGrid.editCell executado com prote��ão');
+                console.log('✅ treeGrid.editCell executado com proteção');
             }
         } catch (error) {
             console.log('❌ Erro no método 2:', error);
@@ -1581,7 +1581,7 @@ if (ganttChart) {
         setTimeout(function() {
             var domRows = document.querySelectorAll('.e-treegrid .e-row');
             if (domRows.length === 1 && currentSelectedRowIndex < 0) {
-                console.log('🔄 VERIFICAÇÃO TARDIA: Configurando linha única...');
+                console.log('🔄 VERIFICAÇÃO TARDIA: Configurando linha ��nica...');
                 currentSelectedRowIndex = 0;
 
                 // Tentar garantir que a linha esteja selecionada
@@ -1597,7 +1597,10 @@ if (ganttChart) {
         // Mostrar instruções de debug
         setTimeout(function() {
             console.log('🎯 GANTT CHART CARREGADO COM SUCESSO!');
-            console.log('💡 FUNÇÕES DE DEBUG DISPONÍVEIS:');
+            console.log('💡 FUNÇÃO DE CORREÇÃO AUTOMÁTICA:');
+            console.log('🩺 diagnoseAndFix() - Diagnostica e corrige automaticamente todos os problemas');
+            console.log('');
+            console.log('💡 OUTRAS FUNÇÕES DE DEBUG DISPONÍVEIS:');
             console.log('- debugQuick() - Debug rápido');
             console.log('- testEditCurrentRow() - Testar edição');
             console.log('- testSingleRowEdit() - Testar linha única');
@@ -1610,10 +1613,7 @@ if (ganttChart) {
             console.log('- resetGanttState() - Reset completo');
             console.log('📋 COMO USAR: Clique em uma linha e pressione Enter para editar');
             console.log('🎯 LINHA ÚNICA: Se há apenas uma tarefa, ela será configurada automaticamente');
-            console.log('🆘 SE NÃO FUNCIONAR:');
-            console.log('  1. checkEditConfiguration() - verificar configurações');
-            console.log('  2. fixEditConfiguration() - corrigir configurações');
-            console.log('  3. forceEditRow() - forçar edição com duplo clique');
+            console.log('🆘 SE NÃO FUNCIONAR: diagnoseAndFix() - resolve automaticamente!');
         }, 1000);
 
     } catch (error) {
