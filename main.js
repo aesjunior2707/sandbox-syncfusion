@@ -56,7 +56,7 @@ try {
         duration: 'Duration',
         progress: 'Progress',
         dependency: 'Predecessor',
-        child: 'subtasks',
+        child: 'subtasks'
     },
     allowSorting: true,
     allowSelection: true,
@@ -139,32 +139,6 @@ try {
         if (args.rowIndex === currentSelectedRowIndex) {
             currentSelectedRowIndex = -1;
             console.log('Linha desselecionada:', args.rowIndex);
-        }
-    },
-
-    actionBegin: function (args) {
-        // Processa predecessores antes de salvar
-        if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
-            var originalValue = args.data.Predecessor;
-
-            // Validar predecessores
-            var validation = validatePredecessors(originalValue, args.data.TaskID);
-            if (!validation.isValid) {
-                args.cancel = true;
-                alert('Erro nos predecessores: ' + validation.message);
-                return;
-            }
-
-            // Processar predecessores com regra FS
-            var processedPredecessors = parsePredecessors(originalValue);
-            args.data.Predecessor = processedPredecessors;
-
-            console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
-        }
-
-        // Respeitar links de predecessores durante validação
-        if (args.requestType === 'validateLinkedTask') {
-            args.validateMode = { respectLink: true };
         }
     },
 
@@ -380,8 +354,7 @@ function clearAllTasks() {
             var msgs = getMessages(currentLanguage);
             console.error('Erro ao limpar tasks:', error);
             alert(msgs.clearError + error.message);
-            }
-        }, 800);
+        }
     } else {
         var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
         var msgs = getMessages(currentLanguage);
