@@ -503,7 +503,7 @@ function restoreDefaultTasks() {
 var currentSelectedRowIndex = -1;
 
 
-// Função utilitária para focar no campo TaskName após iniciar edição
+// Função utilitária para focar no campo TaskName após iniciar ediç��o
 function focusTaskNameField() {
     setTimeout(function() {
         var taskNameInput = document.querySelector('.e-treegrid .e-rowcell input');
@@ -628,27 +628,29 @@ if (ganttChart) {
     }
 }
 
-// Função simples para testar edição (pode ser chamada no console)
-window.testEdit = function() {
-    console.log('Testando edição...');
-    if (currentSelectedRowIndex >= 0) {
-        try {
-            ganttChart.treeGrid.editCell(currentSelectedRowIndex, 'TaskName');
-            console.log('Edição iniciada para linha:', currentSelectedRowIndex);
-        } catch (error) {
-            console.log('Erro ao iniciar edição:', error);
-        }
-    } else {
-        console.log('Nenhuma linha selecionada. Clique em uma linha primeiro.');
-    }
-};
-
 // Configurar função dataBound
 if (ganttChart) {
     ganttChart.dataBound = function() {
         try {
             if (!ganttChart.isInitialLoad) {
                 ganttChart.isInitialLoad = true;
+
+                // Garantir configurações de edição
+                if (ganttChart.treeGrid) {
+                    ganttChart.treeGrid.editSettings = ganttChart.treeGrid.editSettings || {};
+                    ganttChart.treeGrid.editSettings.allowEditing = true;
+                    ganttChart.treeGrid.editSettings.allowAdding = true;
+                    ganttChart.treeGrid.editSettings.mode = 'Cell';
+                }
+
+                // Garantir que colunas são editáveis
+                if (ganttChart.columns) {
+                    ganttChart.columns.forEach(function(col) {
+                        if (col.field === 'TaskName' || col.field === 'Duration' || col.field === 'StartDate' || col.field === 'EndDate' || col.field === 'Progress' || col.field === 'Predecessor') {
+                            col.allowEditing = true;
+                        }
+                    });
+                }
 
                 // Inicializar textos dos botões com idioma padrão
                 var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
@@ -661,6 +663,8 @@ if (ganttChart) {
                         ganttChart.fitToProject();
                     }
                 }, 100);
+
+                console.log('Gantt carregado - edição habilitada');
             }
         } catch (error) {
             console.error('Erro na função dataBound:', error);
