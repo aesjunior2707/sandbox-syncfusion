@@ -245,7 +245,7 @@ function parsePredecessors(predecessorString) {
         return '';
     }
 
-    // Remove espa��os e quebra em vírgulas
+    // Remove espaços e quebra em vírgulas
     var predecessorIds = predecessorString.split(',').map(function(id) { return id.trim(); }).filter(function(id) { return id !== ''; });
 
     // Aplica a regra FS a cada predecessor se não estiver especificada
@@ -647,39 +647,64 @@ function setupEnterKeyEditing() {
                             }
                         }
 
-                        // Verificar se temos dados válidos com múltiplas tentativas
+                        // Verificar se temos dados válidos com mapeamento correto para hierarquia
                         var dataSource = null;
                         var dataLength = 0;
+                        var actualTaskData = null;
 
-                        // Método 1: dataSource direto
-                        if (ganttChart && ganttChart.dataSource) {
-                            dataSource = ganttChart.dataSource;
-                            dataLength = dataSource.length;
-                            console.log('📊 Método 1 - dataSource direto:', dataLength, 'itens');
-                        }
+                        console.log('🔍 MAPEAMENTO HIERÁRQUICO:');
+                        console.log('- targetRowIndex (visual):', targetRowIndex);
 
-                        // Método 2: treeGrid dataSource
-                        if ((!dataSource || dataLength === 0) && ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.dataSource) {
-                            dataSource = ganttChart.treeGrid.dataSource;
-                            dataLength = dataSource.length;
-                            console.log('📊 Método 2 - treeGrid dataSource:', dataLength, 'itens');
-                        }
-
-                        // Método 3: getCurrentViewRecords
-                        if ((!dataSource || dataLength === 0) && ganttChart && ganttChart.getCurrentViewRecords) {
-                            dataSource = ganttChart.getCurrentViewRecords();
-                            dataLength = dataSource ? dataSource.length : 0;
-                            console.log('📊 Método 3 - getCurrentViewRecords:', dataLength, 'itens');
-                        }
-
-                        // Método 4: flatData
-                        if ((!dataSource || dataLength === 0) && ganttChart && ganttChart.flatData) {
+                        // Método PREFERIDO: usar flatData para hierarquia
+                        if (ganttChart && ganttChart.flatData) {
                             dataSource = ganttChart.flatData;
                             dataLength = dataSource ? dataSource.length : 0;
-                            console.log('📊 Método 4 - flatData:', dataLength, 'itens');
+                            console.log('📊 Método HIERÁRQUICO - flatData:', dataLength, 'itens');
+
+                            if (targetRowIndex >= 0 && targetRowIndex < dataLength) {
+                                actualTaskData = dataSource[targetRowIndex];
+                                console.log('✅ Dados encontrados via flatData:', actualTaskData.TaskName);
+                            }
                         }
 
-                        if (targetRowIndex >= 0 && dataSource && targetRowIndex < dataLength) {
+                        // Método ALTERNATIVO: usar treeGrid getCurrentViewRecords
+                        if (!actualTaskData && ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.getCurrentViewRecords) {
+                            try {
+                                var viewRecords = ganttChart.treeGrid.getCurrentViewRecords();
+                                if (viewRecords && targetRowIndex < viewRecords.length) {
+                                    actualTaskData = viewRecords[targetRowIndex];
+                                    console.log('✅ Dados encontrados via treeGrid.getCurrentViewRecords:', actualTaskData.TaskName);
+                                }
+                            } catch (error) {
+                                console.log('⚠️ Erro ao acessar getCurrentViewRecords:', error);
+                            }
+                        }
+
+                        // Método FALLBACK: mapear através do DOM
+                        if (!actualTaskData) {
+                            console.log('🔧 FALLBACK: Tentando mapear via DOM...');
+                            var domRows = document.querySelectorAll('.e-treegrid .e-row');
+                            if (targetRowIndex < domRows.length) {
+                                var targetRow = domRows[targetRowIndex];
+                                var taskNameCell = targetRow.querySelector('.e-treecell');
+                                if (taskNameCell) {
+                                    var taskNameFromDOM = taskNameCell.textContent.trim();
+                                    console.log('📋 Nome da tarefa do DOM:', taskNameFromDOM);
+
+                                    // Tentar encontrar tarefa nos dados por nome
+                                    if (ganttChart.flatData) {
+                                        actualTaskData = ganttChart.flatData.find(function(item) {
+                                            return item.TaskName === taskNameFromDOM;
+                                        });
+                                        if (actualTaskData) {
+                                            console.log('✅ Tarefa encontrada por nome:', actualTaskData.TaskID);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (actualTaskData) {
                             taskData = dataSource[targetRowIndex];
                             var taskId = taskData.TaskID;
 
@@ -1102,7 +1127,7 @@ window.inspectGanttProperties = function() {
         var value = ganttChart[prop];
         console.log('- ' + prop + ':', !!value, typeof value);
         if (Array.isArray(value)) {
-            console.log('  └─�� length:', value.length);
+            console.log('  └── length:', value.length);
             if (value.length > 0) {
                 console.log('  └── primeiro item:', value[0]);
             }
@@ -1574,14 +1599,14 @@ if (ganttChart) {
         // Configurar event listener para Enter
         setupEnterKeyEditing();
 
-        // Configurar linha única se necessário
+        // Configurar linha única se necess��rio
         setupSingleRowForEdit();
 
         // Verificação adicional após mais tempo
         setTimeout(function() {
             var domRows = document.querySelectorAll('.e-treegrid .e-row');
             if (domRows.length === 1 && currentSelectedRowIndex < 0) {
-                console.log('🔄 VERIFICAÇÃO TARDIA: Configurando linha ��nica...');
+                console.log('🔄 VERIFICAÇÃO TARDIA: Configurando linha única...');
                 currentSelectedRowIndex = 0;
 
                 // Tentar garantir que a linha esteja selecionada
