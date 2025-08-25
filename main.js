@@ -687,7 +687,7 @@ function createNewTaskInEdit() {
         // Criar nova tarefa com dados básicos
         var newTask = {
             TaskID: nextTaskId,
-            TaskName: 'Nova Tarefa',  // Nome padrão para evitar problemas
+            TaskName: 'Nova Tarefa',
             StartDate: startDate,
             Duration: 1,
             Progress: 0,
@@ -696,67 +696,16 @@ function createNewTaskInEdit() {
 
         console.log('Criando nova tarefa:', newTask);
 
-        // Método mais direto: adicionar ao dataSource e refresh
-        if (ganttChart.dataSource) {
-            ganttChart.dataSource.push(newTask);
-        }
+        // Configurar flags para o evento actionComplete
+        window.shouldEditNewTask = true;
+        window.newTaskIdToEdit = nextTaskId;
 
-        // Forçar refresh completo
-        ganttChart.refresh();
-
-        console.log('Tarefa adicionada e refresh executado');
-
-        // Aguardar o refresh e então iniciar edição
-        setTimeout(function() {
-            try {
-                // Verificar se a tarefa foi realmente adicionada
-                var totalAfter = ganttChart.flatData ? ganttChart.flatData.length : ganttChart.dataSource.length;
-                console.log('Total de tarefas após adição:', totalAfter);
-
-                // Obter o índice da nova linha (última linha)
-                var newRowIndex = totalAfter - 1;
-
-                if (newRowIndex >= 0) {
-                    console.log('Iniciando edição na linha:', newRowIndex);
-
-                    // Atualizar seleção
-                    currentSelectedRowIndex = newRowIndex;
-
-                    // Selecionar a linha
-                    if (ganttChart.selectRow) {
-                        ganttChart.selectRow(newRowIndex);
-                    }
-
-                    // Aguardar um pouco mais e iniciar edição
-                    setTimeout(function() {
-                        try {
-                            if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
-                                ganttChart.treeGrid.editCell(newRowIndex, 'TaskName');
-                                console.log('✅ Edição iniciada para nova tarefa');
-
-                                // Limpar o campo para permitir entrada de novo nome
-                                setTimeout(function() {
-                                    var input = document.querySelector('.e-treegrid .e-rowcell input');
-                                    if (input) {
-                                        input.value = '';
-                                        input.focus();
-                                        input.select();
-                                        console.log('✅ Campo limpo e focado');
-                                    }
-                                }, 150);
-                            }
-                        } catch (editError) {
-                            console.log('Erro ao iniciar edição:', editError);
-                        }
-                    }, 500);
-                }
-            } catch (error) {
-                console.log('Erro no processo de edição:', error);
-            }
-        }, 800);
+        // Usar o método oficial do Gantt para adicionar tarefa
+        ganttChart.addRecord(newTask);
 
     } catch (error) {
         console.log('Erro ao criar nova tarefa:', error);
+        window.shouldEditNewTask = false;
     }
 }
 
