@@ -256,6 +256,67 @@ function getAllTaskIds() {
     return taskIds;
 }
 
+// Função para limpar todas as tasks do data source
+function clearAllTasks() {
+    if (ganttChart) {
+        try {
+            // Confirmar ação com o usuário
+            var confirmClear = confirm('Tem certeza que deseja limpar todas as tarefas? Esta ação não pode ser desfeita.');
+
+            if (confirmClear) {
+                // Limpar o data source
+                ganttChart.dataSource = [];
+
+                // Atualizar o componente
+                ganttChart.refresh();
+
+                console.log('Todas as tarefas foram removidas do data source');
+                alert('Todas as tarefas foram removidas com sucesso!');
+            }
+        } catch (error) {
+            console.error('Erro ao limpar tasks:', error);
+            alert('Erro ao limpar tarefas: ' + error.message);
+        }
+    } else {
+        console.error('Gantt Chart não está inicializado');
+        alert('Gantt Chart não está disponível');
+    }
+}
+
+// Função para restaurar dados padrão baseado no idioma atual
+function restoreDefaultTasks() {
+    if (ganttChart) {
+        try {
+            // Obter idioma atual do seletor
+            var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+
+            // Confirmar ação com o usuário
+            var confirmRestore = confirm('Deseja restaurar os dados padrão do projeto?');
+
+            if (confirmRestore) {
+                // Restaurar dados padrão
+                ganttChart.dataSource = getProjectDataByLocale(currentLanguage);
+
+                // Atualizar o componente
+                ganttChart.refresh();
+
+                // Ajustar zoom após carregar dados
+                setTimeout(function() {
+                    if (ganttChart && ganttChart.fitToProject) {
+                        ganttChart.fitToProject();
+                    }
+                }, 200);
+
+                console.log('Dados padrão restaurados para idioma:', currentLanguage);
+                alert('Dados padrão restaurados com sucesso!');
+            }
+        } catch (error) {
+            console.error('Erro ao restaurar dados padrão:', error);
+            alert('Erro ao restaurar dados: ' + error.message);
+        }
+    }
+}
+
 // Adicionar o Gantt ao DOM
 if (ganttChart) {
     try {
