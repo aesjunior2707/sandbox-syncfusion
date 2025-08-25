@@ -353,7 +353,7 @@ function clearAllTasks() {
                                     return;
                                 }
 
-                                console.log('Tentando iniciar ediç��o. Linhas disponíveis:', ganttChart.dataSource.length);
+                                console.log('Tentando iniciar edição. Linhas disponíveis:', ganttChart.dataSource.length);
 
                                 // Método correto 1: usar treeGrid.editCell para editar célula específica
                                 if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
@@ -552,14 +552,17 @@ function setupEnterKeyEditing() {
                                     // Método 1: Editar célula TaskName
                                     ganttChart.treeGrid.editCell(rowIndexToEdit, 'TaskName');
                                     console.log('Edição iniciada via treeGrid.editCell');
+                                    focusTaskNameField();
                                 } else if (ganttChart.startEdit && taskId) {
                                     // Método 2: Iniciar edição por TaskID
                                     ganttChart.startEdit(taskId);
                                     console.log('Edição iniciada via startEdit');
+                                    focusTaskNameField();
                                 } else if (ganttChart.beginEdit && taskData) {
                                     // Método 3: Iniciar edição por record
                                     ganttChart.beginEdit(taskData);
                                     console.log('Edição iniciada via beginEdit');
+                                    focusTaskNameField();
                                 }
                             } else {
                                 console.log('Nenhuma linha válida selecionada para edição');
