@@ -631,10 +631,12 @@ function setupEnterKeyEditing() {
                             }
 
                             if (editSuccess) {
+                                console.log('🎉 SUCESSO! Edição iniciada com sucesso!');
                                 // Focar campo TaskName
                                 focusTaskNameField();
                             } else {
-                                console.log('❌ Nenhum método de edição funcionou');
+                                console.log('💥 FALHA TOTAL! Nenhum método de edição funcionou');
+                                console.log('🆘 Tente usar: forceExitEditMode() e depois testEditCurrentRow()');
                             }
                         } else {
                             console.log('❌ Linha inválida ou sem dados:');
@@ -755,7 +757,7 @@ window.testEditCurrentRow = function() {
     }
 };
 
-// Função para sair do modo de edição forçadamente (pode ser chamada no console)
+// Função para sair do modo de edição for��adamente (pode ser chamada no console)
 window.forceExitEditMode = function() {
     console.log('🚫 FORÇANDO SAÍDA DO MODO DE EDIÇÃO');
 
