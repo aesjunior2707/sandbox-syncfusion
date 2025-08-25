@@ -320,7 +320,7 @@ function getMessages(locale) {
             newTaskName: 'New Task'
         },
         'pt-BR': {
-            confirmClear: 'Tem certeza que deseja limpar todas as tarefas? Esta aç��o não pode ser desfeita.',
+            confirmClear: 'Tem certeza que deseja limpar todas as tarefas? Esta ação não pode ser desfeita.',
             confirmRestore: 'Deseja restaurar os dados padrão do projeto?',
             clearSuccess: 'Todas as tarefas foram removidas com sucesso!',
             restoreSuccess: 'Dados padrão restaurados com sucesso!',
@@ -644,15 +644,8 @@ function setupEnterKeyEditing() {
                         return; // Deixar comportamento padrão se já editando
                     }
 
-                    // Verificar se está na última linha
-                    var totalRows = 0;
-                    if (ganttChart && ganttChart.flatData) {
-                        totalRows = ganttChart.flatData.length;
-                    } else if (ganttChart && ganttChart.dataSource) {
-                        totalRows = ganttChart.dataSource.length;
-                    }
-
-                    if (currentSelectedRowIndex >= 0 && currentSelectedRowIndex === totalRows - 1) {
+                    // Verificar se está na última linha visível
+                    if (currentSelectedRowIndex >= 0 && isLastVisibleRow()) {
                         event.preventDefault();
                         event.stopPropagation();
 
