@@ -256,12 +256,50 @@ function getAllTaskIds() {
     return taskIds;
 }
 
+// Função para obter mensagens traduzidas
+function getMessages(locale) {
+    const messages = {
+        'en-US': {
+            confirmClear: 'Are you sure you want to clear all tasks? This action cannot be undone.',
+            confirmRestore: 'Do you want to restore the default project data?',
+            clearSuccess: 'All tasks have been removed successfully!',
+            restoreSuccess: 'Default data restored successfully!',
+            clearError: 'Error clearing tasks: ',
+            restoreError: 'Error restoring data: ',
+            ganttNotAvailable: 'Gantt Chart is not available'
+        },
+        'pt-BR': {
+            confirmClear: 'Tem certeza que deseja limpar todas as tarefas? Esta ação não pode ser desfeita.',
+            confirmRestore: 'Deseja restaurar os dados padrão do projeto?',
+            clearSuccess: 'Todas as tarefas foram removidas com sucesso!',
+            restoreSuccess: 'Dados padrão restaurados com sucesso!',
+            clearError: 'Erro ao limpar tarefas: ',
+            restoreError: 'Erro ao restaurar dados: ',
+            ganttNotAvailable: 'Gantt Chart não está disponível'
+        },
+        'es-ES': {
+            confirmClear: '¿Está seguro de que desea limpiar todas las tareas? Esta acción no se puede deshacer.',
+            confirmRestore: '¿Desea restaurar los datos por defecto del proyecto?',
+            clearSuccess: '¡Todas las tareas han sido eliminadas con éxito!',
+            restoreSuccess: '¡Datos por defecto restaurados con éxito!',
+            clearError: 'Error al limpiar tareas: ',
+            restoreError: 'Error al restaurar datos: ',
+            ganttNotAvailable: 'Gantt Chart no está disponible'
+        }
+    };
+    return messages[locale] || messages['en-US'];
+}
+
 // Função para limpar todas as tasks do data source
 function clearAllTasks() {
     if (ganttChart) {
         try {
+            // Obter idioma atual
+            var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+            var msgs = getMessages(currentLanguage);
+
             // Confirmar ação com o usuário
-            var confirmClear = confirm('Tem certeza que deseja limpar todas as tarefas? Esta ação não pode ser desfeita.');
+            var confirmClear = confirm(msgs.confirmClear);
 
             if (confirmClear) {
                 // Limpar o data source
@@ -271,15 +309,19 @@ function clearAllTasks() {
                 ganttChart.refresh();
 
                 console.log('Todas as tarefas foram removidas do data source');
-                alert('Todas as tarefas foram removidas com sucesso!');
+                alert(msgs.clearSuccess);
             }
         } catch (error) {
+            var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+            var msgs = getMessages(currentLanguage);
             console.error('Erro ao limpar tasks:', error);
-            alert('Erro ao limpar tarefas: ' + error.message);
+            alert(msgs.clearError + error.message);
         }
     } else {
+        var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+        var msgs = getMessages(currentLanguage);
         console.error('Gantt Chart não está inicializado');
-        alert('Gantt Chart não está disponível');
+        alert(msgs.ganttNotAvailable);
     }
 }
 
@@ -289,9 +331,10 @@ function restoreDefaultTasks() {
         try {
             // Obter idioma atual do seletor
             var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+            var msgs = getMessages(currentLanguage);
 
             // Confirmar ação com o usuário
-            var confirmRestore = confirm('Deseja restaurar os dados padrão do projeto?');
+            var confirmRestore = confirm(msgs.confirmRestore);
 
             if (confirmRestore) {
                 // Restaurar dados padrão
@@ -308,11 +351,13 @@ function restoreDefaultTasks() {
                 }, 200);
 
                 console.log('Dados padrão restaurados para idioma:', currentLanguage);
-                alert('Dados padrão restaurados com sucesso!');
+                alert(msgs.restoreSuccess);
             }
         } catch (error) {
+            var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+            var msgs = getMessages(currentLanguage);
             console.error('Erro ao restaurar dados padrão:', error);
-            alert('Erro ao restaurar dados: ' + error.message);
+            alert(msgs.restoreError + error.message);
         }
     }
 }
