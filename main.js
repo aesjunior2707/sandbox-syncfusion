@@ -566,6 +566,10 @@ function setupEnterKeyEditing() {
                         console.log('🔄 Processando Enter...');
                         console.log('currentSelectedRowIndex:', currentSelectedRowIndex);
 
+                        // Debug específico para linha única
+                        var domRows = document.querySelectorAll('.e-treegrid .e-row');
+                        console.log('🔍 CENÁRIO LINHA ÚNICA - Linhas no DOM:', domRows.length);
+
                         var targetRowIndex = -1;
                         var taskData = null;
 
@@ -637,7 +641,7 @@ function setupEnterKeyEditing() {
                             if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
                                 try {
                                     ganttChart.treeGrid.editCell(targetRowIndex, 'TaskName');
-                                    console.log('✅ Edi��ão via treeGrid.editCell');
+                                    console.log('✅ Edição via treeGrid.editCell');
                                     editSuccess = true;
                                 } catch (editError) {
                                     console.log('❌ Erro treeGrid.editCell:', editError);
