@@ -353,7 +353,7 @@ function clearAllTasks() {
                                     return;
                                 }
 
-                                console.log('Tentando iniciar edição. Linhas disponíveis:', ganttChart.dataSource.length);
+                                console.log('Tentando iniciar ediç��o. Linhas disponíveis:', ganttChart.dataSource.length);
 
                                 // Método correto 1: usar treeGrid.editCell para editar célula específica
                                 if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
@@ -468,6 +468,29 @@ function restoreDefaultTasks() {
 
 // Variável para armazenar a linha atualmente selecionada
 var currentSelectedRowIndex = -1;
+
+// Função utilitária para focar no campo TaskName após iniciar edição
+function focusTaskNameField() {
+    setTimeout(function() {
+        try {
+            var taskNameInput = document.querySelector(
+                '.e-treegrid .e-editedbatchcell input, ' +
+                '.e-treegrid .e-inline-edit input[aria-label*="Task"], ' +
+                '.e-treegrid .e-inline-edit input[name="TaskName"], ' +
+                '.e-treegrid .e-editedrow input, ' +
+                '.e-treegrid td[aria-describedby*="TaskName"] input, ' +
+                'input[aria-label*="Task Name"]'
+            );
+            if (taskNameInput) {
+                taskNameInput.focus();
+                taskNameInput.select();
+                console.log('Campo TaskName focado após Enter');
+            }
+        } catch (error) {
+            console.log('Não foi possível focar TaskName:', error);
+        }
+    }, 100);
+}
 
 // Função para configurar evento Enter para edição
 function setupEnterKeyEditing() {
