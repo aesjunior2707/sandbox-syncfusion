@@ -167,23 +167,6 @@ try {
         }
     },
 
-    actionComplete: function (args) {
-        // Log para acompanhar alterações
-        if (args.requestType === 'save' && args.data) {
-            if (args.data.Predecessor !== undefined) {
-                console.log('Predecessores salvos para tarefa', args.data.TaskID + ':', args.data.Predecessor);
-            }
-        }
-
-        // Debug para detectar cancelamento de edição
-        if (args.requestType === 'beginEdit') {
-            console.log('🎯 EVENTO: beginEdit disparado para TaskID:', args.data ? args.data.TaskID : 'N/A');
-        } else if (args.requestType === 'cancel') {
-            console.log('⚠️ EVENTO: Edição CANCELADA pelo sistema');
-        }
-    },
-
-    // EVENTO para detectar quando edição é cancelada/bloqueada
     actionBegin: function (args) {
         // Processa predecessores antes de salvar
         if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
@@ -208,12 +191,12 @@ try {
         if (args.requestType === 'validateLinkedTask') {
             args.validateMode = { respectLink: true };
         }
+    },
 
-        // Debug para edição
-        if (args.requestType === 'beginEdit') {
-            console.log('🚀 EVENTO: Tentativa de iniciar edição para TaskID:', args.data ? args.data.TaskID : 'N/A');
-        } else if (args.requestType === 'cancel') {
-            console.log('🛑 EVENTO: Sistema está tentando cancelar operação:', args.requestType);
+    actionComplete: function (args) {
+        // Log para acompanhar alterações de predecessores
+        if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
+            console.log('Predecessores salvos para tarefa', args.data.TaskID + ':', args.data.Predecessor);
         }
     }
     });
@@ -686,7 +669,7 @@ function setupEnterKeyEditing() {
                                 var taskNameCell = targetRow.querySelector('.e-treecell');
                                 if (taskNameCell) {
                                     var taskNameFromDOM = taskNameCell.textContent.trim();
-                                    console.log('📋 Nome da tarefa do DOM:', taskNameFromDOM);
+                                    console.log('���� Nome da tarefa do DOM:', taskNameFromDOM);
 
                                     // Tentar encontrar tarefa nos dados por nome
                                     if (ganttChart.flatData) {
@@ -944,7 +927,7 @@ function setupEnterKeyEditing() {
                             }
                         }
                     } else if (isEditing) {
-                        console.log('⏸️ GLOBAL: J�� em modo de edição, ignorando');
+                        console.log('⏸️ GLOBAL: Já em modo de edição, ignorando');
                     } else {
                         console.log('⏸️ GLOBAL: Nenhuma linha selecionada');
                     }
@@ -1516,7 +1499,7 @@ window.getTaskDataFromVisualRow = function(visualRowIndex) {
             var viewRecords = ganttChart.treeGrid.getCurrentViewRecords();
             if (viewRecords && visualRowIndex < viewRecords.length) {
                 taskData = viewRecords[visualRowIndex];
-                console.log('�� Método 2 - getCurrentViewRecords:', taskData.TaskName);
+                console.log('✅ Método 2 - getCurrentViewRecords:', taskData.TaskName);
                 return taskData;
             }
         } catch (error) {
@@ -1677,7 +1660,7 @@ window.forceEditRow = function(rowIndex) {
                         focusTaskNameField();
                         return;
                     } else {
-                        console.log('❌ Duplo clique não ativou edição, tentando método 2...');
+                        console.log('❌ Duplo clique não ativou edi��ão, tentando método 2...');
                         tryMethod2();
                     }
                 }, 200);
