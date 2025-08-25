@@ -266,7 +266,8 @@ function getMessages(locale) {
             restoreSuccess: 'Default data restored successfully!',
             clearError: 'Error clearing tasks: ',
             restoreError: 'Error restoring data: ',
-            ganttNotAvailable: 'Gantt Chart is not available'
+            ganttNotAvailable: 'Gantt Chart is not available',
+            newTaskName: 'New Task'
         },
         'pt-BR': {
             confirmClear: 'Tem certeza que deseja limpar todas as tarefas? Esta ação não pode ser desfeita.',
@@ -275,7 +276,8 @@ function getMessages(locale) {
             restoreSuccess: 'Dados padrão restaurados com sucesso!',
             clearError: 'Erro ao limpar tarefas: ',
             restoreError: 'Erro ao restaurar dados: ',
-            ganttNotAvailable: 'Gantt Chart não está disponível'
+            ganttNotAvailable: 'Gantt Chart não está disponível',
+            newTaskName: 'Nova Tarefa'
         },
         'es-ES': {
             confirmClear: '¿Está seguro de que desea limpiar todas las tareas? Esta acción no se puede deshacer.',
@@ -284,7 +286,8 @@ function getMessages(locale) {
             restoreSuccess: '¡Datos por defecto restaurados con éxito!',
             clearError: 'Error al limpiar tareas: ',
             restoreError: 'Error al restaurar datos: ',
-            ganttNotAvailable: 'Gantt Chart no está disponible'
+            ganttNotAvailable: 'Gantt Chart no está disponible',
+            newTaskName: 'Nueva Tarea'
         }
     };
     return messages[locale] || messages['en-US'];
