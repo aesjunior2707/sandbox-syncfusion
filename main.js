@@ -370,7 +370,7 @@ function clearAllTasks() {
                 setTimeout(function() {
                     // Reconfigurar edição após limpar
                     reconfigureEditingAfterClear();
-                    
+                }, 800);
 
                 console.log('Todas as tarefas foram removidas do data source');
                 alert(msgs.clearSuccess);
