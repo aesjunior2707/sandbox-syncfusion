@@ -769,18 +769,24 @@ function setupEnterKeyEditing() {
 
                 // Funcionalidade seta para baixo - criar nova tarefa na última linha
                 if (event.key === 'ArrowDown' || event.keyCode === 40) {
+                    console.log('Seta para baixo detectada. Linha atual:', currentSelectedRowIndex);
+
                     // Verificar se não está em modo de edição
                     var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
                     if (isInEditMode) {
+                        console.log('Em modo de edição, ignorando');
                         return; // Deixar comportamento padrão se já editando
                     }
 
                     // Verificar se está na última linha visível
-                    if (currentSelectedRowIndex >= 0 && isLastVisibleRow()) {
+                    var isLast = isLastVisibleRow();
+                    console.log('É última linha?', isLast);
+
+                    if (currentSelectedRowIndex >= 0 && isLast) {
                         event.preventDefault();
                         event.stopPropagation();
 
-                        console.log('Última linha detectada, criando nova tarefa...');
+                        console.log('🎯 Última linha detectada, criando nova tarefa...');
                         createNewTaskInEdit();
                     }
                 }
