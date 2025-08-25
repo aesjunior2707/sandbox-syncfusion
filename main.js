@@ -599,7 +599,7 @@ function setupEnterKeyEditing() {
                     if (isInEditMode) {
                         console.log('- Elemento que causa detecção:', isInEditMode);
                         console.log('Já em modo de edição, ignorando Enter');
-                        return; // Deixar comportamento padr��o
+                        return; // Deixar comportamento padrão
                     }
 
                     console.log('✅ Não está em modo de edição, prosseguindo...');
@@ -1355,6 +1355,58 @@ window.checkEditConfiguration = function() {
     }
 
     console.log('🔧 Para corrigir problemas, tente: fixEditConfiguration()');
+};
+
+// Função para corrigir configurações de edição
+window.fixEditConfiguration = function() {
+    console.log('🔧 CORRIGINDO CONFIGURAÇÕES DE EDIÇÃO');
+
+    if (!ganttChart) {
+        console.log('❌ ganttChart não disponível');
+        return;
+    }
+
+    try {
+        // Corrigir editSettings do Gantt
+        if (ganttChart.editSettings) {
+            ganttChart.editSettings.allowEditing = true;
+            ganttChart.editSettings.allowAdding = true;
+            ganttChart.editSettings.mode = 'Cell';
+            console.log('✅ editSettings do Gantt corrigido');
+        }
+
+        // Corrigir editSettings do TreeGrid
+        if (ganttChart.treeGrid) {
+            if (!ganttChart.treeGrid.editSettings) {
+                ganttChart.treeGrid.editSettings = {};
+            }
+            ganttChart.treeGrid.editSettings.allowEditing = true;
+            ganttChart.treeGrid.editSettings.allowAdding = true;
+            ganttChart.treeGrid.editSettings.mode = 'Cell';
+            console.log('✅ editSettings do TreeGrid corrigido');
+        }
+
+        // Garantir que colunas são editáveis
+        if (ganttChart.columns) {
+            ganttChart.columns.forEach(function(col) {
+                if (col.field === 'TaskName' || col.field === 'Duration' || col.field === 'StartDate') {
+                    col.allowEditing = true;
+                }
+            });
+            console.log('✅ Colunas marcadas como editáveis');
+        }
+
+        // Refresh do componente
+        if (ganttChart.refresh) {
+            ganttChart.refresh();
+            console.log('✅ Componente atualizado');
+        }
+
+        console.log('🎉 Configurações corrigidas! Tente editar novamente.');
+
+    } catch (error) {
+        console.log('❌ Erro ao corrigir configurações:', error);
+    }
 };
 
 // Função para forçar edição usando múltiplas abordagens
