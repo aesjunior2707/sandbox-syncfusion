@@ -331,6 +331,21 @@ function clearAllTasks() {
                             try {
                                 // Iniciar edição na linha recém-criada (índice 0)
                                 ganttChart.startEdit();
+
+                                // Aguardar um pouco mais para focar no campo TaskName
+                                setTimeout(function() {
+                                    try {
+                                        // Tentar focar no campo TaskName
+                                        var taskNameInput = document.querySelector('.e-treegrid .e-editedbatchcell input, .e-treegrid .e-inline-edit input[aria-label*="Task"], .e-treegrid .e-inline-edit input[name="TaskName"]');
+                                        if (taskNameInput) {
+                                            taskNameInput.focus();
+                                            taskNameInput.select(); // Selecionar o texto para facilitar edição
+                                        }
+                                    } catch (focusError) {
+                                        console.log('Não foi possível focar no campo TaskName automaticamente:', focusError);
+                                    }
+                                }, 100);
+
                                 console.log('Nova linha criada e colocada em modo de edição');
                             } catch (editError) {
                                 console.error('Erro ao iniciar edição:', editError);
