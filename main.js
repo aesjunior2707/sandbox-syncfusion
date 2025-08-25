@@ -599,7 +599,7 @@ function setupEnterKeyEditing() {
                     if (isInEditMode) {
                         console.log('- Elemento que causa detecção:', isInEditMode);
                         console.log('Já em modo de edição, ignorando Enter');
-                        return; // Deixar comportamento padrão
+                        return; // Deixar comportamento padr��o
                     }
 
                     console.log('✅ Não está em modo de edição, prosseguindo...');
@@ -885,7 +885,7 @@ function setupEnterKeyEditing() {
                     }
 
                     if (!isEditing && currentSelectedRowIndex >= 0) {
-                        console.log('���� GLOBAL: Linha selecionada disponível:', currentSelectedRowIndex);
+                        console.log('🎯 GLOBAL: Linha selecionada disponível:', currentSelectedRowIndex);
 
                         // Usar mesma lógica de acesso a dados do event listener principal
                         var dataSource = null;
@@ -1209,7 +1209,7 @@ window.debugQuick = function() {
 function setupSingleRowForEdit() {
     setTimeout(function() {
         var domRows = document.querySelectorAll('.e-treegrid .e-row');
-        console.log('�� SETUP LINHA ÚNICA: Verificando cenário...');
+        console.log('🔍 SETUP LINHA ÚNICA: Verificando cenário...');
         console.log('- Linhas no DOM:', domRows.length);
         console.log('- currentSelectedRowIndex:', currentSelectedRowIndex);
 
@@ -1302,6 +1302,59 @@ window.testSingleRowEdit = function() {
     }
 
     console.log('💥 Todos os métodos falharam');
+};
+
+// Função para verificar configurações que podem estar bloqueando edição
+window.checkEditConfiguration = function() {
+    console.log('🔍 VERIFICANDO CONFIGURAÇÕES DE EDIÇÃO');
+
+    if (!ganttChart) {
+        console.log('❌ ganttChart não disponível');
+        return;
+    }
+
+    console.log('📋 CONFIGURAÇÕES ATUAIS:');
+
+    // Verificar editSettings
+    if (ganttChart.editSettings) {
+        console.log('✅ editSettings encontrado:');
+        console.log('  - allowEditing:', ganttChart.editSettings.allowEditing);
+        console.log('  - allowAdding:', ganttChart.editSettings.allowAdding);
+        console.log('  - mode:', ganttChart.editSettings.mode);
+        console.log('  - allowTaskbarEditing:', ganttChart.editSettings.allowTaskbarEditing);
+    } else {
+        console.log('❌ editSettings não encontrado');
+    }
+
+    // Verificar se TreeGrid tem configurações de edição
+    if (ganttChart.treeGrid && ganttChart.treeGrid.editSettings) {
+        console.log('✅ treeGrid.editSettings encontrado:');
+        console.log('  - allowEditing:', ganttChart.treeGrid.editSettings.allowEditing);
+        console.log('  - mode:', ganttChart.treeGrid.editSettings.mode);
+    } else {
+        console.log('⚠️ treeGrid.editSettings não encontrado');
+    }
+
+    // Verificar propriedades de edição
+    var editProps = ['isEdit', 'allowEditing', 'readonly'];
+    editProps.forEach(function(prop) {
+        if (ganttChart.hasOwnProperty(prop)) {
+            console.log('📌 ganttChart.' + prop + ':', ganttChart[prop]);
+        }
+        if (ganttChart.treeGrid && ganttChart.treeGrid.hasOwnProperty(prop)) {
+            console.log('📌 treeGrid.' + prop + ':', ganttChart.treeGrid[prop]);
+        }
+    });
+
+    // Verificar colunas editáveis
+    if (ganttChart.columns) {
+        console.log('📋 COLUNAS EDITÁVEIS:');
+        ganttChart.columns.forEach(function(col, index) {
+            console.log('  - Coluna ' + index + ' (' + col.field + '): allowEditing =', col.allowEditing);
+        });
+    }
+
+    console.log('🔧 Para corrigir problemas, tente: fixEditConfiguration()');
 };
 
 // Função para forçar edição usando múltiplas abordagens
