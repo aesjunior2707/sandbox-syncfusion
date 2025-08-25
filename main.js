@@ -544,6 +544,10 @@ function setupEnterKeyEditing() {
                     }
 
                     try {
+                        // Debug info antes de processar
+                        console.log('Enter pressionado - iniciando debug...');
+                        debugRowInfo();
+
                         var targetRow = null;
                         var targetRowIndex = -1;
 
@@ -551,6 +555,7 @@ function setupEnterKeyEditing() {
                         var targetCell = event.target.closest('.e-treegrid .e-rowcell');
                         if (targetCell) {
                             targetRow = targetCell.closest('.e-row');
+                            console.log('Método 1: Célula encontrada');
                         }
 
                         // Método 2: Se não temos célula específica, usar linha com foco
