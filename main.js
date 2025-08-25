@@ -374,7 +374,7 @@ function clearAllTasks() {
                                 // Aguardar um pouco mais para focar no campo TaskName
                                 setTimeout(function() {
                                     try {
-                                        // Tentar focar no campo TaskName com m��ltiplos seletores
+                                        // Tentar focar no campo TaskName com múltiplos seletores
                                         var taskNameInput = document.querySelector(
                                             '.e-treegrid .e-editedbatchcell input, ' +
                                             '.e-treegrid .e-inline-edit input[aria-label*="Task"], ' +
@@ -447,7 +447,7 @@ function restoreDefaultTasks() {
                 // Atualizar o componente
                 ganttChart.refresh();
 
-                // Ajustar zoom após carregar dados
+                // Ajustar zoom ap��s carregar dados
                 setTimeout(function() {
                     if (ganttChart && ganttChart.fitToProject) {
                         ganttChart.fitToProject();
@@ -477,9 +477,16 @@ function setupEnterKeyEditing() {
             // Adicionar event listener para tecla Enter no container do Gantt
             var ganttElement = document.getElementById('Gantt');
             if (ganttElement) {
+                // Event listener para keydown
                 ganttElement.addEventListener('keydown', function(event) {
                     // Verificar se Enter foi pressionado
                     if (event.key === 'Enter' || event.keyCode === 13) {
+                        // Verificar se não estamos já em modo de edição
+                        var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
+                        if (isInEditMode) {
+                            // Se já estamos editando, deixar o comportamento padrão
+                            return;
+                        }
                         try {
                             var rowIndexToEdit = -1;
                             var taskData = null;
