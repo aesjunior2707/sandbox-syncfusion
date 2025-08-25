@@ -583,6 +583,9 @@ function changeLanguage(newLocale) {
             // Atualizar colunas com novos textos
             updateColumnHeaders(newLocale);
 
+            // Atualizar textos dos botões de controle
+            updateButtonTexts(newLocale);
+
             // Refresh do componente para aplicar mudanças
             ganttChart.refresh();
 
