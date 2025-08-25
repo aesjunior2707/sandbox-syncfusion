@@ -825,7 +825,7 @@ function setupEnterKeyEditing() {
                         if (dataSource && currentSelectedRowIndex < dataLength) {
                             var taskData = dataSource[currentSelectedRowIndex];
 
-                            console.log('🚀 GLOBAL: Iniciando edi��ão da linha:', currentSelectedRowIndex, 'TaskName:', taskData.TaskName);
+                            console.log('🚀 GLOBAL: Iniciando edição da linha:', currentSelectedRowIndex, 'TaskName:', taskData.TaskName);
 
                             event.preventDefault();
                             event.stopPropagation();
@@ -941,7 +941,7 @@ window.testEditCurrentRow = function() {
 
 // Função para sair do modo de edição forçadamente (pode ser chamada no console)
 window.forceExitEditMode = function() {
-    console.log('🚫 FORÇANDO SAÍDA DO MODO DE EDIÇÃO');
+    console.log('��� FORÇANDO SAÍDA DO MODO DE EDIÇÃO');
 
     try {
         // Cancelar edição no TreeGrid
@@ -1233,6 +1233,9 @@ if (ganttChart) {
 
         // Configurar event listener para Enter
         setupEnterKeyEditing();
+
+        // Configurar linha única se necessário
+        setupSingleRowForEdit();
 
         // Mostrar instruções de debug
         setTimeout(function() {
