@@ -330,6 +330,14 @@ function clearAllTasks() {
                         // Aguardar um pouco mais e então iniciar edição na primeira linha
                         setTimeout(function() {
                             try {
+                                // Verificar se a linha foi realmente adicionada
+                                if (!ganttChart.dataSource || ganttChart.dataSource.length === 0) {
+                                    console.log('Nenhuma linha encontrada para editar');
+                                    return;
+                                }
+
+                                console.log('Tentando iniciar edição. Linhas disponíveis:', ganttChart.dataSource.length);
+
                                 // Método correto 1: usar treeGrid.editCell para editar célula específica
                                 if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
                                     ganttChart.treeGrid.editCell(0, 'TaskName');
