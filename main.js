@@ -885,7 +885,7 @@ function setupEnterKeyEditing() {
                     }
 
                     if (!isEditing && currentSelectedRowIndex >= 0) {
-                        console.log('🎯 GLOBAL: Linha selecionada disponível:', currentSelectedRowIndex);
+                        console.log('���� GLOBAL: Linha selecionada disponível:', currentSelectedRowIndex);
 
                         // Usar mesma lógica de acesso a dados do event listener principal
                         var dataSource = null;
@@ -1209,7 +1209,7 @@ window.debugQuick = function() {
 function setupSingleRowForEdit() {
     setTimeout(function() {
         var domRows = document.querySelectorAll('.e-treegrid .e-row');
-        console.log('🔍 SETUP LINHA ÚNICA: Verificando cenário...');
+        console.log('�� SETUP LINHA ÚNICA: Verificando cenário...');
         console.log('- Linhas no DOM:', domRows.length);
         console.log('- currentSelectedRowIndex:', currentSelectedRowIndex);
 
@@ -1462,12 +1462,14 @@ if (ganttChart) {
             console.log('- debugQuick() - Debug rápido');
             console.log('- testEditCurrentRow() - Testar edição');
             console.log('- testSingleRowEdit() - Testar linha única');
+            console.log('- forceEditRow(index) - Forçar edição com múltiplas abordagens');
             console.log('- forceSingleRowSetup() - Forçar setup linha única');
             console.log('- inspectGanttProperties() - Inspeção completa');
             console.log('- checkEditState() - Verificar estado de edição');
             console.log('- resetGanttState() - Reset completo');
             console.log('📋 COMO USAR: Clique em uma linha e pressione Enter para editar');
             console.log('🎯 LINHA ÚNICA: Se há apenas uma tarefa, ela será configurada automaticamente');
+            console.log('🆘 SE NÃO FUNCIONAR: forceEditRow() - força edição usando duplo clique');
         }, 1000);
 
     } catch (error) {
