@@ -597,7 +597,7 @@ function changeLanguage(newLocale) {
 // Função para atualizar cabeçalhos das colunas
 function updateColumnHeaders(locale) {
     if (!ganttChart || !ganttChart.columns) return;
-    
+
     const translations = {
         'en-US': {
             'TaskID': 'ID',
@@ -627,12 +627,52 @@ function updateColumnHeaders(locale) {
             'Predecessor': 'Predecesores'
         }
     };
-    
+
     const localeTexts = translations[locale] || translations['en-US'];
-    
+
     ganttChart.columns.forEach(column => {
         if (localeTexts[column.field]) {
             column.headerText = localeTexts[column.field];
         }
     });
+}
+
+// Função para atualizar textos dos botões de controle
+function updateButtonTexts(locale) {
+    const buttonTranslations = {
+        'en-US': {
+            clearBtn: '🗑️ Clear',
+            restoreBtn: '🔄 Restore',
+            clearTitle: 'Clear all tasks',
+            restoreTitle: 'Restore default data'
+        },
+        'pt-BR': {
+            clearBtn: '🗑️ Limpar',
+            restoreBtn: '🔄 Restaurar',
+            clearTitle: 'Limpar todas as tarefas',
+            restoreTitle: 'Restaurar dados padrão'
+        },
+        'es-ES': {
+            clearBtn: '🗑️ Limpiar',
+            restoreBtn: '🔄 Restaurar',
+            clearTitle: 'Limpiar todas las tareas',
+            restoreTitle: 'Restaurar datos por defecto'
+        }
+    };
+
+    const texts = buttonTranslations[locale] || buttonTranslations['en-US'];
+
+    // Atualizar botão de limpar
+    const clearBtn = document.getElementById('clearTasksBtn');
+    if (clearBtn) {
+        clearBtn.textContent = texts.clearBtn;
+        clearBtn.title = texts.clearTitle;
+    }
+
+    // Atualizar botão de restaurar
+    const restoreBtn = document.getElementById('restoreTasksBtn');
+    if (restoreBtn) {
+        restoreBtn.textContent = texts.restoreBtn;
+        restoreBtn.title = texts.restoreTitle;
+    }
 }
