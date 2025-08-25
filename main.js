@@ -514,6 +514,44 @@ function focusTaskNameField() {
     }, 100);
 }
 
+// Função para verificar se está na última linha visível
+function isLastVisibleRow() {
+    if (currentSelectedRowIndex < 0 || !ganttChart) {
+        return false;
+    }
+
+    try {
+        // Método 1: Usar getCurrentViewRecords para obter linhas visíveis
+        if (ganttChart.treeGrid && ganttChart.treeGrid.getCurrentViewRecords) {
+            var viewRecords = ganttChart.treeGrid.getCurrentViewRecords();
+            if (viewRecords && viewRecords.length > 0) {
+                return currentSelectedRowIndex === viewRecords.length - 1;
+            }
+        }
+
+        // Método 2: Contar linhas DOM visíveis
+        var visibleRows = document.querySelectorAll('.e-treegrid .e-row:not(.e-hide)');
+        if (visibleRows.length > 0) {
+            return currentSelectedRowIndex === visibleRows.length - 1;
+        }
+
+        // Método 3: Fallback - usar flatData
+        if (ganttChart.flatData) {
+            return currentSelectedRowIndex === ganttChart.flatData.length - 1;
+        }
+
+        // Método 4: Fallback final - usar dataSource
+        if (ganttChart.dataSource) {
+            return currentSelectedRowIndex === ganttChart.dataSource.length - 1;
+        }
+
+    } catch (error) {
+        console.log('Erro ao verificar última linha:', error);
+    }
+
+    return false;
+}
+
 // Função para criar nova tarefa em modo de edição
 function createNewTaskInEdit() {
     if (!ganttChart) {
