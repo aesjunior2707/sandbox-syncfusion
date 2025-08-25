@@ -666,10 +666,11 @@ function setupEnterKeyEditing() {
                 console.log('Event listeners configurados (Enter + Click)');
             }
 
-            // Event listener super simples no document (captura Enter globalmente)
+            // Event listener super simples no document (captura Enter/F2 globalmente)
             document.addEventListener('keydown', function(event) {
-                if (event.key === 'Enter' || event.keyCode === 13) {
-                    console.log('🌍 GLOBAL Enter detectado!');
+                if (event.key === 'Enter' || event.keyCode === 13 || event.key === 'F2' || event.keyCode === 113) {
+                    var keyPressed = event.key === 'F2' || event.keyCode === 113 ? 'F2' : 'Enter';
+                    console.log('🌍 GLOBAL ' + keyPressed + ' detectado!');
 
                     // Verificar se não estamos editando (excluindo campo de busca)
                     var isEditing = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid .e-rowcell input, .e-treegrid .e-rowcell textarea');
