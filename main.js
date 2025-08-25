@@ -1043,6 +1043,37 @@ window.resetGanttState = function() {
     }
 };
 
+// Função de debug rápido (atalho)
+window.debugQuick = function() {
+    console.log('⚡ DEBUG RÁPIDO');
+    console.log('currentSelectedRowIndex:', currentSelectedRowIndex);
+
+    if (ganttChart) {
+        var methods = [
+            { name: 'dataSource', value: ganttChart.dataSource },
+            { name: 'treeGrid.dataSource', value: ganttChart.treeGrid?.dataSource },
+            { name: 'flatData', value: ganttChart.flatData }
+        ];
+
+        methods.forEach(function(method) {
+            if (method.value) {
+                console.log('✅', method.name + ':', method.value.length, 'itens');
+                if (method.value.length > 0) {
+                    console.log('  └── Primeira tarefa:', method.value[0].TaskName);
+                }
+            } else {
+                console.log('❌', method.name + ':', 'não disponível');
+            }
+        });
+    }
+
+    var domRows = document.querySelectorAll('.e-treegrid .e-row');
+    console.log('📋 Linhas no DOM:', domRows.length);
+
+    console.log('🔧 Para testar edição: testEditCurrentRow()');
+    console.log('🔍 Para debug completo: inspectGanttProperties()');
+};
+
 // Adicionar o Gantt ao DOM
 if (ganttChart) {
     try {
