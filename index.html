@@ -10,7 +10,7 @@
            <script src="localization.js" type="text/javascript"></script>
       </head>
       <body>
-          <!-- Language Selector -->
+          <!-- Language Selector and Controls -->
           <div id="language-selector-container">
               <div class="language-selector">
                   <label for="languageSelector">🌐 Language:</label>
@@ -19,6 +19,16 @@
                       <option value="pt-BR" selected>🇧🇷 Português</option>
                       <option value="es-ES">🇪🇸 Español</option>
                   </select>
+              </div>
+
+              <!-- Data Controls -->
+              <div class="data-controls">
+                  <button id="clearTasksBtn" onclick="clearAllTasks()" title="Limpar todas as tarefas">
+                      🗑️ Limpar
+                  </button>
+                  <button id="restoreTasksBtn" onclick="restoreDefaultTasks()" title="Restaurar dados padrão">
+                      🔄 Restaurar
+                  </button>
               </div>
           </div>
 
