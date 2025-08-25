@@ -500,7 +500,7 @@ function debugRowInfo() {
     console.log('===================');
 }
 
-// Função utilitária para focar no campo TaskName após iniciar edição
+// Função utilitária para focar no campo TaskName ap��s iniciar edição
 function focusTaskNameField() {
     setTimeout(function() {
         try {
@@ -543,7 +543,18 @@ function setupEnterKeyEditing() {
 
                     // Verificar se já estamos em modo de edição (excluindo campo de busca)
                     var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid .e-rowcell input, .e-treegrid .e-rowcell textarea');
+
+                    // Debug: mostrar todos os inputs encontrados
+                    var allInputs = document.querySelectorAll('.e-treegrid input, .e-treegrid textarea');
+                    var editInputs = document.querySelectorAll('.e-treegrid .e-rowcell input, .e-treegrid .e-rowcell textarea');
+
+                    console.log('🔍 DEBUG EDIÇÃO:');
+                    console.log('- Total inputs no treegrid:', allInputs.length);
+                    console.log('- Inputs de edição em células:', editInputs.length);
+                    console.log('- Detectado como editando:', !!isInEditMode);
+
                     if (isInEditMode) {
+                        console.log('- Elemento que causa detecção:', isInEditMode);
                         console.log('Já em modo de edição, ignorando Enter');
                         return; // Deixar comportamento padrão
                     }
