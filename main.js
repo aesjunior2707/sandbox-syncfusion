@@ -525,22 +525,10 @@ function debugRowInfo() {
 // Função utilitária para focar no campo TaskName após iniciar edição
 function focusTaskNameField() {
     setTimeout(function() {
-        try {
-            var taskNameInput = document.querySelector(
-                '.e-treegrid .e-editedbatchcell input, ' +
-                '.e-treegrid .e-inline-edit input[aria-label*="Task"], ' +
-                '.e-treegrid .e-inline-edit input[name="TaskName"], ' +
-                '.e-treegrid .e-editedrow input, ' +
-                '.e-treegrid td[aria-describedby*="TaskName"] input, ' +
-                'input[aria-label*="Task Name"]'
-            );
-            if (taskNameInput) {
-                taskNameInput.focus();
-                taskNameInput.select();
-                console.log('Campo TaskName focado após Enter');
-            }
-        } catch (error) {
-            console.log('Não foi possível focar TaskName:', error);
+        var taskNameInput = document.querySelector('.e-treegrid .e-rowcell input');
+        if (taskNameInput) {
+            taskNameInput.focus();
+            taskNameInput.select();
         }
     }, 100);
 }
