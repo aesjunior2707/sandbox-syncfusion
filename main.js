@@ -510,6 +510,18 @@ function focusTaskNameField() {
         if (taskNameInput) {
             taskNameInput.focus();
             taskNameInput.select();
+            console.log('✅ Campo TaskName focado e selecionado');
+        } else {
+            console.log('❌ Campo TaskName não encontrado para foco');
+            // Tentar novamente após um tempo
+            setTimeout(function() {
+                var input = document.querySelector('.e-treegrid .e-rowcell input');
+                if (input) {
+                    input.focus();
+                    input.select();
+                    console.log('✅ Campo TaskName focado na segunda tentativa');
+                }
+            }, 200);
         }
     }, 100);
 }
