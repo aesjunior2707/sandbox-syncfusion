@@ -128,15 +128,13 @@ try {
 
     // EVENTO DE SELEÇÃO DE LINHA
     rowSelected: function (args) {
-        // Armazenar índice da linha selecionada
         if (args.rowIndex !== undefined) {
             currentSelectedRowIndex = args.rowIndex;
-            console.log('Linha selecionada:', args.rowIndex, 'TaskID:', args.data ? args.data.TaskID : 'N/A', 'TaskName:', args.data ? args.data.TaskName : 'N/A');
+            console.log('Linha selecionada:', args.rowIndex);
         }
     },
 
     rowDeselected: function (args) {
-        // Resetar seleção se linha foi desselecionada
         if (args.rowIndex === currentSelectedRowIndex) {
             currentSelectedRowIndex = -1;
             console.log('Linha desselecionada:', args.rowIndex);
@@ -206,7 +204,7 @@ try {
             console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
         }
 
-        // Respeitar links de predecessores durante valida��ão
+        // Respeitar links de predecessores durante validação
         if (args.requestType === 'validateLinkedTask') {
             args.validateMode = { respectLink: true };
         }
@@ -405,7 +403,7 @@ function clearAllTasks() {
                                     ganttChart.treeGrid.editCell(0, 'TaskName');
                                     console.log('Edição iniciada via treeGrid.editCell');
                                 }
-                                // M��todo correto 2: usar startEdit com taskId
+                                // Método correto 2: usar startEdit com taskId
                                 else if (ganttChart.startEdit) {
                                     ganttChart.startEdit(1); // ID da nova tarefa criada
                                     console.log('Edição iniciada via startEdit com taskId');
@@ -946,7 +944,7 @@ function setupEnterKeyEditing() {
                             }
                         }
                     } else if (isEditing) {
-                        console.log('⏸️ GLOBAL: Já em modo de edição, ignorando');
+                        console.log('⏸️ GLOBAL: J�� em modo de edição, ignorando');
                     } else {
                         console.log('⏸️ GLOBAL: Nenhuma linha selecionada');
                     }
@@ -1316,7 +1314,7 @@ window.checkEditConfiguration = function() {
         return;
     }
 
-    console.log('��� CONFIGURAÇÕES ATUAIS:');
+    console.log('📋 CONFIGURAÇÕES ATUAIS:');
 
     // Verificar editSettings
     if (ganttChart.editSettings) {
@@ -1518,7 +1516,7 @@ window.getTaskDataFromVisualRow = function(visualRowIndex) {
             var viewRecords = ganttChart.treeGrid.getCurrentViewRecords();
             if (viewRecords && visualRowIndex < viewRecords.length) {
                 taskData = viewRecords[visualRowIndex];
-                console.log('✅ Método 2 - getCurrentViewRecords:', taskData.TaskName);
+                console.log('�� Método 2 - getCurrentViewRecords:', taskData.TaskName);
                 return taskData;
             }
         } catch (error) {
