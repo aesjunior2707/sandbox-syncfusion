@@ -586,7 +586,7 @@ function setupEnterKeyEditing() {
                                 console.log('✅ Usando API Gantt:', targetRowIndex);
                             }
                         }
-                        // Método 3: ESPECIAL - Se há apenas uma linha e nenhuma seleção, usar a primeira
+                        // M��todo 3: ESPECIAL - Se há apenas uma linha e nenhuma seleção, usar a primeira
                         if (targetRowIndex < 0 && domRows.length === 1) {
                             targetRowIndex = 0;
                             currentSelectedRowIndex = 0; // Atualizar rastreamento
@@ -1311,6 +1311,7 @@ if (ganttChart) {
             console.log('- debugQuick() - Debug rápido');
             console.log('- testEditCurrentRow() - Testar edição');
             console.log('- testSingleRowEdit() - Testar linha única');
+            console.log('- forceSingleRowSetup() - Forçar setup linha única');
             console.log('- inspectGanttProperties() - Inspeção completa');
             console.log('- checkEditState() - Verificar estado de edição');
             console.log('- resetGanttState() - Reset completo');
