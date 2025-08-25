@@ -541,6 +541,7 @@ function setupEnterKeyEditing() {
         var ganttElement = document.getElementById('Gantt');
         if (ganttElement) {
             ganttElement.addEventListener('keydown', function(event) {
+                // Funcionalidade Enter para edição
                 if (event.key === 'Enter' || event.keyCode === 13) {
                     // Verificar se já está em modo de edição
                     var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
@@ -563,6 +564,31 @@ function setupEnterKeyEditing() {
                         } catch (error) {
                             console.log('Erro ao iniciar edição:', error);
                         }
+                    }
+                }
+
+                // Funcionalidade seta para baixo - criar nova tarefa na última linha
+                if (event.key === 'ArrowDown' || event.keyCode === 40) {
+                    // Verificar se não está em modo de edição
+                    var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
+                    if (isInEditMode) {
+                        return; // Deixar comportamento padrão se já editando
+                    }
+
+                    // Verificar se está na última linha
+                    var totalRows = 0;
+                    if (ganttChart && ganttChart.flatData) {
+                        totalRows = ganttChart.flatData.length;
+                    } else if (ganttChart && ganttChart.dataSource) {
+                        totalRows = ganttChart.dataSource.length;
+                    }
+
+                    if (currentSelectedRowIndex >= 0 && currentSelectedRowIndex === totalRows - 1) {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        console.log('Última linha detectada, criando nova tarefa...');
+                        createNewTaskInEdit();
                     }
                 }
             });
