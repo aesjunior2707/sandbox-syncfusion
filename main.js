@@ -624,9 +624,12 @@ function createNewTaskInEdit() {
         };
 
         console.log('Criando nova tarefa:', newTask);
+        console.log('Total de tarefas antes:', ganttChart.flatData ? ganttChart.flatData.length : ganttChart.dataSource ? ganttChart.dataSource.length : 0);
 
         // Adicionar a nova tarefa ao Gantt
         ganttChart.addRecord(newTask);
+
+        console.log('Tarefa adicionada, aguardando processamento...');
 
         // Aguardar o registro ser adicionado e forçar entrada em modo de edição
         setTimeout(function() {
@@ -738,7 +741,7 @@ function setupEnterKeyEditing() {
         var ganttElement = document.getElementById('Gantt');
         if (ganttElement) {
             ganttElement.addEventListener('keydown', function(event) {
-                // Funcionalidade Enter para edi��ão
+                // Funcionalidade Enter para edição
                 if (event.key === 'Enter' || event.keyCode === 13) {
                     // Verificar se já está em modo de edição
                     var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
