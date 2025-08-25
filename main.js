@@ -199,6 +199,12 @@ try {
         if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
             console.log('Predecessores salvos para tarefa', args.data.TaskID + ':', args.data.Predecessor);
         }
+    },
+
+    // Evento para garantir que células sejam editáveis por duplo clique
+    cellEdit: function (args) {
+        // Permitir edição de todas as células editáveis
+        return true;
     }
     });
 } catch (error) {
