@@ -200,78 +200,9 @@ try {
             console.log('Predecessores salvos para tarefa', args.data.TaskID + ':', args.data.Predecessor);
         }
 
-        // Detectar quando uma nova tarefa foi adicionada
+        // Detectar quando uma nova tarefa foi adicionada (para outras funcionalidades)
         if (args.requestType === 'add' && args.data) {
             console.log('Nova tarefa adicionada via evento:', args.data.TaskID);
-
-            // Aguardar um pouco e então iniciar edição se for nossa nova tarefa
-            setTimeout(function() {
-                if (window.shouldEditNewTask && args.data.TaskID === window.newTaskIdToEdit) {
-                    window.shouldEditNewTask = false;
-
-                    // Encontrar o índice da nova tarefa
-                    var newRowIndex = -1;
-                    if (ganttChart.flatData) {
-                        for (var i = 0; i < ganttChart.flatData.length; i++) {
-                            if (ganttChart.flatData[i].TaskID === args.data.TaskID) {
-                                newRowIndex = i;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (newRowIndex >= 0) {
-                        console.log('Iniciando edição da nova tarefa na linha:', newRowIndex);
-                        currentSelectedRowIndex = newRowIndex;
-
-                        // Selecionar e editar
-                        if (ganttChart.selectRow) {
-                            ganttChart.selectRow(newRowIndex);
-                        }
-
-                        setTimeout(function() {
-                            if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
-                                ganttChart.treeGrid.editCell(newRowIndex, 'TaskName');
-
-                                // Limpar o campo e focar
-                                setTimeout(function() {
-                                    var input = document.querySelector('.e-treegrid .e-rowcell input');
-                                    if (input) {
-                                        // Se veio da função clear, limpar o campo
-                                        if (window.clearTaskName) {
-                                            input.value = '';
-                                            window.clearTaskName = null;
-                                        }
-                                        input.focus();
-                                        input.select();
-                                        console.log('✅ Nova tarefa em edição com campo limpo');
-                                    } else {
-                                        // Tentar novamente com seletores alternativos
-                                        setTimeout(function() {
-                                            var altInput = document.querySelector(
-                                                '.e-treegrid .e-editedbatchcell input, ' +
-                                                '.e-treegrid .e-editedrow input, ' +
-                                                '.e-treegrid input[aria-label*="Task"]'
-                                            );
-                                            if (altInput) {
-                                                if (window.clearTaskName) {
-                                                    altInput.value = '';
-                                                    window.clearTaskName = null;
-                                                }
-                                                altInput.focus();
-                                                altInput.select();
-                                                console.log('✅ Campo focado na segunda tentativa');
-                                            }
-                                        }, 100);
-                                    }
-                                }, 150);
-                            }
-                        }, 300);
-                    } else {
-                        console.log('❌ Não foi possível encontrar a linha da nova tarefa');
-                    }
-                }
-            }, 200);
         }
     },
 
@@ -472,17 +403,67 @@ function createNewTaskAfterClear(taskName) {
 
         console.log('Criando nova tarefa após limpar:', newTask);
 
-        // Configurar flags para edição automática
-        window.shouldEditNewTask = true;
-        window.newTaskIdToEdit = 1;
-        window.clearTaskName = taskName || 'Nova Tarefa';
-
-        // Adicionar a nova tarefa
+        // Adicionar a nova tarefa primeiro
         ganttChart.addRecord(newTask);
+
+        // Aguardar a tarefa ser adicionada e então forçar edição
+        setTimeout(function() {
+            try {
+                // Selecionar a primeira linha (índice 0)
+                if (ganttChart.selectRow) {
+                    ganttChart.selectRow(0);
+                    currentSelectedRowIndex = 0;
+                }
+
+                // Aguardar seleção e então iniciar edição
+                setTimeout(function() {
+                    // Método 1: Usar editCell diretamente
+                    if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                        ganttChart.treeGrid.editCell(0, 'TaskName');
+                        console.log('✅ Edição iniciada via editCell');
+                        
+                        // Limpar e focar no campo
+                        setTimeout(function() {
+                            var input = document.querySelector('.e-treegrid .e-rowcell input, .e-treegrid .e-editedbatchcell input');
+                            if (input) {
+                                input.value = '';
+                                input.focus();
+                                input.select();
+                                console.log('✅ Campo limpo e focado');
+                            } else {
+                                // Método alternativo: simular duplo clique
+                                console.log('Tentando método alternativo...');
+                                var taskNameCell = document.querySelector('.e-treegrid .e-rowcell[aria-describedby*="TaskName"]');
+                                if (taskNameCell) {
+                                    // Simular duplo clique na célula
+                                    var dblClickEvent = new MouseEvent('dblclick', {
+                                        bubbles: true,
+                                        cancelable: true,
+                                        view: window
+                                    });
+                                    taskNameCell.dispatchEvent(dblClickEvent);
+                                    
+                                    setTimeout(function() {
+                                        var input = document.querySelector('.e-treegrid .e-rowcell input');
+                                        if (input) {
+                                            input.value = '';
+                                            input.focus();
+                                            input.select();
+                                            console.log('✅ Campo focado via duplo clique simulado');
+                                        }
+                                    }, 200);
+                                }
+                            }
+                        }, 300);
+                    }
+                }, 200);
+            } catch (error) {
+                console.error('Erro ao iniciar edição:', error);
+            }
+        }, 800);
 
     } catch (error) {
         console.error('Erro ao criar nova tarefa após limpar:', error);
-        window.shouldEditNewTask = false;
     }
 }
 
@@ -670,16 +651,55 @@ function createNewTaskInEdit() {
 
         console.log('Criando nova tarefa:', newTask);
 
-        // Configurar flags para o evento actionComplete
-        window.shouldEditNewTask = true;
-        window.newTaskIdToEdit = nextTaskId;
-
-        // Usar o método oficial do Gantt para adicionar tarefa
+        // Adicionar a nova tarefa
         ganttChart.addRecord(newTask);
+
+        // Aguardar a tarefa ser adicionada e então iniciar edição
+        setTimeout(function() {
+            try {
+                // Encontrar o índice da nova tarefa
+                var newRowIndex = -1;
+                if (ganttChart.flatData) {
+                    for (var i = 0; i < ganttChart.flatData.length; i++) {
+                        if (ganttChart.flatData[i].TaskID === nextTaskId) {
+                            newRowIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                if (newRowIndex >= 0) {
+                    // Selecionar a nova linha
+                    if (ganttChart.selectRow) {
+                        ganttChart.selectRow(newRowIndex);
+                        currentSelectedRowIndex = newRowIndex;
+                    }
+
+                    // Iniciar edição
+                    setTimeout(function() {
+                        if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                            ganttChart.treeGrid.editCell(newRowIndex, 'TaskName');
+                            
+                            // Focar e limpar campo
+                            setTimeout(function() {
+                                var input = document.querySelector('.e-treegrid .e-rowcell input, .e-treegrid .e-editedbatchcell input');
+                                if (input) {
+                                    input.value = '';
+                                    input.focus();
+                                    input.select();
+                                    console.log('✅ Nova tarefa em edição');
+                                }
+                            }, 200);
+                        }
+                    }, 300);
+                }
+            } catch (error) {
+                console.error('Erro ao iniciar edição da nova tarefa:', error);
+            }
+        }, 500);
 
     } catch (error) {
         console.log('Erro ao criar nova tarefa:', error);
-        window.shouldEditNewTask = false;
     }
 }
 
