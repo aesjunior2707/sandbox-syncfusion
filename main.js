@@ -619,10 +619,13 @@ function setupEnterKeyEditing() {
                             taskData = dataSource[targetRowIndex];
                             var taskId = taskData.TaskID;
 
-                            console.log('🎯 INICIANDO EDIÇÃO:');
-                            console.log('- Linha:', targetRowIndex);
+                            console.log('🎯 DADOS ENCONTRADOS! INICIANDO EDIÇÃO:');
+                            console.log('- Linha selecionada:', targetRowIndex);
                             console.log('- TaskID:', taskId);
                             console.log('- TaskName:', taskData.TaskName);
+                            console.log('- Fonte dos dados:', dataSource === ganttChart.dataSource ? 'dataSource' :
+                                         dataSource === ganttChart.treeGrid?.dataSource ? 'treeGrid.dataSource' :
+                                         'método alternativo');
 
                             // Prevenir comportamento padrão
                             event.preventDefault();
