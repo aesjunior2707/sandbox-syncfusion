@@ -325,6 +325,7 @@ function clearAllTasks() {
 
                         // Adicionar a nova tarefa
                         ganttChart.addRecord(newTask);
+                        console.log('Nova tarefa adicionada:', newTask);
 
                         // Aguardar um pouco mais e então iniciar edição na primeira linha
                         setTimeout(function() {
