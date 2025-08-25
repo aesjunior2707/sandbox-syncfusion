@@ -709,12 +709,10 @@ function setupEnterKeyEditing() {
                             var taskId = taskData.TaskID;
 
                             console.log('🎯 DADOS ENCONTRADOS! INICIANDO EDIÇÃO:');
-                            console.log('- Linha selecionada:', targetRowIndex);
+                            console.log('- Linha visual:', targetRowIndex);
                             console.log('- TaskID:', taskId);
                             console.log('- TaskName:', taskData.TaskName);
-                            console.log('- Fonte dos dados:', dataSource === ganttChart.dataSource ? 'dataSource' :
-                                         dataSource === ganttChart.treeGrid?.dataSource ? 'treeGrid.dataSource' :
-                                         'método alternativo');
+                            console.log('- Fonte dos dados:', 'mapeamento hierárquico correto');
 
                             // Prevenir comportamento padrão
                             event.preventDefault();
