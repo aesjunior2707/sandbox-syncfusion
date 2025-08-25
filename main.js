@@ -754,8 +754,26 @@ function setupEnterKeyEditing() {
                     if (!isEditing && currentSelectedRowIndex >= 0) {
                         console.log('🎯 GLOBAL: Linha selecionada disponível:', currentSelectedRowIndex);
 
-                        if (ganttChart && ganttChart.dataSource && currentSelectedRowIndex < ganttChart.dataSource.length) {
-                            var taskData = ganttChart.dataSource[currentSelectedRowIndex];
+                        // Usar mesma lógica de acesso a dados do event listener principal
+                        var dataSource = null;
+                        var dataLength = 0;
+
+                        if (ganttChart && ganttChart.dataSource) {
+                            dataSource = ganttChart.dataSource;
+                            dataLength = dataSource.length;
+                        } else if (ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.dataSource) {
+                            dataSource = ganttChart.treeGrid.dataSource;
+                            dataLength = dataSource.length;
+                        } else if (ganttChart && ganttChart.getCurrentViewRecords) {
+                            dataSource = ganttChart.getCurrentViewRecords();
+                            dataLength = dataSource ? dataSource.length : 0;
+                        } else if (ganttChart && ganttChart.flatData) {
+                            dataSource = ganttChart.flatData;
+                            dataLength = dataSource ? dataSource.length : 0;
+                        }
+
+                        if (dataSource && currentSelectedRowIndex < dataLength) {
+                            var taskData = dataSource[currentSelectedRowIndex];
 
                             console.log('🚀 GLOBAL: Iniciando edição da linha:', currentSelectedRowIndex, 'TaskName:', taskData.TaskName);
 
@@ -822,7 +840,7 @@ window.testEditCurrentRow = function() {
                 console.log('❌ treeGrid.editCell não disponível');
             }
         } catch (error) {
-            console.log('❌ Erro na edição manual:', error);
+            console.log('❌ Erro na ediç��o manual:', error);
         }
     } else {
         console.log('❌ Linha inválida ou sem dados');
