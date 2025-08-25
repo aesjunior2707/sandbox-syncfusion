@@ -76,8 +76,7 @@ try {
         allowEditing: true,
         allowDeleting: true,
         allowTaskbarEditing: true,
-        mode: 'Cell', // Mudando para Cell para garantir edição inline
-        showDeleteConfirmDialog: false // Evitar diálogos que podem interferir
+        mode: 'Cell'
     },
     toolbar: ['Update', 'Delete', 'Cancel', 'ExpandAll', 'CollapseAll', 'ExcelExport', 'PdfExport', 'Search', 'ZoomIn', 'ZoomOut', 'ZoomToFit'],
     highlightWeekends: true,
@@ -207,7 +206,7 @@ try {
             console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
         }
 
-        // Respeitar links de predecessores durante validação
+        // Respeitar links de predecessores durante valida��ão
         if (args.requestType === 'validateLinkedTask') {
             args.validateMode = { respectLink: true };
         }
@@ -406,7 +405,7 @@ function clearAllTasks() {
                                     ganttChart.treeGrid.editCell(0, 'TaskName');
                                     console.log('Edição iniciada via treeGrid.editCell');
                                 }
-                                // Método correto 2: usar startEdit com taskId
+                                // M��todo correto 2: usar startEdit com taskId
                                 else if (ganttChart.startEdit) {
                                     ganttChart.startEdit(1); // ID da nova tarefa criada
                                     console.log('Edição iniciada via startEdit com taskId');
@@ -1317,7 +1316,7 @@ window.checkEditConfiguration = function() {
         return;
     }
 
-    console.log('📋 CONFIGURAÇÕES ATUAIS:');
+    console.log('��� CONFIGURAÇÕES ATUAIS:');
 
     // Verificar editSettings
     if (ganttChart.editSettings) {
