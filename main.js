@@ -716,6 +716,14 @@ if (ganttChart) {
         ganttChart.appendTo('#Gantt');
         console.log('Gantt inicializado com sucesso');
 
+        // Configurar foco no elemento Gantt
+        var ganttElement = document.getElementById('Gantt');
+        if (ganttElement) {
+            ganttElement.setAttribute('tabindex', '0');
+            ganttElement.style.outline = 'none';
+            console.log('Foco configurado no elemento Gantt');
+        }
+
         // Configurar event listener para Enter
         setupEnterKeyEditing();
     } catch (error) {
