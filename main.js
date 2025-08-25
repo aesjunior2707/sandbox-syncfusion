@@ -383,6 +383,19 @@ function clearAllTasks() {
                     
                     ganttChart.addRecord(newTask);
                     console.log('Nova tarefa adicionada após limpar');
+                    
+                    // Criar nova tarefa simples
+                    var newTask = {
+                        TaskID: 1,
+                        TaskName: msgs.newTaskName || 'Nova Tarefa',
+                        StartDate: new Date(),
+                        Duration: 1,
+                        Progress: 0,
+                        Predecessor: ''
+                    };
+                    
+                    ganttChart.addRecord(newTask);
+                    console.log('Nova tarefa adicionada após limpar');
                 }, 800);
 
                 console.log('Todas as tarefas foram removidas do data source');
