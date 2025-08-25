@@ -449,6 +449,9 @@ function restoreDefaultTasks() {
     }
 }
 
+// Variável para armazenar a linha atualmente selecionada
+var currentSelectedRowIndex = -1;
+
 // Função para configurar evento Enter para edição
 function setupEnterKeyEditing() {
     // Aguardar o componente estar totalmente carregado
@@ -461,38 +464,58 @@ function setupEnterKeyEditing() {
                     // Verificar se Enter foi pressionado
                     if (event.key === 'Enter' || event.keyCode === 13) {
                         try {
-                            // Encontrar a linha atualmente selecionada/focada
-                            var selectedRow = document.querySelector('.e-treegrid .e-row.e-active, .e-treegrid .e-row[aria-selected="true"]');
-                            if (selectedRow) {
-                                // Obter o índice da linha
-                                var rowIndex = selectedRow.rowIndex - 1; // Subtraindo 1 porque o header é rowIndex 0
+                            var rowIndexToEdit = -1;
+                            var taskData = null;
 
-                                // Verificar se há dados nesta linha
-                                if (ganttChart && ganttChart.dataSource && ganttChart.dataSource.length > rowIndex && rowIndex >= 0) {
-                                    var taskData = ganttChart.dataSource[rowIndex];
-                                    var taskId = taskData.TaskID;
-
-                                    console.log('Enter pressionado na linha:', rowIndex, 'TaskID:', taskId);
-
-                                    // Prevenir comportamento padrão do Enter
-                                    event.preventDefault();
-                                    event.stopPropagation();
-
-                                    // Iniciar edição usando diferentes métodos
-                                    if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
-                                        // Método 1: Editar célula TaskName
-                                        ganttChart.treeGrid.editCell(rowIndex, 'TaskName');
-                                        console.log('Edição iniciada via treeGrid.editCell');
-                                    } else if (ganttChart.startEdit && taskId) {
-                                        // Método 2: Iniciar edição por TaskID
-                                        ganttChart.startEdit(taskId);
-                                        console.log('Edição iniciada via startEdit');
-                                    } else if (ganttChart.beginEdit && taskData) {
-                                        // Método 3: Iniciar edição por record
-                                        ganttChart.beginEdit(taskData);
-                                        console.log('Edição iniciada via beginEdit');
-                                    }
+                            // Método 1: Usar linha selecionada armazenada
+                            if (currentSelectedRowIndex >= 0) {
+                                rowIndexToEdit = currentSelectedRowIndex;
+                            } else {
+                                // Método 2: Encontrar linha selecionada no DOM
+                                var selectedRows = document.querySelectorAll('.e-treegrid .e-row.e-active, .e-treegrid .e-row[aria-selected="true"], .e-treegrid .e-row.e-focus');
+                                if (selectedRows.length > 0) {
+                                    var selectedRow = selectedRows[selectedRows.length - 1]; // Última linha selecionada
+                                    rowIndexToEdit = Array.from(selectedRow.parentElement.children).indexOf(selectedRow);
+                                    // Ajustar índice se houver header
+                                    if (rowIndexToEdit > 0) rowIndexToEdit -= 1;
                                 }
+                            }
+
+                            // Método 3: Usar seleção do próprio Gantt
+                            if (rowIndexToEdit < 0 && ganttChart && ganttChart.selectionSettings) {
+                                var selectedRowIndexes = ganttChart.getSelectedRowIndexes();
+                                if (selectedRowIndexes && selectedRowIndexes.length > 0) {
+                                    rowIndexToEdit = selectedRowIndexes[0];
+                                }
+                            }
+
+                            // Verificar se encontramos uma linha válida e obter dados
+                            if (rowIndexToEdit >= 0 && ganttChart && ganttChart.dataSource && ganttChart.dataSource.length > rowIndexToEdit) {
+                                taskData = ganttChart.dataSource[rowIndexToEdit];
+                                var taskId = taskData.TaskID;
+
+                                console.log('Enter pressionado na linha:', rowIndexToEdit, 'TaskID:', taskId);
+
+                                // Prevenir comportamento padrão do Enter
+                                event.preventDefault();
+                                event.stopPropagation();
+
+                                // Iniciar edição usando diferentes métodos
+                                if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                                    // Método 1: Editar célula TaskName
+                                    ganttChart.treeGrid.editCell(rowIndexToEdit, 'TaskName');
+                                    console.log('Edição iniciada via treeGrid.editCell');
+                                } else if (ganttChart.startEdit && taskId) {
+                                    // Método 2: Iniciar edição por TaskID
+                                    ganttChart.startEdit(taskId);
+                                    console.log('Edição iniciada via startEdit');
+                                } else if (ganttChart.beginEdit && taskData) {
+                                    // Método 3: Iniciar edição por record
+                                    ganttChart.beginEdit(taskData);
+                                    console.log('Edição iniciada via beginEdit');
+                                }
+                            } else {
+                                console.log('Nenhuma linha válida selecionada para edição');
                             }
                         } catch (editError) {
                             console.error('Erro ao iniciar edição com Enter:', editError);
