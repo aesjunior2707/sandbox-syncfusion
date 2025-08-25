@@ -700,6 +700,21 @@ function setupEnterKeyEditing() {
                             console.log('- dataLength encontrado:', dataLength);
                             console.log('- dataSource disponível:', !!dataSource);
 
+                            // FALLBACK ESPECIAL para linha única - tentar edição direta
+                            if (domRows.length === 1 && targetRowIndex >= 0) {
+                                console.log('🚀 FALLBACK LINHA ÚNICA: Tentando edição direta sem dados...');
+                                try {
+                                    if (ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                                        ganttChart.treeGrid.editCell(targetRowIndex, 'TaskName');
+                                        console.log('✅ FALLBACK: Edição direta bem-sucedida!');
+                                        focusTaskNameField();
+                                        return; // Sair para evitar mais processamento
+                                    }
+                                } catch (fallbackError) {
+                                    console.log('❌ FALLBACK: Erro na edição direta:', fallbackError);
+                                }
+                            }
+
                             // Debug adicional - tentar diferentes propriedades do Gantt
                             if (ganttChart) {
                                 console.log('🔍 DEBUG GANTT PROPRIEDADES:');
