@@ -514,9 +514,30 @@ function focusTaskNameField() {
     }, 100);
 }
 
-// Função para configurar evento Enter para edição
+// Função para configurar evento Enter para edição e garantir duplo clique
 function setupEnterKeyEditing() {
     setTimeout(function() {
+        if (ganttChart && ganttChart.treeGrid) {
+            // Garantir que o TreeGrid permite edição
+            ganttChart.treeGrid.editSettings = {
+                allowEditing: true,
+                allowAdding: true,
+                allowDeleting: true,
+                mode: 'Cell'
+            };
+
+            // Garantir que colunas são editáveis
+            if (ganttChart.treeGrid.columns) {
+                ganttChart.treeGrid.columns.forEach(function(col) {
+                    if (col.field === 'TaskName' || col.field === 'Duration' || col.field === 'StartDate' || col.field === 'EndDate' || col.field === 'Progress' || col.field === 'Predecessor') {
+                        col.allowEditing = true;
+                    }
+                });
+            }
+
+            console.log('TreeGrid configurado para edição');
+        }
+
         var ganttElement = document.getElementById('Gantt');
         if (ganttElement) {
             ganttElement.addEventListener('keydown', function(event) {
@@ -537,15 +558,7 @@ function setupEnterKeyEditing() {
                             if (ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
                                 ganttChart.treeGrid.editCell(currentSelectedRowIndex, 'TaskName');
                                 console.log('Edição iniciada via Enter para linha:', currentSelectedRowIndex);
-
-                                // Focar no campo após um pequeno delay
-                                setTimeout(function() {
-                                    var input = document.querySelector('.e-treegrid .e-rowcell input[name="TaskName"], .e-treegrid .e-rowcell input');
-                                    if (input) {
-                                        input.focus();
-                                        input.select();
-                                    }
-                                }, 100);
+                                focusTaskNameField();
                             }
                         } catch (error) {
                             console.log('Erro ao iniciar edição:', error);
@@ -566,9 +579,9 @@ function setupEnterKeyEditing() {
                 }
             });
 
-            console.log('Event listeners configurados para Enter');
+            console.log('Event listeners configurados');
         }
-    }, 500);
+    }, 1000);
 }
 
 
