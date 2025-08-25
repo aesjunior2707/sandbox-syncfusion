@@ -517,6 +517,7 @@ function focusTaskNameField() {
 // Função para verificar se está na última linha visível
 function isLastVisibleRow() {
     if (currentSelectedRowIndex < 0 || !ganttChart) {
+        console.log('isLastVisibleRow: linha não selecionada ou gantt não disponível');
         return false;
     }
 
@@ -525,30 +526,39 @@ function isLastVisibleRow() {
         if (ganttChart.treeGrid && ganttChart.treeGrid.getCurrentViewRecords) {
             var viewRecords = ganttChart.treeGrid.getCurrentViewRecords();
             if (viewRecords && viewRecords.length > 0) {
-                return currentSelectedRowIndex === viewRecords.length - 1;
+                var isLast = currentSelectedRowIndex === viewRecords.length - 1;
+                console.log('isLastVisibleRow (método 1): linha', currentSelectedRowIndex, 'de', viewRecords.length, '= última?', isLast);
+                return isLast;
             }
         }
 
         // Método 2: Contar linhas DOM visíveis
         var visibleRows = document.querySelectorAll('.e-treegrid .e-row:not(.e-hide)');
         if (visibleRows.length > 0) {
-            return currentSelectedRowIndex === visibleRows.length - 1;
+            var isLast = currentSelectedRowIndex === visibleRows.length - 1;
+            console.log('isLastVisibleRow (método 2): linha', currentSelectedRowIndex, 'de', visibleRows.length, '= última?', isLast);
+            return isLast;
         }
 
         // Método 3: Fallback - usar flatData
         if (ganttChart.flatData) {
-            return currentSelectedRowIndex === ganttChart.flatData.length - 1;
+            var isLast = currentSelectedRowIndex === ganttChart.flatData.length - 1;
+            console.log('isLastVisibleRow (método 3): linha', currentSelectedRowIndex, 'de', ganttChart.flatData.length, '= última?', isLast);
+            return isLast;
         }
 
         // Método 4: Fallback final - usar dataSource
         if (ganttChart.dataSource) {
-            return currentSelectedRowIndex === ganttChart.dataSource.length - 1;
+            var isLast = currentSelectedRowIndex === ganttChart.dataSource.length - 1;
+            console.log('isLastVisibleRow (método 4): linha', currentSelectedRowIndex, 'de', ganttChart.dataSource.length, '= última?', isLast);
+            return isLast;
         }
 
     } catch (error) {
         console.log('Erro ao verificar última linha:', error);
     }
 
+    console.log('isLastVisibleRow: nenhum método funcionou');
     return false;
 }
 
