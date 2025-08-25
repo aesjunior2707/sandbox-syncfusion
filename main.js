@@ -314,10 +314,10 @@ function clearAllTasks() {
                 // Aguardar um momento para o refresh completar e então adicionar nova linha
                 setTimeout(function() {
                     try {
-                        // Criar uma nova tarefa vazia
+                        // Criar uma nova tarefa com nome traduzido
                         var newTask = {
                             TaskID: 1,
-                            TaskName: '',
+                            TaskName: msgs.newTaskName,
                             StartDate: new Date(),
                             Duration: 1,
                             Progress: 0
