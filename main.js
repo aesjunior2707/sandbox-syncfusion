@@ -495,32 +495,6 @@ function restoreDefaultTasks() {
 // Variável para armazenar a linha atualmente selecionada
 var currentSelectedRowIndex = -1;
 
-// Função de debug para diagnóstico
-function debugRowInfo() {
-    console.log('=== DEBUG INFO ===');
-    console.log('currentSelectedRowIndex:', currentSelectedRowIndex);
-
-    var activeRows = document.querySelectorAll('.e-treegrid .e-row.e-active, .e-treegrid .e-row[aria-selected="true"]');
-    console.log('Linhas ativas no DOM:', activeRows.length);
-
-    activeRows.forEach(function(row, index) {
-        var ariaRowIndex = row.getAttribute('aria-rowindex');
-        console.log('Linha ativa', index, '- aria-rowindex:', ariaRowIndex);
-    });
-
-    if (ganttChart && ganttChart.getSelectedRowIndexes) {
-        var selectedIndexes = ganttChart.getSelectedRowIndexes();
-        console.log('Índices selecionados (API Gantt):', selectedIndexes);
-    }
-
-    if (ganttChart && ganttChart.dataSource) {
-        console.log('Total de linhas no dataSource:', ganttChart.dataSource.length);
-        ganttChart.dataSource.forEach(function(item, index) {
-            console.log('Linha', index, '- TaskID:', item.TaskID, 'TaskName:', item.TaskName);
-        });
-    }
-    console.log('===================');
-}
 
 // Função utilitária para focar no campo TaskName após iniciar edição
 function focusTaskNameField() {
