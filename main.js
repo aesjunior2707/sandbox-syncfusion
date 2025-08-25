@@ -199,6 +199,56 @@ try {
         if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
             console.log('Predecessores salvos para tarefa', args.data.TaskID + ':', args.data.Predecessor);
         }
+
+        // Detectar quando uma nova tarefa foi adicionada
+        if (args.requestType === 'add' && args.data) {
+            console.log('Nova tarefa adicionada via evento:', args.data.TaskID);
+
+            // Aguardar um pouco e então iniciar edição se for nossa nova tarefa
+            setTimeout(function() {
+                if (window.shouldEditNewTask && args.data.TaskID === window.newTaskIdToEdit) {
+                    window.shouldEditNewTask = false;
+
+                    // Encontrar o índice da nova tarefa
+                    var newRowIndex = -1;
+                    if (ganttChart.flatData) {
+                        for (var i = 0; i < ganttChart.flatData.length; i++) {
+                            if (ganttChart.flatData[i].TaskID === args.data.TaskID) {
+                                newRowIndex = i;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (newRowIndex >= 0) {
+                        console.log('Iniciando edição da nova tarefa na linha:', newRowIndex);
+                        currentSelectedRowIndex = newRowIndex;
+
+                        // Selecionar e editar
+                        if (ganttChart.selectRow) {
+                            ganttChart.selectRow(newRowIndex);
+                        }
+
+                        setTimeout(function() {
+                            if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                                ganttChart.treeGrid.editCell(newRowIndex, 'TaskName');
+
+                                // Limpar o campo
+                                setTimeout(function() {
+                                    var input = document.querySelector('.e-treegrid .e-rowcell input');
+                                    if (input) {
+                                        input.value = '';
+                                        input.focus();
+                                        input.select();
+                                        console.log('✅ Nova tarefa em edição com campo limpo');
+                                    }
+                                }, 100);
+                            }
+                        }, 200);
+                    }
+                }
+            }, 100);
+        }
     },
 
     // Evento para garantir que células sejam editáveis por duplo clique
