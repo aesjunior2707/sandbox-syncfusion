@@ -1573,6 +1573,56 @@ window.getTaskDataFromVisualRow = function(visualRowIndex) {
     return null;
 };
 
+// Função de recovery completa para restaurar funcionalidade
+window.fullRecovery = function() {
+    console.log('🚑 RECOVERY COMPLETA DO GANTT');
+    console.log('============================');
+
+    try {
+        // 1. Restaurar duplo clique
+        console.log('1️⃣ Restaurando duplo clique...');
+        restoreDoubleClickEdit();
+
+        // 2. Resetar estado do Gantt
+        console.log('2️⃣ Resetando estado...');
+        resetGanttState();
+
+        // 3. Reconfigurar seleção
+        console.log('3️⃣ Reconfigurando seleção...');
+        currentSelectedRowIndex = -1;
+
+        // 4. Aguardar e testar
+        setTimeout(function() {
+            console.log('4️⃣ Testando funcionalidade...');
+
+            // Testar duplo clique na primeira linha
+            var firstRow = document.querySelector('.e-treegrid .e-row');
+            if (firstRow) {
+                var taskNameCell = firstRow.querySelector('.e-rowcell:nth-child(2)');
+                if (taskNameCell) {
+                    console.log('📋 Primeira linha encontrada:', taskNameCell.textContent.trim());
+                    console.log('🔧 Tente duplo clique na célula TaskName da primeira linha');
+                } else {
+                    console.log('⚠️ Célula TaskName não encontrada');
+                }
+            } else {
+                console.log('⚠️ Nenhuma linha encontrada');
+            }
+
+            console.log('============================');
+            console.log('🎉 RECOVERY COMPLETA!');
+            console.log('📋 Agora tente:');
+            console.log('  - Duplo clique em qualquer célula TaskName');
+            console.log('  - Ou clique + Enter');
+            console.log('  - Ou testEditCurrentRow()');
+
+        }, 2000);
+
+    } catch (error) {
+        console.log('❌ Erro na recovery:', error);
+    }
+};
+
 // Função para forçar edição usando múltiplas abordagens
 window.forceEditRow = function(rowIndex) {
     if (rowIndex === undefined) {
