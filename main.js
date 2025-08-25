@@ -541,12 +541,14 @@ function setupEnterKeyEditing() {
 
                     console.log('🎯 ENTER DETECTADO! Processando...');
 
-                    // Verificar se já estamos em modo de edição
-                    var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid input, .e-treegrid textarea');
+                    // Verificar se já estamos em modo de edição (excluindo campo de busca)
+                    var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid .e-rowcell input, .e-treegrid .e-rowcell textarea');
                     if (isInEditMode) {
                         console.log('Já em modo de edição, ignorando Enter');
                         return; // Deixar comportamento padrão
                     }
+
+                    console.log('✅ Não está em modo de edição, prosseguindo...');
 
                     try {
                         console.log('🔄 Processando Enter...');
