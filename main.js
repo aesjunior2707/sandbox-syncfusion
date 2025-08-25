@@ -500,7 +500,7 @@ function debugRowInfo() {
     console.log('===================');
 }
 
-// Função utilitária para focar no campo TaskName ap��s iniciar edição
+// Função utilitária para focar no campo TaskName após iniciar edição
 function focusTaskNameField() {
     setTimeout(function() {
         try {
@@ -672,6 +672,9 @@ function setupEnterKeyEditing() {
 
                     // Verificar se não estamos editando (excluindo campo de busca)
                     var isEditing = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid .e-rowcell input, .e-treegrid .e-rowcell textarea');
+
+                    console.log('🔍 GLOBAL DEBUG EDIÇÃO:', !!isEditing);
+
                     if (!isEditing && currentSelectedRowIndex >= 0) {
                         console.log('🎯 GLOBAL: Linha selecionada disponível:', currentSelectedRowIndex);
 
