@@ -131,7 +131,7 @@ try {
         // Armazenar índice da linha selecionada
         if (args.rowIndex !== undefined) {
             currentSelectedRowIndex = args.rowIndex;
-            console.log('Linha selecionada:', args.rowIndex, 'TaskID:', args.data ? args.data.TaskID : 'N/A');
+            console.log('Linha selecionada:', args.rowIndex, 'TaskID:', args.data ? args.data.TaskID : 'N/A', 'TaskName:', args.data ? args.data.TaskName : 'N/A');
         }
     },
 
