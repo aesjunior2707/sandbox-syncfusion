@@ -586,6 +586,24 @@ function setupEnterKeyEditing() {
                                 console.log('✅ Usando API Gantt:', targetRowIndex);
                             }
                         }
+                        // Método 3: ESPECIAL - Se há apenas uma linha e nenhuma seleção, usar a primeira
+                        if (targetRowIndex < 0 && domRows.length === 1) {
+                            targetRowIndex = 0;
+                            currentSelectedRowIndex = 0; // Atualizar rastreamento
+                            console.log('🎯 CENÁRIO LINHA ÚNICA: Forçando seleção da primeira linha (índice 0)');
+                        }
+                        // Método 4: Se há poucas linhas (<=3) e linha ativa no DOM
+                        else if (targetRowIndex < 0 && domRows.length <= 3) {
+                            var activeRow = document.querySelector('.e-treegrid .e-row.e-active, .e-treegrid .e-row[aria-selected="true"]');
+                            if (activeRow) {
+                                var ariaRowIndex = activeRow.getAttribute('aria-rowindex');
+                                if (ariaRowIndex !== null) {
+                                    targetRowIndex = parseInt(ariaRowIndex);
+                                    currentSelectedRowIndex = targetRowIndex;
+                                    console.log('🎯 POUCAS LINHAS: Usando linha ativa do DOM (índice ' + targetRowIndex + ')');
+                                }
+                            }
+                        }
 
                         // Verificar se temos dados válidos com múltiplas tentativas
                         var dataSource = null;
