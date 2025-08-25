@@ -568,7 +568,7 @@ function setupEnterKeyEditing() {
 
                         // Debug específico para linha única
                         var domRows = document.querySelectorAll('.e-treegrid .e-row');
-                        console.log('🔍 CENÁRIO LINHA ÚNICA - Linhas no DOM:', domRows.length);
+                        console.log('🔍 CENÁRIO LINHA ��NICA - Linhas no DOM:', domRows.length);
 
                         var targetRowIndex = -1;
                         var taskData = null;
@@ -1034,7 +1034,7 @@ window.inspectGanttProperties = function() {
         if (Array.isArray(value)) {
             console.log('  └── length:', value.length);
             if (value.length > 0) {
-                console.log('  └��─ primeiro item:', value[0]);
+                console.log('  └── primeiro item:', value[0]);
             }
         }
     });
@@ -1254,12 +1254,29 @@ if (ganttChart) {
         // Configurar linha única se necessário
         setupSingleRowForEdit();
 
+        // Verificação adicional após mais tempo
+        setTimeout(function() {
+            var domRows = document.querySelectorAll('.e-treegrid .e-row');
+            if (domRows.length === 1 && currentSelectedRowIndex < 0) {
+                console.log('🔄 VERIFICAÇÃO TARDIA: Configurando linha única...');
+                currentSelectedRowIndex = 0;
+
+                // Tentar garantir que a linha esteja selecionada
+                var firstRow = domRows[0];
+                if (firstRow) {
+                    firstRow.classList.add('e-active');
+                    firstRow.setAttribute('aria-selected', 'true');
+                    console.log('✅ VERIFICAÇÃO TARDIA: Linha única marcada como ativa');
+                }
+            }
+        }, 3000);
+
         // Mostrar instruções de debug
         setTimeout(function() {
             console.log('🎯 GANTT CHART CARREGADO COM SUCESSO!');
             console.log('💡 FUNÇÕES DE DEBUG DISPONÍVEIS:');
             console.log('- debugQuick() - Debug rápido');
-            console.log('- testEditCurrentRow() - Testar ediç��o');
+            console.log('- testEditCurrentRow() - Testar edição');
             console.log('- testSingleRowEdit() - Testar linha única');
             console.log('- inspectGanttProperties() - Inspeção completa');
             console.log('- checkEditState() - Verificar estado de edição');
