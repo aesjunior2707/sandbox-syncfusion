@@ -493,7 +493,7 @@ function restoreDefaultTasks() {
                 // Atualizar o componente
                 ganttChart.refresh();
 
-                // Ajustar zoom após carregar dados
+                // Ajustar zoom ap��s carregar dados
                 setTimeout(function() {
                     if (ganttChart && ganttChart.fitToProject) {
                         ganttChart.fitToProject();
@@ -1193,7 +1193,7 @@ window.debugQuick = function() {
             if (method.value) {
                 console.log('✅', method.name + ':', method.value.length, 'itens');
                 if (method.value.length > 0) {
-                    console.log('  └── Primeira tarefa:', method.value[0].TaskName);
+                    console.log('  ���── Primeira tarefa:', method.value[0].TaskName);
                 }
             } else {
                 console.log('❌', method.name + ':', 'não disponível');
@@ -1601,6 +1601,50 @@ window.fullRecovery = function() {
     } catch (error) {
         console.log('❌ Erro na recovery:', error);
     }
+};
+
+// Função de teste rápido para verificar se tudo está funcionando
+window.quickTest = function() {
+    console.log('⚡ TESTE RÁPIDO DE FUNCIONALIDADE');
+    console.log('================================');
+
+    // 1. Verificar estrutura básica
+    var domRows = document.querySelectorAll('.e-treegrid .e-row');
+    var flatDataLength = ganttChart && ganttChart.flatData ? ganttChart.flatData.length : 0;
+
+    console.log('📊 ESTRUTURA:');
+    console.log('- Linhas no DOM:', domRows.length);
+    console.log('- flatData itens:', flatDataLength);
+    console.log('- currentSelectedRowIndex:', currentSelectedRowIndex);
+
+    // 2. Testar mapeamento
+    if (currentSelectedRowIndex >= 0) {
+        console.log('🔍 TESTE DE MAPEAMENTO:');
+        var taskData = getTaskDataFromVisualRow(currentSelectedRowIndex);
+        if (taskData) {
+            console.log('✅ Mapeamento OK:', taskData.TaskName);
+        } else {
+            console.log('❌ Mapeamento falhou');
+        }
+    }
+
+    // 3. Verificar configurações de edição
+    console.log('🔧 CONFIGURAÇÕES:');
+    if (ganttChart && ganttChart.editSettings) {
+        console.log('- allowEditing:', ganttChart.editSettings.allowEditing);
+        console.log('- mode:', ganttChart.editSettings.mode);
+    }
+
+    if (ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.editSettings) {
+        console.log('- treeGrid.allowEditing:', ganttChart.treeGrid.editSettings.allowEditing);
+    }
+
+    console.log('================================');
+    console.log('📋 INSTRUÇÕES DE TESTE:');
+    console.log('1. Clique em qualquer linha');
+    console.log('2. Pressione Enter OU duplo clique');
+    console.log('3. Se não funcionar: fullRecovery()');
+    console.log('================================');
 };
 
 // Função para forçar edição usando múltiplas abordagens
