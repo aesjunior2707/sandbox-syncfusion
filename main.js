@@ -583,9 +583,40 @@ function setupEnterKeyEditing() {
                             }
                         }
 
-                        // Verificar se temos dados válidos
-                        if (targetRowIndex >= 0 && ganttChart && ganttChart.dataSource && targetRowIndex < ganttChart.dataSource.length) {
-                            taskData = ganttChart.dataSource[targetRowIndex];
+                        // Verificar se temos dados válidos com múltiplas tentativas
+                        var dataSource = null;
+                        var dataLength = 0;
+
+                        // Método 1: dataSource direto
+                        if (ganttChart && ganttChart.dataSource) {
+                            dataSource = ganttChart.dataSource;
+                            dataLength = dataSource.length;
+                            console.log('📊 Método 1 - dataSource direto:', dataLength, 'itens');
+                        }
+
+                        // Método 2: treeGrid dataSource
+                        if ((!dataSource || dataLength === 0) && ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.dataSource) {
+                            dataSource = ganttChart.treeGrid.dataSource;
+                            dataLength = dataSource.length;
+                            console.log('📊 Método 2 - treeGrid dataSource:', dataLength, 'itens');
+                        }
+
+                        // Método 3: getCurrentViewRecords
+                        if ((!dataSource || dataLength === 0) && ganttChart && ganttChart.getCurrentViewRecords) {
+                            dataSource = ganttChart.getCurrentViewRecords();
+                            dataLength = dataSource ? dataSource.length : 0;
+                            console.log('📊 Método 3 - getCurrentViewRecords:', dataLength, 'itens');
+                        }
+
+                        // Método 4: flatData
+                        if ((!dataSource || dataLength === 0) && ganttChart && ganttChart.flatData) {
+                            dataSource = ganttChart.flatData;
+                            dataLength = dataSource ? dataSource.length : 0;
+                            console.log('📊 Método 4 - flatData:', dataLength, 'itens');
+                        }
+
+                        if (targetRowIndex >= 0 && dataSource && targetRowIndex < dataLength) {
+                            taskData = dataSource[targetRowIndex];
                             var taskId = taskData.TaskID;
 
                             console.log('🎯 INICIANDO EDIÇÃO:');
@@ -693,7 +724,7 @@ function setupEnterKeyEditing() {
                             // Edição direta
                             try {
                                 ganttChart.treeGrid.editCell(currentSelectedRowIndex, 'TaskName');
-                                console.log('✅ GLOBAL: Edi��ão iniciada com sucesso!');
+                                console.log('✅ GLOBAL: Edição iniciada com sucesso!');
                                 focusTaskNameField();
                             } catch (error) {
                                 console.log('❌ GLOBAL: Erro na edição:', error);
