@@ -449,11 +449,73 @@ function restoreDefaultTasks() {
     }
 }
 
+// Função para configurar evento Enter para edição
+function setupEnterKeyEditing() {
+    // Aguardar o componente estar totalmente carregado
+    setTimeout(function() {
+        try {
+            // Adicionar event listener para tecla Enter no container do Gantt
+            var ganttElement = document.getElementById('Gantt');
+            if (ganttElement) {
+                ganttElement.addEventListener('keydown', function(event) {
+                    // Verificar se Enter foi pressionado
+                    if (event.key === 'Enter' || event.keyCode === 13) {
+                        try {
+                            // Encontrar a linha atualmente selecionada/focada
+                            var selectedRow = document.querySelector('.e-treegrid .e-row.e-active, .e-treegrid .e-row[aria-selected="true"]');
+                            if (selectedRow) {
+                                // Obter o índice da linha
+                                var rowIndex = selectedRow.rowIndex - 1; // Subtraindo 1 porque o header é rowIndex 0
+
+                                // Verificar se há dados nesta linha
+                                if (ganttChart && ganttChart.dataSource && ganttChart.dataSource.length > rowIndex && rowIndex >= 0) {
+                                    var taskData = ganttChart.dataSource[rowIndex];
+                                    var taskId = taskData.TaskID;
+
+                                    console.log('Enter pressionado na linha:', rowIndex, 'TaskID:', taskId);
+
+                                    // Prevenir comportamento padrão do Enter
+                                    event.preventDefault();
+                                    event.stopPropagation();
+
+                                    // Iniciar edição usando diferentes métodos
+                                    if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                                        // Método 1: Editar célula TaskName
+                                        ganttChart.treeGrid.editCell(rowIndex, 'TaskName');
+                                        console.log('Edição iniciada via treeGrid.editCell');
+                                    } else if (ganttChart.startEdit && taskId) {
+                                        // Método 2: Iniciar edição por TaskID
+                                        ganttChart.startEdit(taskId);
+                                        console.log('Edição iniciada via startEdit');
+                                    } else if (ganttChart.beginEdit && taskData) {
+                                        // Método 3: Iniciar edição por record
+                                        ganttChart.beginEdit(taskData);
+                                        console.log('Edição iniciada via beginEdit');
+                                    }
+                                }
+                            }
+                        } catch (editError) {
+                            console.error('Erro ao iniciar edição com Enter:', editError);
+                        }
+                    }
+                });
+
+                console.log('Event listener para Enter configurado no Gantt');
+            }
+        } catch (error) {
+            console.error('Erro ao configurar event listener Enter:', error);
+        }
+    }, 500);
+}
+
 // Adicionar o Gantt ao DOM
 if (ganttChart) {
     try {
         ganttChart.appendTo('#Gantt');
         console.log('Gantt inicializado com sucesso');
+
+        // Configurar event listener para Enter
+        setupEnterKeyEditing();
     } catch (error) {
         console.error('Erro ao anexar Gantt ao DOM:', error);
     }
