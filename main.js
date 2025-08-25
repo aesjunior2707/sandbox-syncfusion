@@ -414,6 +414,38 @@ function reconfigureEditingAfterClear() {
             }, 100);
         }
         
+        // Criar nova tarefa após reconfigurar edição
+        setTimeout(function() {
+            try {
+                console.log('Criando nova tarefa após limpar...');
+                
+                var newTask = {
+                    TaskID: 1,
+                    TaskName: 'Nova Tarefa',
+                    StartDate: new Date(),
+                    Duration: 1,
+                    Progress: 0,
+                    Predecessor: ''
+                };
+
+                console.log('Adicionando nova tarefa:', newTask);
+                ganttChart.addRecord(newTask);
+                
+                console.log('✅ Nova tarefa criada após limpar');
+            } catch (error) {
+                console.error('Erro ao criar nova tarefa:', error);
+                
+                // Fallback: tentar adicionar diretamente ao dataSource
+                try {
+                    ganttChart.dataSource = [newTask];
+                    ganttChart.refresh();
+                    console.log('✅ Nova tarefa criada via fallback');
+                } catch (fallbackError) {
+                    console.error('Erro no fallback:', fallbackError);
+                }
+            }
+        }, 1200);
+        
     } catch (error) {
         console.error('Erro ao reconfigurar edição:', error);
     }
