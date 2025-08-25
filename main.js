@@ -827,23 +827,65 @@ window.testEditCurrentRow = function() {
     console.log('🧪 TESTE MANUAL DE EDIÇÃO');
     console.log('Linha selecionada:', currentSelectedRowIndex);
 
-    if (currentSelectedRowIndex >= 0 && ganttChart && ganttChart.dataSource && currentSelectedRowIndex < ganttChart.dataSource.length) {
-        var taskData = ganttChart.dataSource[currentSelectedRowIndex];
-        console.log('Dados da linha:', taskData);
+    if (currentSelectedRowIndex >= 0) {
+        // Usar mesma lógica de acesso a dados
+        var dataSource = null;
+        var dataLength = 0;
 
-        try {
-            if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
-                ganttChart.treeGrid.editCell(currentSelectedRowIndex, 'TaskName');
-                console.log('✅ Edição manual iniciada!');
-                focusTaskNameField();
-            } else {
-                console.log('❌ treeGrid.editCell não disponível');
+        if (ganttChart && ganttChart.dataSource) {
+            dataSource = ganttChart.dataSource;
+            dataLength = dataSource.length;
+            console.log('✅ Usando dataSource direto:', dataLength, 'itens');
+        } else if (ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.dataSource) {
+            dataSource = ganttChart.treeGrid.dataSource;
+            dataLength = dataSource.length;
+            console.log('✅ Usando treeGrid dataSource:', dataLength, 'itens');
+        } else if (ganttChart && ganttChart.getCurrentViewRecords) {
+            dataSource = ganttChart.getCurrentViewRecords();
+            dataLength = dataSource ? dataSource.length : 0;
+            console.log('✅ Usando getCurrentViewRecords:', dataLength, 'itens');
+        } else if (ganttChart && ganttChart.flatData) {
+            dataSource = ganttChart.flatData;
+            dataLength = dataSource ? dataSource.length : 0;
+            console.log('✅ Usando flatData:', dataLength, 'itens');
+        }
+
+        if (dataSource && currentSelectedRowIndex < dataLength) {
+            var taskData = dataSource[currentSelectedRowIndex];
+            console.log('Dados da linha:', taskData);
+
+            try {
+                if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                    ganttChart.treeGrid.editCell(currentSelectedRowIndex, 'TaskName');
+                    console.log('✅ Edição manual iniciada!');
+                    focusTaskNameField();
+                } else {
+                    console.log('❌ treeGrid.editCell não disponível');
+                }
+            } catch (error) {
+                console.log('❌ Erro na edição manual:', error);
             }
-        } catch (error) {
-            console.log('❌ Erro na edição manual:', error);
+        } else {
+            console.log('❌ Dados não encontrados');
+            console.log('- currentSelectedRowIndex:', currentSelectedRowIndex);
+            console.log('- dataLength:', dataLength);
+            console.log('- dataSource:', !!dataSource);
+
+            // Tentar edição direta mesmo sem dados
+            console.log('🔧 Tentando edição direta...');
+            try {
+                if (ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                    ganttChart.treeGrid.editCell(currentSelectedRowIndex, 'TaskName');
+                    console.log('✅ Edição direta bem-sucedida!');
+                    focusTaskNameField();
+                }
+            } catch (error) {
+                console.log('❌ Erro na edição direta:', error);
+            }
         }
     } else {
-        console.log('❌ Linha inválida ou sem dados');
+        console.log('❌ Nenhuma linha selecionada');
+        console.log('📋 Clique em uma linha primeiro ou use: currentSelectedRowIndex = 0');
     }
 };
 
