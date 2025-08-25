@@ -659,8 +659,8 @@ function setupEnterKeyEditing() {
                 if (event.key === 'Enter' || event.keyCode === 13) {
                     console.log('🌍 GLOBAL Enter detectado!');
 
-                    // Verificar se não estamos editando
-                    var isEditing = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid input, .e-treegrid textarea');
+                    // Verificar se não estamos editando (excluindo campo de busca)
+                    var isEditing = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid .e-rowcell input, .e-treegrid .e-rowcell textarea');
                     if (!isEditing && currentSelectedRowIndex >= 0) {
                         console.log('🎯 GLOBAL: Linha selecionada disponível:', currentSelectedRowIndex);
 
