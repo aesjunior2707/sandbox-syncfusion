@@ -840,7 +840,7 @@ window.testEditCurrentRow = function() {
                 console.log('❌ treeGrid.editCell não disponível');
             }
         } catch (error) {
-            console.log('❌ Erro na ediç��o manual:', error);
+            console.log('❌ Erro na edição manual:', error);
         }
     } else {
         console.log('❌ Linha inválida ou sem dados');
@@ -910,6 +910,63 @@ window.checkEditState = function() {
         console.log('- TreeGrid disponível:', !!ganttChart.treeGrid);
         console.log('- isEdit (se disponível):', ganttChart.treeGrid.isEdit);
     }
+};
+
+// Função para inspecionar propriedades do Gantt
+window.inspectGanttProperties = function() {
+    console.log('🔍 INSPEÇÃO COMPLETA DO GANTT CHART');
+
+    if (!ganttChart) {
+        console.log('❌ ganttChart não está disponível');
+        return;
+    }
+
+    console.log('📋 PROPRIEDADES PRINCIPAIS:');
+    var mainProps = ['dataSource', 'treeGrid', 'flatData', 'taskFields', 'columns'];
+    mainProps.forEach(function(prop) {
+        var value = ganttChart[prop];
+        console.log('- ' + prop + ':', !!value, typeof value);
+        if (Array.isArray(value)) {
+            console.log('  └── length:', value.length);
+            if (value.length > 0) {
+                console.log('  └── primeiro item:', value[0]);
+            }
+        }
+    });
+
+    console.log('📋 MÉTODOS RELEVANTES:');
+    var methods = ['getCurrentViewRecords', 'getSelectedRowIndexes', 'startEdit', 'editCell'];
+    methods.forEach(function(method) {
+        console.log('- ' + method + ':', typeof ganttChart[method]);
+    });
+
+    if (ganttChart.treeGrid) {
+        console.log('📋 TREEGRID PROPRIEDADES:');
+        var treeProps = ['dataSource', 'editCell', 'startEdit', 'isEdit'];
+        treeProps.forEach(function(prop) {
+            var value = ganttChart.treeGrid[prop];
+            console.log('- treeGrid.' + prop + ':', !!value, typeof value);
+            if (Array.isArray(value)) {
+                console.log('  └── length:', value.length);
+            }
+        });
+    }
+
+    // Informações do DOM
+    var domRows = document.querySelectorAll('.e-treegrid .e-row');
+    console.log('📋 INFORMAÇÕES DO DOM:');
+    console.log('- Linhas renderizadas:', domRows.length);
+
+    domRows.forEach(function(row, index) {
+        if (index < 5) { // Mostrar apenas as primeiras 5 linhas
+            var cells = row.querySelectorAll('.e-rowcell');
+            var rowText = '';
+            if (cells.length > 1) {
+                rowText = cells[1].textContent.trim(); // TaskName
+            }
+            console.log('  └── Linha ' + index + ':', rowText);
+        }
+    });
 };
 
 // Função de reset completo (último recurso)
