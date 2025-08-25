@@ -329,12 +329,20 @@ function clearAllTasks() {
                         // Aguardar um pouco mais e então iniciar edição na primeira linha
                         setTimeout(function() {
                             try {
-                                // Método alternativo: tentar editCell primeiro se disponível
-                                if (ganttChart.editCell && ganttChart.treeGrid && ganttChart.treeGrid.getRows().length > 0) {
-                                    ganttChart.editCell(0, 'TaskName');
-                                } else {
-                                    // Fallback: usar startEdit
-                                    ganttChart.startEdit();
+                                // Método correto 1: usar treeGrid.editCell para editar célula específica
+                                if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                                    ganttChart.treeGrid.editCell(0, 'TaskName');
+                                    console.log('Edição iniciada via treeGrid.editCell');
+                                }
+                                // Método correto 2: usar startEdit com taskId
+                                else if (ganttChart.startEdit) {
+                                    ganttChart.startEdit(1); // ID da nova tarefa criada
+                                    console.log('Edição iniciada via startEdit com taskId');
+                                }
+                                // Método correto 3: usar beginEdit com o registro
+                                else if (ganttChart.beginEdit && ganttChart.dataSource && ganttChart.dataSource.length > 0) {
+                                    ganttChart.beginEdit(ganttChart.dataSource[0]);
+                                    console.log('Edição iniciada via beginEdit com record');
                                 }
 
                                 // Aguardar um pouco mais para focar no campo TaskName
@@ -346,7 +354,9 @@ function clearAllTasks() {
                                             '.e-treegrid .e-inline-edit input[aria-label*="Task"], ' +
                                             '.e-treegrid .e-inline-edit input[name="TaskName"], ' +
                                             '.e-treegrid .e-editedrow input, ' +
-                                            '.e-treegrid td[aria-describedby*="TaskName"] input'
+                                            '.e-treegrid td[aria-describedby*="TaskName"] input, ' +
+                                            '.e-treegrid .e-rowcell input[aria-label*="TaskName"], ' +
+                                            'input[aria-label*="Task Name"]'
                                         );
                                         if (taskNameInput) {
                                             taskNameInput.focus();
@@ -358,19 +368,18 @@ function clearAllTasks() {
                                     } catch (focusError) {
                                         console.log('Não foi possível focar no campo TaskName automaticamente:', focusError);
                                     }
-                                }, 150);
+                                }, 200);
 
                                 console.log('Nova linha criada e colocada em modo de edição');
                             } catch (editError) {
                                 console.error('Erro ao iniciar edição:', editError);
-                                // Tentar método mais simples como fallback
-                                try {
-                                    ganttChart.startEdit();
-                                } catch (fallbackError) {
-                                    console.error('Erro no fallback de edição:', fallbackError);
-                                }
+                                console.log('Métodos de edição disponíveis:', {
+                                    'treeGrid.editCell': !!(ganttChart.treeGrid && ganttChart.treeGrid.editCell),
+                                    'startEdit': !!(ganttChart.startEdit),
+                                    'beginEdit': !!(ganttChart.beginEdit)
+                                });
                             }
-                        }, 250);
+                        }, 300);
 
                     } catch (addError) {
                         console.error('Erro ao adicionar nova linha:', addError);
