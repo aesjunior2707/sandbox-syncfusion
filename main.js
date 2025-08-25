@@ -710,6 +710,31 @@ window.debugGanttSelection = function() {
     }
 };
 
+// Função para teste manual de edição (pode ser chamada no console)
+window.testEditCurrentRow = function() {
+    console.log('🧪 TESTE MANUAL DE EDIÇÃO');
+    console.log('Linha selecionada:', currentSelectedRowIndex);
+
+    if (currentSelectedRowIndex >= 0 && ganttChart && ganttChart.dataSource && currentSelectedRowIndex < ganttChart.dataSource.length) {
+        var taskData = ganttChart.dataSource[currentSelectedRowIndex];
+        console.log('Dados da linha:', taskData);
+
+        try {
+            if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                ganttChart.treeGrid.editCell(currentSelectedRowIndex, 'TaskName');
+                console.log('✅ Edição manual iniciada!');
+                focusTaskNameField();
+            } else {
+                console.log('❌ treeGrid.editCell não disponível');
+            }
+        } catch (error) {
+            console.log('❌ Erro na edição manual:', error);
+        }
+    } else {
+        console.log('❌ Linha inválida ou sem dados');
+    }
+};
+
 // Adicionar o Gantt ao DOM
 if (ganttChart) {
     try {
