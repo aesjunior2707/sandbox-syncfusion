@@ -651,6 +651,40 @@ function setupEnterKeyEditing() {
 
                 console.log('Event listeners configurados (Enter + Click)');
             }
+
+            // Event listener adicional no document como backup
+            document.addEventListener('keydown', function(event) {
+                if ((event.key === 'Enter' || event.keyCode === 13) && !event.ctrlKey && !event.altKey && !event.shiftKey) {
+                    // Verificar se o foco está no Gantt
+                    var activeElement = document.activeElement;
+                    var isInGantt = activeElement && (activeElement.closest('#Gantt') || activeElement.id === 'Gantt');
+
+                    if (isInGantt) {
+                        console.log('🔥 BACKUP Enter detectado no document!');
+
+                        // Verificar se não estamos editando
+                        var isEditing = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid input, .e-treegrid textarea');
+                        if (!isEditing && currentSelectedRowIndex >= 0) {
+                            console.log('🚀 BACKUP: Tentando editar linha:', currentSelectedRowIndex);
+
+                            if (ganttChart && ganttChart.dataSource && currentSelectedRowIndex < ganttChart.dataSource.length) {
+                                var taskData = ganttChart.dataSource[currentSelectedRowIndex];
+
+                                event.preventDefault();
+                                event.stopPropagation();
+
+                                // Tentar edição
+                                if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                                    ganttChart.treeGrid.editCell(currentSelectedRowIndex, 'TaskName');
+                                    console.log('🎯 BACKUP: Edição iniciada!');
+                                    focusTaskNameField();
+                                }
+                            }
+                        }
+                    }
+                }
+            }, true);
+
         } catch (error) {
             console.error('Erro ao configurar event listeners:', error);
         }
