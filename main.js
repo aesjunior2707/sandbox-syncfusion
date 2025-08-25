@@ -693,7 +693,7 @@ function setupEnterKeyEditing() {
                             // Edição direta
                             try {
                                 ganttChart.treeGrid.editCell(currentSelectedRowIndex, 'TaskName');
-                                console.log('✅ GLOBAL: Edição iniciada com sucesso!');
+                                console.log('✅ GLOBAL: Edi��ão iniciada com sucesso!');
                                 focusTaskNameField();
                             } catch (error) {
                                 console.log('❌ GLOBAL: Erro na edição:', error);
@@ -757,7 +757,7 @@ window.testEditCurrentRow = function() {
     }
 };
 
-// Função para sair do modo de edição for��adamente (pode ser chamada no console)
+// Função para sair do modo de edição forçadamente (pode ser chamada no console)
 window.forceExitEditMode = function() {
     console.log('🚫 FORÇANDO SAÍDA DO MODO DE EDIÇÃO');
 
@@ -819,6 +819,35 @@ window.checkEditState = function() {
         console.log('📈 ESTADO DO TREEGRID:');
         console.log('- TreeGrid disponível:', !!ganttChart.treeGrid);
         console.log('- isEdit (se disponível):', ganttChart.treeGrid.isEdit);
+    }
+};
+
+// Função de reset completo (último recurso)
+window.resetGanttState = function() {
+    console.log('🔄 RESET COMPLETO DO ESTADO DO GANTT');
+
+    try {
+        // Forçar saída do modo de edição
+        forceExitEditMode();
+
+        // Limpar seleção
+        if (ganttChart && ganttChart.clearSelection) {
+            ganttChart.clearSelection();
+        }
+
+        // Resetar variável de linha selecionada
+        currentSelectedRowIndex = -1;
+
+        // Refresh do componente
+        if (ganttChart && ganttChart.refresh) {
+            ganttChart.refresh();
+        }
+
+        console.log('✅ Reset completo realizado');
+        console.log('📋 Agora clique em uma linha e tente Enter novamente');
+
+    } catch (error) {
+        console.log('❌ Erro no reset:', error);
     }
 };
 
