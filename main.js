@@ -705,7 +705,7 @@ function setupEnterKeyEditing() {
                         }
 
                         if (actualTaskData) {
-                            taskData = dataSource[targetRowIndex];
+                            taskData = actualTaskData;
                             var taskId = taskData.TaskID;
 
                             console.log('🎯 DADOS ENCONTRADOS! INICIANDO EDIÇÃO:');
