@@ -586,7 +586,7 @@ function setupEnterKeyEditing() {
                                 console.log('✅ Usando API Gantt:', targetRowIndex);
                             }
                         }
-                        // M��todo 3: ESPECIAL - Se há apenas uma linha e nenhuma seleção, usar a primeira
+                        // Método 3: ESPECIAL - Se há apenas uma linha e nenhuma seleção, usar a primeira
                         if (targetRowIndex < 0 && domRows.length === 1) {
                             targetRowIndex = 0;
                             currentSelectedRowIndex = 0; // Atualizar rastreamento
@@ -658,8 +658,30 @@ function setupEnterKeyEditing() {
 
                             if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
                                 try {
+                                    console.log('🔧 Tentando treeGrid.editCell...');
+                                    console.log('- Parâmetros:', 'rowIndex=' + targetRowIndex, 'field=TaskName');
+
                                     ganttChart.treeGrid.editCell(targetRowIndex, 'TaskName');
-                                    console.log('✅ Edição via treeGrid.editCell');
+                                    console.log('✅ treeGrid.editCell executado');
+
+                                    // Verificar imediatamente se a edição está ativa
+                                    setTimeout(function() {
+                                        var isEditingNow = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid .e-rowcell input, .e-treegrid .e-rowcell textarea');
+                                        console.log('🔍 VERIFICAÇÃO PÓS-EDIÇÃO:', !!isEditingNow);
+                                        if (isEditingNow) {
+                                            console.log('✅ Modo de edição ATIVO após editCell');
+                                        } else {
+                                            console.log('❌ Modo de edição NÃO ATIVO - algo cancelou a edição');
+
+                                            // Tentar método alternativo imediato
+                                            console.log('🔄 Tentando método alternativo...');
+                                            if (ganttChart.startEdit && taskId) {
+                                                ganttChart.startEdit(taskId);
+                                                console.log('🔧 startEdit executado como alternativa');
+                                            }
+                                        }
+                                    }, 100);
+
                                     editSuccess = true;
                                 } catch (editError) {
                                     console.log('❌ Erro treeGrid.editCell:', editError);
