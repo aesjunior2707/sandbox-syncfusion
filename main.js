@@ -532,14 +532,19 @@ function setupEnterKeyEditing() {
             if (ganttElement) {
                 // Event listener único e simplificado
                 ganttElement.addEventListener('keydown', function(event) {
+                    console.log('Tecla pressionada:', event.key, 'Código:', event.keyCode);
+
                     // Apenas processar Enter
                     if (event.key !== 'Enter' && event.keyCode !== 13) {
                         return;
                     }
 
+                    console.log('🎯 ENTER DETECTADO! Processando...');
+
                     // Verificar se já estamos em modo de edição
                     var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid input, .e-treegrid textarea');
                     if (isInEditMode) {
+                        console.log('Já em modo de edição, ignorando Enter');
                         return; // Deixar comportamento padrão
                     }
 
