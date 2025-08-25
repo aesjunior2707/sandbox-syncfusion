@@ -672,7 +672,48 @@ function setupEnterKeyEditing() {
                         } else {
                             console.log('❌ Linha inválida ou sem dados:');
                             console.log('- targetRowIndex:', targetRowIndex);
-                            console.log('- dataSource length:', ganttChart ? ganttChart.dataSource.length : 'N/A');
+                            console.log('- dataLength encontrado:', dataLength);
+                            console.log('- dataSource disponível:', !!dataSource);
+
+                            // Debug adicional - tentar diferentes propriedades do Gantt
+                            if (ganttChart) {
+                                console.log('🔍 DEBUG GANTT PROPRIEDADES:');
+                                console.log('- ganttChart.dataSource:', !!ganttChart.dataSource, ganttChart.dataSource ? ganttChart.dataSource.length : 'null');
+                                console.log('- ganttChart.treeGrid:', !!ganttChart.treeGrid);
+                                if (ganttChart.treeGrid) {
+                                    console.log('- ganttChart.treeGrid.dataSource:', !!ganttChart.treeGrid.dataSource, ganttChart.treeGrid.dataSource ? ganttChart.treeGrid.dataSource.length : 'null');
+                                }
+                                console.log('- ganttChart.flatData:', !!ganttChart.flatData, ganttChart.flatData ? ganttChart.flatData.length : 'null');
+                                console.log('- ganttChart.getCurrentViewRecords:', !!ganttChart.getCurrentViewRecords);
+
+                                // Tentar método alternativo - obter dados da linha diretamente do DOM
+                                var domRows = document.querySelectorAll('.e-treegrid .e-row');
+                                console.log('- Linhas no DOM:', domRows.length);
+
+                                if (targetRowIndex >= 0 && targetRowIndex < domRows.length) {
+                                    var targetDomRow = domRows[targetRowIndex];
+                                    var cells = targetDomRow.querySelectorAll('.e-rowcell');
+                                    console.log('- Células na linha DOM:', cells.length);
+                                    if (cells.length > 1) {
+                                        var taskNameCell = cells[1]; // Assumindo que TaskName é a segunda coluna
+                                        var taskNameText = taskNameCell.textContent.trim();
+                                        console.log('- Nome da tarefa do DOM:', taskNameText);
+
+                                        // Tentar edição direta pelo DOM
+                                        console.log('🔧 Tentando edição alternativa via DOM...');
+                                        try {
+                                            if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                                                ganttChart.treeGrid.editCell(targetRowIndex, 'TaskName');
+                                                console.log('✅ Edição DOM iniciada!');
+                                                focusTaskNameField();
+                                                return; // Sair para evitar mais processamento
+                                            }
+                                        } catch (domEditError) {
+                                            console.log('❌ Erro na edição DOM:', domEditError);
+                                        }
+                                    }
+                                }
+                            }
                         }
                     } catch (editError) {
                         console.error('Erro ao processar Enter:', editError);
