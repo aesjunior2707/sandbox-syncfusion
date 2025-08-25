@@ -848,6 +848,12 @@ if (ganttChart) {
     }
 }
 
+// Função de teste para criar nova tarefa manualmente (pode ser chamada no console)
+window.testCreateNewTask = function() {
+    console.log('Testando criação de nova tarefa...');
+    createNewTaskInEdit();
+};
+
 // Configurar função dataBound
 if (ganttChart) {
     ganttChart.dataBound = function() {
