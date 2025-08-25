@@ -586,7 +586,7 @@ function setupEnterKeyEditing() {
                                 console.log('✅ Usando API Gantt:', targetRowIndex);
                             }
                         }
-                        // Método 3: ESPECIAL - Se há apenas uma linha e nenhuma sele��ão, usar a primeira
+                        // Método 3: ESPECIAL - Se há apenas uma linha e nenhuma seleção, usar a primeira
                         if (targetRowIndex < 0 && domRows.length === 1) {
                             targetRowIndex = 0;
                             currentSelectedRowIndex = 0; // Atualizar rastreamento
@@ -702,7 +702,7 @@ function setupEnterKeyEditing() {
 
                             // FALLBACK ESPECIAL para linha única - tentar edição direta
                             if (domRows.length === 1 && targetRowIndex >= 0) {
-                                console.log('🚀 FALLBACK LINHA ÚNICA: Tentando edição direta sem dados...');
+                                console.log('🚀 FALLBACK LINHA ÚNICA: Tentando ediç��o direta sem dados...');
                                 try {
                                     if (ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
                                         ganttChart.treeGrid.editCell(targetRowIndex, 'TaskName');
@@ -1256,10 +1256,12 @@ if (ganttChart) {
             console.log('💡 FUNÇÕES DE DEBUG DISPONÍVEIS:');
             console.log('- debugQuick() - Debug rápido');
             console.log('- testEditCurrentRow() - Testar edição');
+            console.log('- testSingleRowEdit() - Testar linha única');
             console.log('- inspectGanttProperties() - Inspeção completa');
             console.log('- checkEditState() - Verificar estado de edição');
             console.log('- resetGanttState() - Reset completo');
             console.log('📋 COMO USAR: Clique em uma linha e pressione Enter para editar');
+            console.log('🎯 LINHA ÚNICA: Se há apenas uma tarefa, ela será configurada automaticamente');
         }, 1000);
 
     } catch (error) {
