@@ -586,7 +586,7 @@ function setupEnterKeyEditing() {
                                 console.log('✅ Usando API Gantt:', targetRowIndex);
                             }
                         }
-                        // Método 3: ESPECIAL - Se há apenas uma linha e nenhuma seleção, usar a primeira
+                        // Método 3: ESPECIAL - Se há apenas uma linha e nenhuma sele��ão, usar a primeira
                         if (targetRowIndex < 0 && domRows.length === 1) {
                             targetRowIndex = 0;
                             currentSelectedRowIndex = 0; // Atualizar rastreamento
@@ -770,6 +770,19 @@ function setupEnterKeyEditing() {
                                 var rowIndex = parseInt(ariaRowIndex);
                                 currentSelectedRowIndex = rowIndex;
                                 console.log('Clique na linha:', rowIndex);
+
+                                // Debug específico para linha única
+                                var domRows = document.querySelectorAll('.e-treegrid .e-row');
+                                if (domRows.length === 1) {
+                                    console.log('🎯 LINHA ÚNICA: Clique registrado, linha preparada para edição');
+                                }
+                            }
+                        } else {
+                            // Se clicou em área vazia mas há apenas uma linha, manter seleção
+                            var domRows = document.querySelectorAll('.e-treegrid .e-row');
+                            if (domRows.length === 1 && currentSelectedRowIndex < 0) {
+                                currentSelectedRowIndex = 0;
+                                console.log('🎯 LINHA ÚNICA: Clique em área vazia, mantendo seleção da linha única');
                             }
                         }
                     } catch (clickError) {
@@ -941,7 +954,7 @@ window.testEditCurrentRow = function() {
 
 // Função para sair do modo de edição forçadamente (pode ser chamada no console)
 window.forceExitEditMode = function() {
-    console.log('��� FORÇANDO SAÍDA DO MODO DE EDIÇÃO');
+    console.log('🚫 FORÇANDO SAÍDA DO MODO DE EDIÇÃO');
 
     try {
         // Cancelar edição no TreeGrid
