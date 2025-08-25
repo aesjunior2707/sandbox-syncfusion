@@ -788,10 +788,11 @@ function setupEnterKeyEditing() {
                                 console.log('🆘 Tente usar: forceExitEditMode() e depois testEditCurrentRow()');
                             }
                         } else {
-                            console.log('❌ Linha inválida ou sem dados:');
-                            console.log('- targetRowIndex:', targetRowIndex);
-                            console.log('- dataLength encontrado:', dataLength);
-                            console.log('- dataSource disponível:', !!dataSource);
+                            console.log('❌ ERRO DE MAPEAMENTO HIERÁRQUICO:');
+                            console.log('- Linha visual selecionada:', targetRowIndex);
+                            console.log('- Linhas no DOM:', document.querySelectorAll('.e-treegrid .e-row').length);
+                            console.log('- flatData disponível:', ganttChart.flatData ? ganttChart.flatData.length : 'N/A');
+                            console.log('- Problema: Mapeamento entre linha visual e dados falhou');
 
                             // FALLBACK ESPECIAL para linha única - tentar edição direta
                             if (domRows.length === 1 && targetRowIndex >= 0) {
@@ -1536,7 +1537,7 @@ window.forceEditRow = function(rowIndex) {
                 console.log('✅ treeGrid.editCell executado com proteção');
             }
         } catch (error) {
-            console.log('❌ Erro no método 2:', error);
+            console.log('❌ Erro no m��todo 2:', error);
         }
 
         // Restaurar eventos após um tempo
