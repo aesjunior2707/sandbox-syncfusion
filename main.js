@@ -724,6 +724,7 @@ function setupEnterKeyEditing() {
             });
 
             console.log('Event listeners configurados');
+            console.log('Funcionalidade ativa: Pressione ↓ na última linha para criar nova tarefa');
         }
     }, 1000);
 }
