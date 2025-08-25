@@ -1313,7 +1313,7 @@ window.checkEditConfiguration = function() {
         return;
     }
 
-    console.log('���� CONFIGURAÇÕES ATUAIS:');
+    console.log('📋 CONFIGURAÇÕES ATUAIS:');
 
     // Verificar editSettings
     if (ganttChart.editSettings) {
@@ -1409,6 +1409,40 @@ window.fixEditConfiguration = function() {
     }
 };
 
+// Função de diagnóstico e correção automática completa
+window.diagnoseAndFix = function() {
+    console.log('🩺 DIAGNÓSTICO E CORREÇÃO AUTOMÁTICA');
+    console.log('=====================================');
+
+    // 1. Verificar configurações
+    console.log('1️⃣ Verificando configurações...');
+    checkEditConfiguration();
+
+    // 2. Corrigir configurações
+    console.log('2️⃣ Corrigindo configurações...');
+    fixEditConfiguration();
+
+    // 3. Configurar linha única se necessário
+    console.log('3️⃣ Configurando linha única...');
+    var domRows = document.querySelectorAll('.e-treegrid .e-row');
+    if (domRows.length === 1) {
+        forceSingleRowSetup();
+    }
+
+    // 4. Tentar edição
+    setTimeout(function() {
+        console.log('4️⃣ Testando edição...');
+        if (currentSelectedRowIndex >= 0) {
+            forceEditRow(currentSelectedRowIndex);
+        } else {
+            forceEditRow(0);
+        }
+    }, 1000);
+
+    console.log('=====================================');
+    console.log('🎯 Diagnóstico completo! Aguarde 1 segundo...');
+};
+
 // Função para forçar edição usando múltiplas abordagens
 window.forceEditRow = function(rowIndex) {
     if (rowIndex === undefined) {
@@ -1476,7 +1510,7 @@ window.forceEditRow = function(rowIndex) {
         try {
             if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
                 ganttChart.treeGrid.editCell(rowIndex, 'TaskName');
-                console.log('✅ treeGrid.editCell executado com proteção');
+                console.log('✅ treeGrid.editCell executado com prote��ão');
             }
         } catch (error) {
             console.log('❌ Erro no método 2:', error);
