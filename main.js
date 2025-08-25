@@ -783,6 +783,41 @@ window.forceExitEditMode = function() {
     }
 };
 
+// Função para verificar estado de edição detalhadamente
+window.checkEditState = function() {
+    console.log('🔍 VERIFICAÇÃO COMPLETA DO ESTADO DE EDIÇÃO');
+
+    // Verificar elementos de edição
+    var editedRows = document.querySelectorAll('.e-treegrid .e-editedrow');
+    var editedCells = document.querySelectorAll('.e-treegrid .e-editedbatchcell');
+    var inputsInCells = document.querySelectorAll('.e-treegrid .e-rowcell input, .e-treegrid .e-rowcell textarea');
+    var allInputs = document.querySelectorAll('.e-treegrid input, .e-treegrid textarea');
+
+    console.log('📊 CONTADORES:');
+    console.log('- Linhas editadas (.e-editedrow):', editedRows.length);
+    console.log('- Células editadas (.e-editedbatchcell):', editedCells.length);
+    console.log('- Inputs em células:', inputsInCells.length);
+    console.log('- Total de inputs:', allInputs.length);
+
+    console.log('📋 DETALHES DOS INPUTS:');
+    allInputs.forEach(function(input, index) {
+        console.log('Input', index, ':', {
+            id: input.id,
+            className: input.className,
+            type: input.type,
+            placeholder: input.placeholder,
+            isInCell: !!input.closest('.e-rowcell')
+        });
+    });
+
+    // Verificar estado do Gantt
+    if (ganttChart && ganttChart.treeGrid) {
+        console.log('📈 ESTADO DO TREEGRID:');
+        console.log('- TreeGrid disponível:', !!ganttChart.treeGrid);
+        console.log('- isEdit (se disponível):', ganttChart.treeGrid.isEdit);
+    }
+};
+
 // Adicionar o Gantt ao DOM
 if (ganttChart) {
     try {
