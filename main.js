@@ -753,6 +753,36 @@ window.testEditCurrentRow = function() {
     }
 };
 
+// Função para sair do modo de edição forçadamente (pode ser chamada no console)
+window.forceExitEditMode = function() {
+    console.log('🚫 FORÇANDO SAÍDA DO MODO DE EDIÇÃO');
+
+    try {
+        // Cancelar edição no TreeGrid
+        if (ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.cancelEdit) {
+            ganttChart.treeGrid.cancelEdit();
+            console.log('✅ TreeGrid.cancelEdit executado');
+        }
+
+        // Cancelar edição no Gantt
+        if (ganttChart && ganttChart.cancelEdit) {
+            ganttChart.cancelEdit();
+            console.log('✅ Gantt.cancelEdit executado');
+        }
+
+        // Remover elementos de edição do DOM
+        var editElements = document.querySelectorAll('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
+        editElements.forEach(function(el) {
+            el.classList.remove('e-editedrow', 'e-editedbatchcell');
+        });
+
+        console.log('✅ Limpeza do DOM realizada');
+
+    } catch (error) {
+        console.log('❌ Erro ao forçar saída:', error);
+    }
+};
+
 // Adicionar o Gantt ao DOM
 if (ganttChart) {
     try {
