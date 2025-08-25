@@ -326,7 +326,7 @@ function getMessages(locale) {
             restoreSuccess: 'Dados padrão restaurados com sucesso!',
             clearError: 'Erro ao limpar tarefas: ',
             restoreError: 'Erro ao restaurar dados: ',
-            ganttNotAvailable: 'Gantt Chart não est�� disponível',
+            ganttNotAvailable: 'Gantt Chart não está disponível',
             newTaskName: 'Nova Tarefa'
         },
         'es-ES': {
@@ -628,41 +628,83 @@ function createNewTaskInEdit() {
         // Adicionar a nova tarefa ao Gantt
         ganttChart.addRecord(newTask);
 
-        // Aguardar um momento para o registro ser adicionado e então iniciar edição
+        // Aguardar o registro ser adicionado e forçar entrada em modo de edição
         setTimeout(function() {
             try {
-                // Obter o índice da nova linha (última linha)
-                var newRowIndex = -1;
-                if (ganttChart.flatData) {
-                    newRowIndex = ganttChart.flatData.length - 1;
-                } else if (ganttChart.dataSource) {
-                    newRowIndex = ganttChart.dataSource.length - 1;
+                // Refresh para garantir que a nova linha está no DOM
+                if (ganttChart.refresh) {
+                    ganttChart.refresh();
                 }
 
-                if (newRowIndex >= 0) {
-                    // Atualizar o índice da linha selecionada
-                    currentSelectedRowIndex = newRowIndex;
+                // Aguardar mais um pouco após o refresh
+                setTimeout(function() {
+                    try {
+                        // Obter o índice da nova linha (última linha)
+                        var newRowIndex = -1;
+                        if (ganttChart.flatData) {
+                            newRowIndex = ganttChart.flatData.length - 1;
+                        } else if (ganttChart.dataSource) {
+                            newRowIndex = ganttChart.dataSource.length - 1;
+                        }
 
-                    // Selecionar a nova linha no Gantt
-                    if (ganttChart.selectRow) {
-                        ganttChart.selectRow(newRowIndex);
+                        console.log('Tentando editar nova tarefa na linha:', newRowIndex);
+
+                        if (newRowIndex >= 0) {
+                            // Atualizar o índice da linha selecionada
+                            currentSelectedRowIndex = newRowIndex;
+
+                            // Múltiplas tentativas para garantir edição
+                            var attemptEdit = function(attempt) {
+                                if (attempt > 3) {
+                                    console.log('Falha ao entrar em modo de edição após 3 tentativas');
+                                    return;
+                                }
+
+                                try {
+                                    // Selecionar a linha
+                                    if (ganttChart.selectRow) {
+                                        ganttChart.selectRow(newRowIndex);
+                                    }
+
+                                    // Iniciar edição
+                                    if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                                        ganttChart.treeGrid.editCell(newRowIndex, 'TaskName');
+
+                                        // Verificar se entrou em modo de edição
+                                        setTimeout(function() {
+                                            var isInEdit = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
+                                            if (isInEdit) {
+                                                console.log('✅ Nova tarefa em modo de edição!');
+                                                focusTaskNameField();
+                                            } else {
+                                                console.log('❌ Tentativa', attempt, 'falhou, tentando novamente...');
+                                                setTimeout(function() {
+                                                    attemptEdit(attempt + 1);
+                                                }, 200);
+                                            }
+                                        }, 100);
+                                    }
+                                } catch (error) {
+                                    console.log('Erro na tentativa', attempt, ':', error);
+                                    if (attempt < 3) {
+                                        setTimeout(function() {
+                                            attemptEdit(attempt + 1);
+                                        }, 300);
+                                    }
+                                }
+                            };
+
+                            // Iniciar primeira tentativa
+                            attemptEdit(1);
+                        }
+                    } catch (innerError) {
+                        console.log('Erro interno ao editar nova tarefa:', innerError);
                     }
-
-                    // Iniciar edição na nova linha
-                    if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
-                        ganttChart.treeGrid.editCell(newRowIndex, 'TaskName');
-                        console.log('Edição iniciada para nova tarefa na linha:', newRowIndex);
-
-                        // Focar no campo TaskName
-                        setTimeout(function() {
-                            focusTaskNameField();
-                        }, 200);
-                    }
-                }
+                }, 400);
             } catch (editError) {
                 console.log('Erro ao iniciar edição da nova tarefa:', editError);
             }
-        }, 300);
+        }, 200);
 
     } catch (error) {
         console.log('Erro ao criar nova tarefa:', error);
@@ -696,7 +738,7 @@ function setupEnterKeyEditing() {
         var ganttElement = document.getElementById('Gantt');
         if (ganttElement) {
             ganttElement.addEventListener('keydown', function(event) {
-                // Funcionalidade Enter para edição
+                // Funcionalidade Enter para edi��ão
                 if (event.key === 'Enter' || event.keyCode === 13) {
                     // Verificar se já está em modo de edição
                     var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
