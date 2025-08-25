@@ -76,7 +76,8 @@ try {
         allowEditing: true,
         allowDeleting: true,
         allowTaskbarEditing: true,
-        mode: 'Cell'
+        mode: 'Cell',
+        showDeleteConfirmDialog: true
     },
     toolbar: ['Update', 'Delete', 'Cancel', 'ExpandAll', 'CollapseAll', 'ExcelExport', 'PdfExport', 'Search', 'ZoomIn', 'ZoomOut', 'ZoomToFit'],
     highlightWeekends: true,
