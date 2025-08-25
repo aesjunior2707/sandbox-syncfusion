@@ -1297,6 +1297,87 @@ window.testSingleRowEdit = function() {
     console.log('💥 Todos os métodos falharam');
 };
 
+// Função para forçar edição usando múltiplas abordagens
+window.forceEditRow = function(rowIndex) {
+    if (rowIndex === undefined) {
+        rowIndex = currentSelectedRowIndex >= 0 ? currentSelectedRowIndex : 0;
+    }
+
+    console.log('🚀 FORÇANDO EDIÇÃO DA LINHA:', rowIndex);
+
+    // Método 1: Simular duplo clique na célula TaskName
+    var rows = document.querySelectorAll('.e-treegrid .e-row');
+    if (rows[rowIndex]) {
+        var cells = rows[rowIndex].querySelectorAll('.e-rowcell');
+        if (cells.length > 1) { // TaskName é geralmente a segunda coluna
+            var taskNameCell = cells[1];
+            console.log('🔧 Método 1: Simulando duplo clique na célula TaskName...');
+
+            try {
+                // Simular duplo clique
+                var dblClickEvent = new MouseEvent('dblclick', {
+                    bubbles: true,
+                    cancelable: true,
+                    view: window
+                });
+                taskNameCell.dispatchEvent(dblClickEvent);
+                console.log('✅ Duplo clique simulado');
+
+                setTimeout(function() {
+                    var isEditingAfterDblClick = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid .e-rowcell input');
+                    if (isEditingAfterDblClick) {
+                        console.log('🎉 SUCESSO: Edição ativada via duplo clique!');
+                        focusTaskNameField();
+                        return;
+                    } else {
+                        console.log('❌ Duplo clique não ativou edição, tentando método 2...');
+                        tryMethod2();
+                    }
+                }, 200);
+
+            } catch (error) {
+                console.log('❌ Erro no duplo clique:', error);
+                tryMethod2();
+            }
+        } else {
+            tryMethod2();
+        }
+    } else {
+        console.log('❌ Linha não encontrada no DOM');
+    }
+
+    function tryMethod2() {
+        console.log('🔧 Método 2: Forçar edição via API...');
+
+        // Desabilitar temporariamente eventos que podem cancelar
+        var originalActionBegin = ganttChart.actionBegin;
+        ganttChart.actionBegin = function(args) {
+            if (args.requestType === 'beginEdit') {
+                console.log('✅ Permitindo beginEdit...');
+            }
+            // Chamar função original apenas se não for cancelamento
+            if (originalActionBegin && args.requestType !== 'cancel') {
+                originalActionBegin.call(ganttChart, args);
+            }
+        };
+
+        try {
+            if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                ganttChart.treeGrid.editCell(rowIndex, 'TaskName');
+                console.log('✅ treeGrid.editCell executado com proteção');
+            }
+        } catch (error) {
+            console.log('❌ Erro no método 2:', error);
+        }
+
+        // Restaurar eventos após um tempo
+        setTimeout(function() {
+            ganttChart.actionBegin = originalActionBegin;
+            console.log('🔄 Eventos restaurados');
+        }, 1000);
+    }
+};
+
 // Função de conveniência para forçar setup de linha única
 window.forceSingleRowSetup = function() {
     console.log('🔧 FORÇANDO SETUP DE LINHA ÚNICA');
