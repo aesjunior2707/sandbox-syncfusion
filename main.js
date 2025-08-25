@@ -549,87 +549,83 @@ function setupEnterKeyEditing() {
                     }
 
                     try {
-                        // Debug info antes de processar
-                        console.log('Enter pressionado - iniciando debug...');
-                        debugRowInfo();
+                        console.log('🔄 Processando Enter...');
+                        console.log('currentSelectedRowIndex:', currentSelectedRowIndex);
 
-                        var targetRow = null;
                         var targetRowIndex = -1;
+                        var taskData = null;
 
-                        // Método 1: Verificar se Enter foi pressionado em uma célula específica
-                        var targetCell = event.target.closest('.e-treegrid .e-rowcell');
-                        if (targetCell) {
-                            targetRow = targetCell.closest('.e-row');
-                            console.log('Método 1: Célula encontrada');
+                        // Método 1: Usar linha selecionada rastreada (mais confiável)
+                        if (currentSelectedRowIndex >= 0) {
+                            targetRowIndex = currentSelectedRowIndex;
+                            console.log('✅ Usando linha rastreada:', targetRowIndex);
                         }
-
-                        // Método 2: Se não temos célula específica, usar linha com foco
-                        if (!targetRow) {
-                            targetRow = document.querySelector('.e-treegrid .e-row.e-active, .e-treegrid .e-row[aria-selected="true"]');
-                            if (targetRow) {
-                                console.log('Método 2: Linha ativa encontrada no DOM');
-                            }
-                        }
-
-                        // Método 3: Usar API do Gantt para obter linha selecionada
-                        if (!targetRow && ganttChart && ganttChart.getSelectedRowIndexes) {
+                        // Método 2: Usar API do Gantt
+                        else if (ganttChart && ganttChart.getSelectedRowIndexes) {
                             var selectedIndexes = ganttChart.getSelectedRowIndexes();
                             if (selectedIndexes && selectedIndexes.length > 0) {
                                 targetRowIndex = selectedIndexes[0];
-                                var allRows = document.querySelectorAll('.e-treegrid .e-row');
-                                if (targetRowIndex < allRows.length) {
-                                    targetRow = allRows[targetRowIndex];
-                                    console.log('Método 3: Linha encontrada via API Gantt, índice:', targetRowIndex);
-                                }
+                                console.log('✅ Usando API Gantt:', targetRowIndex);
                             }
                         }
 
-                        if (targetRow) {
-                            // Obter o índice correto usando aria-rowindex
-                            var ariaRowIndex = targetRow.getAttribute('aria-rowindex');
-                            if (ariaRowIndex !== null) {
-                                targetRowIndex = parseInt(ariaRowIndex);
-                                console.log('Índice obtido via aria-rowindex:', targetRowIndex);
-                            } else {
-                                // Fallback: calcular índice manualmente
-                                var allRows = Array.from(document.querySelectorAll('.e-treegrid .e-row'));
-                                targetRowIndex = allRows.indexOf(targetRow);
-                                console.log('Índice calculado manualmente:', targetRowIndex);
+                        // Verificar se temos dados válidos
+                        if (targetRowIndex >= 0 && ganttChart && ganttChart.dataSource && targetRowIndex < ganttChart.dataSource.length) {
+                            taskData = ganttChart.dataSource[targetRowIndex];
+                            var taskId = taskData.TaskID;
+
+                            console.log('🎯 INICIANDO EDIÇÃO:');
+                            console.log('- Linha:', targetRowIndex);
+                            console.log('- TaskID:', taskId);
+                            console.log('- TaskName:', taskData.TaskName);
+
+                            // Prevenir comportamento padrão
+                            event.preventDefault();
+                            event.stopPropagation();
+
+                            // Iniciar edição - tentar diferentes métodos
+                            var editSuccess = false;
+
+                            if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                                try {
+                                    ganttChart.treeGrid.editCell(targetRowIndex, 'TaskName');
+                                    console.log('✅ Edição via treeGrid.editCell');
+                                    editSuccess = true;
+                                } catch (editError) {
+                                    console.log('❌ Erro treeGrid.editCell:', editError);
+                                }
                             }
 
-                            console.log('Linha final detectada - Índice:', targetRowIndex);
-                            console.log('Total de linhas no dataSource:', ganttChart ? ganttChart.dataSource.length : 'N/A');
-
-                            // Verificar se temos dados para esta linha
-                            if (ganttChart && ganttChart.dataSource && targetRowIndex >= 0 && targetRowIndex < ganttChart.dataSource.length) {
-                                var taskData = ganttChart.dataSource[targetRowIndex];
-                                var taskId = taskData.TaskID;
-
-                                console.log('✅ EDITANDO - Linha:', targetRowIndex, 'TaskID:', taskId, 'TaskName:', taskData.TaskName);
-
-                                // Prevenir comportamento padrão
-                                event.preventDefault();
-                                event.stopPropagation();
-
-                                // Iniciar edição
-                                if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
-                                    ganttChart.treeGrid.editCell(targetRowIndex, 'TaskName');
-                                    console.log('Edição iniciada via treeGrid.editCell');
-                                } else if (ganttChart.startEdit && taskId) {
+                            if (!editSuccess && ganttChart.startEdit && taskId) {
+                                try {
                                     ganttChart.startEdit(taskId);
-                                    console.log('Edição iniciada via startEdit');
-                                } else if (ganttChart.beginEdit && taskData) {
-                                    ganttChart.beginEdit(taskData);
-                                    console.log('Edição iniciada via beginEdit');
+                                    console.log('✅ Edição via startEdit');
+                                    editSuccess = true;
+                                } catch (editError) {
+                                    console.log('❌ Erro startEdit:', editError);
                                 }
+                            }
 
+                            if (!editSuccess && ganttChart.beginEdit && taskData) {
+                                try {
+                                    ganttChart.beginEdit(taskData);
+                                    console.log('✅ Edição via beginEdit');
+                                    editSuccess = true;
+                                } catch (editError) {
+                                    console.log('❌ Erro beginEdit:', editError);
+                                }
+                            }
+
+                            if (editSuccess) {
                                 // Focar campo TaskName
                                 focusTaskNameField();
                             } else {
-                                console.log('Dados não encontrados para linha:', targetRowIndex);
+                                console.log('❌ Nenhum método de edição funcionou');
                             }
                         } else {
-                            console.log('Nenhuma linha foi encontrada para edição');
+                            console.log('❌ Linha inválida ou sem dados:');
+                            console.log('- targetRowIndex:', targetRowIndex);
+                            console.log('- dataSource length:', ganttChart ? ganttChart.dataSource.length : 'N/A');
                         }
                     } catch (editError) {
                         console.error('Erro ao processar Enter:', editError);
