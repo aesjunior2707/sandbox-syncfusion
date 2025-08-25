@@ -702,7 +702,7 @@ function setupEnterKeyEditing() {
 
                             // FALLBACK ESPECIAL para linha única - tentar edição direta
                             if (domRows.length === 1 && targetRowIndex >= 0) {
-                                console.log('🚀 FALLBACK LINHA ÚNICA: Tentando ediç��o direta sem dados...');
+                                console.log('🚀 FALLBACK LINHA ÚNICA: Tentando edição direta sem dados...');
                                 try {
                                     if (ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
                                         ganttChart.treeGrid.editCell(targetRowIndex, 'TaskName');
@@ -1139,6 +1139,10 @@ window.debugQuick = function() {
 function setupSingleRowForEdit() {
     setTimeout(function() {
         var domRows = document.querySelectorAll('.e-treegrid .e-row');
+        console.log('🔍 SETUP LINHA ÚNICA: Verificando cenário...');
+        console.log('- Linhas no DOM:', domRows.length);
+        console.log('- currentSelectedRowIndex:', currentSelectedRowIndex);
+
         if (domRows.length === 1 && currentSelectedRowIndex < 0) {
             console.log('🎯 AUTO-SETUP: Configurando linha única para edição');
             currentSelectedRowIndex = 0;
