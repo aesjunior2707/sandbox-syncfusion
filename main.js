@@ -378,6 +378,13 @@ if (ganttChart) {
         try {
             if (!ganttChart.isInitialLoad) {
                 ganttChart.isInitialLoad = true;
+
+                // Inicializar textos dos botões com idioma padrão
+                var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+                if (typeof updateButtonTexts !== 'undefined') {
+                    updateButtonTexts(currentLanguage);
+                }
+
                 setTimeout(function() {
                     if (ganttChart && ganttChart.fitToProject) {
                         ganttChart.fitToProject();
