@@ -534,12 +534,13 @@ function setupEnterKeyEditing() {
                 ganttElement.addEventListener('keydown', function(event) {
                     console.log('Tecla pressionada:', event.key, 'Código:', event.keyCode);
 
-                    // Apenas processar Enter
-                    if (event.key !== 'Enter' && event.keyCode !== 13) {
+                    // Processar Enter ou F2 (atalho alternativo para edição)
+                    if (event.key !== 'Enter' && event.keyCode !== 13 && event.key !== 'F2' && event.keyCode !== 113) {
                         return;
                     }
 
-                    console.log('🎯 ENTER DETECTADO! Processando...');
+                    var keyPressed = event.key === 'F2' || event.keyCode === 113 ? 'F2' : 'Enter';
+                    console.log('🎯 ' + keyPressed + ' DETECTADO! Processando...');
 
                     // Verificar se já estamos em modo de edição (excluindo campo de busca)
                     var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid .e-rowcell input, .e-treegrid .e-rowcell textarea');
