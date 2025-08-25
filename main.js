@@ -618,6 +618,11 @@ function createNewTaskInEdit() {
                     // Atualizar o índice da linha selecionada
                     currentSelectedRowIndex = newRowIndex;
 
+                    // Selecionar a nova linha no Gantt
+                    if (ganttChart.selectRow) {
+                        ganttChart.selectRow(newRowIndex);
+                    }
+
                     // Iniciar edição na nova linha
                     if (ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
                         ganttChart.treeGrid.editCell(newRowIndex, 'TaskName');
