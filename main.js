@@ -493,7 +493,7 @@ function restoreDefaultTasks() {
                 // Atualizar o componente
                 ganttChart.refresh();
 
-                // Ajustar zoom ap��s carregar dados
+                // Ajustar zoom após carregar dados
                 setTimeout(function() {
                     if (ganttChart && ganttChart.fitToProject) {
                         ganttChart.fitToProject();
@@ -1193,7 +1193,7 @@ window.debugQuick = function() {
             if (method.value) {
                 console.log('✅', method.name + ':', method.value.length, 'itens');
                 if (method.value.length > 0) {
-                    console.log('  ���── Primeira tarefa:', method.value[0].TaskName);
+                    console.log('  └── Primeira tarefa:', method.value[0].TaskName);
                 }
             } else {
                 console.log('❌', method.name + ':', 'não disponível');
@@ -1801,21 +1801,24 @@ if (ganttChart) {
         // Mostrar instruções de debug
         setTimeout(function() {
             console.log('🎯 GANTT CHART CARREGADO COM SUCESSO!');
-            console.log('🚑 FUNÇÃO DE RECOVERY COMPLETA:');
-            console.log('🩺 fullRecovery() - Restaura TUDO se algo quebrou');
+            console.log('⚡ TESTE RÁPIDO: quickTest() - verificar se tudo funciona');
+            console.log('🚑 RECOVERY: fullRecovery() - restaurar se algo quebrou');
             console.log('');
-            console.log('💡 OUTRAS FUNÇÕES ÚTEIS:');
-            console.log('- diagnoseAndFix() - Diagnóstico automático');
-            console.log('- restoreDoubleClickEdit() - Restaurar duplo clique');
+            console.log('💡 PRINCIPAIS FUNÇÕES:');
+            console.log('- quickTest() - Teste completo de funcionalidade');
+            console.log('- fullRecovery() - Recovery completa');
+            console.log('- testEditCurrentRow() - Testar edição da linha selecionada');
             console.log('- getTaskDataFromVisualRow(index) - Mapear linha visual');
+            console.log('- restoreDoubleClickEdit() - Restaurar duplo clique');
+            console.log('');
+            console.log('💡 OUTRAS FUNÇÕES:');
+            console.log('- diagnoseAndFix() - Diagnóstico automático');
             console.log('- debugQuick() - Debug rápido');
-            console.log('- testEditCurrentRow() - Testar edição');
             console.log('- forceEditRow(index) - Forçar edição');
             console.log('- checkEditConfiguration() - Verificar configurações');
-            console.log('- resetGanttState() - Reset estado');
             console.log('📋 COMO USAR: Clique em uma linha e pressione Enter para editar');
-            console.log('🔧 ESTRUTURA HIERÁRQUICA: Sistema agora mapeia corretamente');
-            console.log('🆘 SE QUEBROU ALGO: fullRecovery() - restaura tudo!');
+            console.log('🔧 HIERARQUIA: Sistema mapeia corretamente linhas expandidas');
+            console.log('🆘 PROBLEMAS? Use: quickTest() depois fullRecovery()');
         }, 1000);
 
     } catch (error) {
