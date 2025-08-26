@@ -293,23 +293,27 @@ try {
                 // Atualiza o objeto em memória
                 record[field] = value;
 
-                // Preferir método nativo do Gantt se disponível
-                if (ganttChart && typeof ganttChart.updateRecordByID === 'function') {
-                    var updated = {};
-                    for (var k in record) { if (Object.prototype.hasOwnProperty.call(record, k)) { updated[k] = record[k]; } }
-                    updated[field] = value;
-                    ganttChart.updateRecordByID(updated);
-                    console.log('Registro atualizado via updateRecordByID:', updated.TaskID);
-                }
-                // Fallback: atualizar célula específica no TreeGrid
-                else if (ganttChart && ganttChart.treeGrid && typeof ganttChart.treeGrid.updateCell === 'function' && args.rowIndex != null) {
+                // Atualizar também a fonte de dados hierárquica
+                try {
+                    if (record.TaskID != null) {
+                        var dsItem = (typeof findTaskInDataSource === 'function') ? findTaskInDataSource(record.TaskID, ganttChart && ganttChart.dataSource) : null;
+                        if (dsItem) { dsItem[field] = value; }
+                    }
+                } catch (_) {}
+
+                // Atualização mínima de célula para evitar refresh amplo
+                if (ganttChart && ganttChart.treeGrid && typeof ganttChart.treeGrid.updateCell === 'function' && args.rowIndex != null) {
                     ganttChart.treeGrid.updateCell(args.rowIndex, field, value);
                     console.log('Célula atualizada via treeGrid.updateCell - linha:', args.rowIndex, 'campo:', field);
                 }
-                // Último recurso: re-render mínimo não disponível, permitir fluxo padrão
-                else {
-                    args.cancel = false;
-                    console.log('Método de atualização direcionada indisponível, seguindo fluxo padrão de salvamento');
+                // Fallback: usar updateRecordByID apenas se updateCell não estiver disponível
+                else if (ganttChart && typeof ganttChart.updateRecordByID === 'function') {
+                    var updated = { TaskID: record.TaskID };
+                    updated[field] = value;
+                    ganttChart.updateRecordByID(updated);
+                    console.log('Registro atualizado via updateRecordByID (fallback):', updated.TaskID);
+                } else {
+                    console.log('APIs de atualização indisponíveis; alteração mantida em memória');
                 }
 
                 // Encerrar modo de edição explicitamente para evitar comportamento de re-render
