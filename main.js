@@ -810,6 +810,8 @@ function setupEnterKeyEditing() {
                 }
             });
 
+                console.log('Tecla pressionada:', event.key, 'KeyCode:', event.keyCode, 'Ctrl:', event.ctrlKey, 'Shift:', event.shiftKey);
+                
             // Event listener para clicks em linhas
             ganttElement.addEventListener('click', function(event) {
                 var clickedRow = event.target.closest('.e-treegrid .e-row');
@@ -818,6 +820,25 @@ function setupEnterKeyEditing() {
                     if (ariaRowIndex !== null) {
                         currentSelectedRowIndex = parseInt(ariaRowIndex);
                         console.log('Clique na linha:', currentSelectedRowIndex);
+                    }
+                }
+
+                // TESTE ALTERNATIVO - detectar apenas Shift + Seta Esquerda (sem Ctrl)
+                if (event.shiftKey && !event.ctrlKey && (event.key === 'ArrowLeft' || event.keyCode === 37)) {
+                    console.log('🧪 TESTE: Shift + ← detectado (sem Ctrl). Linha atual:', currentSelectedRowIndex);
+                    
+                    // Verificar se não está em modo de edição
+                    var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
+                    if (isInEditMode) {
+                        console.log('Em modo de edição, ignorando teste');
+                        return;
+                    }
+
+                    if (currentSelectedRowIndex >= 0) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        console.log('🧪 EXECUTANDO OUTDENT VIA TESTE...');
+                        outdentTask(currentSelectedRowIndex);
                     }
                 }
             });
