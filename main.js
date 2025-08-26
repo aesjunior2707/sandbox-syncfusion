@@ -723,42 +723,53 @@ function createNewTaskInEdit() {
             nextTaskId = maxId + 1;
         }
 
-        // Determinar data de início baseada na data fim da última tarefa
-        var startDate = new Date();
-        try {
-            var lastEndDate = null;
-
-            // Buscar a data fim mais tarde de todas as tarefas
-            var allTasks = [];
-            if (ganttChart.flatData && ganttChart.flatData.length > 0) {
-                allTasks = ganttChart.flatData;
-            } else if (ganttChart.dataSource && ganttChart.dataSource.length > 0) {
-                allTasks = ganttChart.dataSource;
+        if (indentBtn) {
+            // Sempre manter visível
+            indentBtn.style.display = 'inline-block';
+            indentBtn.style.visibility = 'visible';
+            
+            const selectedRecords = ganttChart.getSelectedRecords();
+            const canIndent = selectedRecords.length > 0 && ganttChart.selectedRowIndex > 0;
+            
+            if (canIndent) {
+                // Habilitar Indent
+                indentBtn.disabled = false;
+                indentBtn.classList.remove('e-disabled');
+                indentBtn.style.opacity = '1';
+                indentBtn.style.cursor = 'pointer';
+                indentBtn.style.pointerEvents = 'auto';
+            } else {
+                // Desabilitar Indent
+                indentBtn.disabled = true;
+                indentBtn.classList.add('e-disabled');
+                indentBtn.style.opacity = '0.5';
+                indentBtn.style.cursor = 'not-allowed';
+                indentBtn.style.pointerEvents = 'none';
             }
-
-            if (allTasks.length > 0) {
-                for (var i = 0; i < allTasks.length; i++) {
-                    var task = allTasks[i];
-                    var taskEndDate = null;
-
-                    if (task.EndDate) {
-                        taskEndDate = new Date(task.EndDate);
-                    } else if (task.StartDate && task.Duration) {
-                        taskEndDate = new Date(task.StartDate);
-                        taskEndDate.setDate(taskEndDate.getDate() + (task.Duration || 1));
-                    }
-
-                    if (taskEndDate && (!lastEndDate || taskEndDate > lastEndDate)) {
-                        lastEndDate = taskEndDate;
-                    }
-                }
-
-                if (lastEndDate) {
-                    startDate = new Date(lastEndDate);
-                    console.log('Nova tarefa iniciará em:', startDate.toDateString());
-                } else {
-                    console.log('Não foi possível encontrar data fim, usando data atual');
-                }
+        }
+        
+        if (outdentBtn) {
+            // Sempre manter visível
+            outdentBtn.style.display = 'inline-block';
+            outdentBtn.style.visibility = 'visible';
+            
+            const selectedRecords = ganttChart.getSelectedRecords();
+            const canOutdent = selectedRecords.length > 0 && selectedRecords[0].parentItem;
+            
+            if (canOutdent) {
+                // Habilitar Outdent
+                outdentBtn.disabled = false;
+                outdentBtn.classList.remove('e-disabled');
+                outdentBtn.style.opacity = '1';
+                outdentBtn.style.cursor = 'pointer';
+                outdentBtn.style.pointerEvents = 'auto';
+            } else {
+                // Desabilitar Outdent
+                outdentBtn.disabled = true;
+                outdentBtn.classList.add('e-disabled');
+                outdentBtn.style.opacity = '0.5';
+                outdentBtn.style.cursor = 'not-allowed';
+                outdentBtn.style.pointerEvents = 'none';
             }
         } catch (dateError) {
             console.log('Erro no cálculo da data:', dateError);
