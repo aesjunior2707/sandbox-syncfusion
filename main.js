@@ -858,7 +858,13 @@ function setupEnterKeyEditing() {
         // Adicionar event listener ao documento para capturar todas as teclas
         document.addEventListener('keydown', function(event) {
             console.log('Tecla detectada:', event.key, 'Ctrl:', event.ctrlKey, 'Shift:', event.shiftKey, 'Alt:', event.altKey);
-            
+
+            // Ignorar Enter imediatamente após um commit para não reabrir edição
+            if ((event.key === 'Enter' || event.keyCode === 13) && window.__suppressEnterOnce) {
+                window.__suppressEnterOnce = false;
+                return;
+            }
+
             // Verificar se não está em modo de edição
             var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid .e-inline-edit, .e-treegrid .e-editedcell, .e-treegrid td.e-editedcell, .e-treegrid input, .e-treegrid textarea');
             if (isInEditMode) {
