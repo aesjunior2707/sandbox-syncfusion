@@ -281,50 +281,30 @@ try {
         if (field === 'Predecessor' && value) {
             var processedValue = parsePredecessors(value);
             console.log('Predecessor processado na célula:', value, '->', processedValue);
+            args.value = processedValue;
             value = processedValue;
         }
 
-        // Atualização direcionada do registro (evitar refresh completo)
+        // Sincronizar dataSource em memória e deixar o commit padrão acontecer
         try {
             if (record && typeof record === 'object') {
-                // Evitar que o componente faça o fluxo padrão de salvamento que pode causar refresh amplo
-                args.cancel = true;
+                // Sinal para suprimir o Enter global imediatamente após o commit
+                window.__suppressEnterOnce = true;
 
-                // Atualiza o objeto em memória
+                // Atualiza o objeto em memória e a fonte hierárquica
                 record[field] = value;
-
-                // Atualizar também a fonte de dados hierárquica
                 try {
-                    if (record.TaskID != null) {
-                        var dsItem = (typeof findTaskInDataSource === 'function') ? findTaskInDataSource(record.TaskID, ganttChart && ganttChart.dataSource) : null;
+                    if (record.TaskID != null && typeof findTaskInDataSource === 'function') {
+                        var dsItem = findTaskInDataSource(record.TaskID, ganttChart && ganttChart.dataSource);
                         if (dsItem) { dsItem[field] = value; }
                     }
                 } catch (_) {}
-
-                // Atualização mínima de célula para evitar refresh amplo
-                if (ganttChart && ganttChart.treeGrid && typeof ganttChart.treeGrid.updateCell === 'function' && args.rowIndex != null) {
-                    ganttChart.treeGrid.updateCell(args.rowIndex, field, value);
-                    console.log('Célula atualizada via treeGrid.updateCell - linha:', args.rowIndex, 'campo:', field);
-                }
-                // Fallback: usar updateRecordByID apenas se updateCell não estiver disponível
-                else if (ganttChart && typeof ganttChart.updateRecordByID === 'function') {
-                    var updated = { TaskID: record.TaskID };
-                    updated[field] = value;
-                    ganttChart.updateRecordByID(updated);
-                    console.log('Registro atualizado via updateRecordByID (fallback):', updated.TaskID);
-                } else {
-                    console.log('APIs de atualização indisponíveis; alteração mantida em memória');
-                }
-
-                // Encerrar modo de edição explicitamente para evitar comportamento de re-render
-                if (ganttChart && ganttChart.treeGrid && typeof ganttChart.treeGrid.endEdit === 'function') {
-                    setTimeout(function() { ganttChart.treeGrid.endEdit(); }, 0);
-                }
             }
         } catch (e) {
-            console.log('Falha ao aplicar atualização direcionada, seguindo fluxo padrão:', e);
-            args.cancel = false;
+            console.log('Falha ao sincronizar dataSource em memória:', e);
         }
+        // Não cancelar: permitir que o Syncfusion finalize o commit sem refresh global
+        args.cancel = false;
     },
 
     // Evento para capturar cliques nos botões da toolbar
