@@ -254,12 +254,21 @@ try {
 
     // Evento para controlar estado dos botões da toolbar
     toolbarRender: function (args) {
-        // Manter todos os botões sempre visíveis
-        args.items.forEach(function(item) {
-            if (item.id === ganttChart.element.id + '_indent' || item.id === ganttChart.element.id + '_outdent') {
-                item.visible = true;
+        // Forçar botões Indent e Outdent sempre visíveis
+        setTimeout(function() {
+            var indentButton = document.querySelector('#' + ganttChart.element.id + '_indent');
+            var outdentButton = document.querySelector('#' + ganttChart.element.id + '_outdent');
+            
+            if (indentButton) {
+                indentButton.style.display = 'inline-block';
+                indentButton.style.visibility = 'visible';
             }
-        });
+            
+            if (outdentButton) {
+                outdentButton.style.display = 'inline-block';
+                outdentButton.style.visibility = 'visible';
+            }
+        }, 100);
     },
 
     // Evento para atualizar estado dos botões baseado na seleção
@@ -588,6 +597,10 @@ function updateToolbarButtonStates() {
         var outdentButton = document.querySelector('#' + ganttChart.element.id + '_outdent');
         
         if (indentButton) {
+            // Forçar sempre visível
+            indentButton.style.display = 'inline-block';
+            indentButton.style.visibility = 'visible';
+            
             // Indent: desabilitar se for primeira linha ou nenhuma linha selecionada
             var canIndent = currentSelectedRowIndex > 0;
             indentButton.disabled = !canIndent;
@@ -596,6 +609,10 @@ function updateToolbarButtonStates() {
         }
         
         if (outdentButton) {
+            // Forçar sempre visível
+            outdentButton.style.display = 'inline-block';
+            outdentButton.style.visibility = 'visible';
+            
             // Outdent: desabilitar se nenhuma linha selecionada ou se não é subtarefa
             var canOutdent = currentSelectedRowIndex >= 0;
             
@@ -1137,6 +1154,22 @@ if (ganttChart) {
             // Atualizar estado inicial dos botões
             setTimeout(function() {
                 updateToolbarButtonStates();
+                
+                // Forçar visibilidade dos botões periodicamente
+                setInterval(function() {
+                    var indentButton = document.querySelector('#' + ganttChart.element.id + '_indent');
+                    var outdentButton = document.querySelector('#' + ganttChart.element.id + '_outdent');
+                    
+                    if (indentButton && indentButton.style.display === 'none') {
+                        indentButton.style.display = 'inline-block';
+                        indentButton.style.visibility = 'visible';
+                    }
+                    
+                    if (outdentButton && outdentButton.style.display === 'none') {
+                        outdentButton.style.display = 'inline-block';
+                        outdentButton.style.visibility = 'visible';
+                    }
+                }, 1000);
             }, 500);
         }, 1500);
 
