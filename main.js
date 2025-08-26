@@ -199,10 +199,24 @@ try {
     },
 
     actionComplete: function (args) {
-        // Log para acompanhar alterações de predecessores
-        if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
-            console.log('Predecessores salvos para tarefa', args.data.TaskID + ':', args.data.Predecessor);
-            // NÃO fazer refresh aqui - deixar o Syncfusion gerenciar
+        // Persistir qualquer edição no dataSource hierárquico para evitar "reset"
+        if (args.requestType === 'save' && args.data) {
+            try {
+                var rec = args.data;
+                var dsItem = (typeof findTaskInDataSource === 'function') ? findTaskInDataSource(rec.TaskID, ganttChart && ganttChart.dataSource) : null;
+                if (dsItem) {
+                    if (rec.TaskName !== undefined) dsItem.TaskName = rec.TaskName;
+                    if (rec.StartDate !== undefined) dsItem.StartDate = rec.StartDate instanceof Date ? rec.StartDate : new Date(rec.StartDate);
+                    if (rec.EndDate !== undefined) dsItem.EndDate = rec.EndDate ? (rec.EndDate instanceof Date ? rec.EndDate : new Date(rec.EndDate)) : dsItem.EndDate;
+                    if (rec.Duration !== undefined) dsItem.Duration = rec.Duration;
+                    if (rec.Progress !== undefined) dsItem.Progress = rec.Progress;
+                    if (rec.Predecessor !== undefined) dsItem.Predecessor = rec.Predecessor;
+                    console.log('Registro persistido no dataSource:', rec.TaskID);
+                }
+            } catch (e) {
+                console.log('Falha ao persistir no dataSource:', e);
+            }
+            // Não fazer refresh aqui; deixar o componente atualizar a linha
             return;
         }
 
