@@ -306,6 +306,11 @@ try {
                     ganttChart.treeGrid.updateCell(args.rowIndex, field, value);
                     console.log('Célula atualizada via treeGrid.updateCell - linha:', args.rowIndex, 'campo:', field);
                 }
+
+                // Encerrar modo de edição explicitamente para evitar comportamento de re-render
+                if (ganttChart && ganttChart.treeGrid && typeof ganttChart.treeGrid.endEdit === 'function') {
+                    setTimeout(function() { ganttChart.treeGrid.endEdit(); }, 0);
+                }
                 // Último recurso: re-render mínimo não disponível, permitir fluxo padrão
                 else {
                     args.cancel = false;
@@ -1030,7 +1035,7 @@ function moveTaskAsSubtask(currentRowIndex) {
             
         } else {
             // Fallback: método manual se indent não estiver disponível
-            console.log('Método indent não disponível, usando método manual');
+            console.log('Método indent não disponível, usando m��todo manual');
             moveTaskManually(currentTask, parentTask, currentLanguage);
         }
 
