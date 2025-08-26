@@ -272,12 +272,49 @@ try {
     // Evento para capturar quando uma célula é salva
     cellSave: function (args) {
         console.log('CellSave:', args.columnName, 'Valor:', args.value);
-        
-        // Para predecessores, processar o valor antes de salvar
-        if (args.columnName === 'Predecessor' && args.value) {
-            var processedValue = parsePredecessors(args.value);
-            console.log('Predecessor processado na célula:', args.value, '->', processedValue);
-            args.value = processedValue;
+
+        var field = args.columnName;
+        var value = args.value;
+        var record = args.rowData || args.data || null;
+
+        // Processar predecessores antes de salvar
+        if (field === 'Predecessor' && value) {
+            var processedValue = parsePredecessors(value);
+            console.log('Predecessor processado na célula:', value, '->', processedValue);
+            value = processedValue;
+        }
+
+        // Atualização direcionada do registro (evitar refresh completo)
+        try {
+            if (record && typeof record === 'object') {
+                // Evitar que o componente faça o fluxo padrão de salvamento que pode causar refresh amplo
+                args.cancel = true;
+
+                // Atualiza o objeto em memória
+                record[field] = value;
+
+                // Preferir método nativo do Gantt se disponível
+                if (ganttChart && typeof ganttChart.updateRecordByID === 'function') {
+                    var updated = {};
+                    for (var k in record) { if (Object.prototype.hasOwnProperty.call(record, k)) { updated[k] = record[k]; } }
+                    updated[field] = value;
+                    ganttChart.updateRecordByID(updated);
+                    console.log('Registro atualizado via updateRecordByID:', updated.TaskID);
+                }
+                // Fallback: atualizar célula específica no TreeGrid
+                else if (ganttChart && ganttChart.treeGrid && typeof ganttChart.treeGrid.updateCell === 'function' && args.rowIndex != null) {
+                    ganttChart.treeGrid.updateCell(args.rowIndex, field, value);
+                    console.log('Célula atualizada via treeGrid.updateCell - linha:', args.rowIndex, 'campo:', field);
+                }
+                // Último recurso: re-render mínimo não disponível, permitir fluxo padrão
+                else {
+                    args.cancel = false;
+                    console.log('Método de atualização direcionada indisponível, seguindo fluxo padrão de salvamento');
+                }
+            }
+        } catch (e) {
+            console.log('Falha ao aplicar atualização direcionada, seguindo fluxo padrão:', e);
+            args.cancel = false;
         }
     },
 
