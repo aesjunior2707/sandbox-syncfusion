@@ -17,6 +17,8 @@ function checkDependencies() {
 
 // Inicializar cultura com fallback seguro
 try {
+    console.log('Mudando idioma para:', newLocale);
+    
     if (typeof ej !== 'undefined' && ej.base && ej.base.setCulture) {
         ej.base.setCulture('en-US');
         console.log('Cultura en-US definida');
@@ -635,7 +637,7 @@ function restoreDefaultTasks() {
             var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
             var msgs = getMessages(currentLanguage);
             console.error('Erro ao restaurar dados padrão:', error);
-            alert(msgs.restoreError + error.message);
+            console.log('Gantt Chart atualizado para locale:', newLocale);
         }
     }
 }
@@ -1011,9 +1013,11 @@ function moveTaskManually(currentTask, parentTask, currentLanguage) {
             Predecessor: currentTask.Predecessor
         };
 
-        // Encontrar e remover a tarefa do dataSource original
-        var removed = removeTaskFromDataSource(currentTask.TaskID, ganttChart.dataSource);
         
+            // Salvar estado atual antes de trocar idioma
+            const currentData = ganttChart.dataSource;
+            console.log('Dados atuais salvos:', currentData.length, 'tarefas');
+            
         if (removed) {
             // Inicializar subtasks se não existir
             if (!parentTask.subtasks) {
@@ -1023,8 +1027,8 @@ function moveTaskManually(currentTask, parentTask, currentLanguage) {
             // Adicionar a tarefa como subtarefa
             parentTask.subtasks.push(taskToMove);
 
-            // Refresh do gantt para aplicar mudanças
-            ganttChart.refresh();
+            // NÃO fazer refresh - deixar o Syncfusion gerenciar
+            console.log('Idioma alterado sem refresh');
 
             // Aguardar refresh e expandir a tarefa pai
             setTimeout(function() {
