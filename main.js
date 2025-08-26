@@ -79,7 +79,7 @@ try {
         mode: 'Cell',
         showDeleteConfirmDialog: true
     },
-    toolbar: ['Update', 'Delete', 'Cancel', 'ExpandAll', 'CollapseAll', 'ExcelExport', 'PdfExport', 'Search', 'ZoomIn', 'ZoomOut', 'ZoomToFit'],
+    toolbar: ['Update', 'Delete', 'Cancel', 'ExpandAll', 'CollapseAll', 'Indent', 'Outdent', 'ExcelExport', 'PdfExport', 'Search', 'ZoomIn', 'ZoomOut', 'ZoomToFit'],
     highlightWeekends: true,
     timelineSettings: {
         timelineUnitSize: 100,
@@ -229,6 +229,27 @@ try {
     cellEdit: function (args) {
         // Permitir edição de todas as células editáveis
         return true;
+    },
+
+    // Evento para capturar cliques nos botões da toolbar
+    toolbarClick: function (args) {
+        if (args.item.id === ganttChart.element.id + '_indent') {
+            // Botão Indent clicado
+            if (currentSelectedRowIndex > 0) {
+                console.log('🎯 Botão Indent clicado. Linha atual:', currentSelectedRowIndex);
+                moveTaskAsSubtask(currentSelectedRowIndex);
+            } else {
+                console.log('Não é possível fazer indent: primeira linha ou nenhuma linha selecionada');
+            }
+        } else if (args.item.id === ganttChart.element.id + '_outdent') {
+            // Botão Outdent clicado
+            if (currentSelectedRowIndex >= 0) {
+                console.log('🎯 Botão Outdent clicado. Linha atual:', currentSelectedRowIndex);
+                outdentTask(currentSelectedRowIndex);
+            } else {
+                console.log('Não é possível fazer outdent: nenhuma linha selecionada');
+            }
+        }
     }
     });
 } catch (error) {
