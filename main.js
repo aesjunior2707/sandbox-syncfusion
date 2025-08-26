@@ -733,9 +733,128 @@ function setupEnterKeyEditing() {
             console.log('TreeGrid configurado para edição');
         }
 
+        // Adicionar event listener ao documento para capturar todas as teclas
+        document.addEventListener('keydown', function(event) {
+            console.log('Tecla detectada:', event.key, 'Ctrl:', event.ctrlKey, 'Shift:', event.shiftKey, 'Alt:', event.altKey);
+            
+            // Verificar se não está em modo de edição
+            var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
+            if (isInEditMode) {
+                console.log('Em modo de edição, ignorando atalhos');
+                return;
+            }
+
+            // Verificar se o foco está no Gantt ou se há linha selecionada
+            var ganttElement = document.getElementById('Gantt');
+            var ganttHasFocus = ganttElement && (ganttElement.contains(document.activeElement) || currentSelectedRowIndex >= 0);
+            
+            if (!ganttHasFocus) {
+                console.log('Gantt não tem foco, ignorando atalhos');
+                return;
+            }
+
+            // FUNCIONALIDADE OUTDENT: Ctrl + Shift + Seta Esquerda
+            if (event.ctrlKey && event.shiftKey && (event.key === 'ArrowLeft' || event.keyCode === 37)) {
+                console.log('🎯 Ctrl + Shift + ← detectado! Linha atual:', currentSelectedRowIndex);
+                event.preventDefault();
+                event.stopPropagation();
+                
+                if (currentSelectedRowIndex >= 0) {
+                    outdentTask(currentSelectedRowIndex);
+                } else {
+                    console.log('Nenhuma linha selecionada para outdent');
+                }
+                return;
+            }
+
+            // FUNCIONALIDADE INDENT: Ctrl + Shift + Seta Direita  
+            if (event.ctrlKey && event.shiftKey && (event.key === 'ArrowRight' || event.keyCode === 39)) {
+                console.log('🎯 Ctrl + Shift + → detectado! Linha atual:', currentSelectedRowIndex);
+                event.preventDefault();
+                event.stopPropagation();
+                
+                if (currentSelectedRowIndex > 0) {
+                    moveTaskAsSubtask(currentSelectedRowIndex);
+                } else {
+                    console.log('Não é possível mover: primeira linha ou nenhuma linha selecionada');
+                }
+                return;
+            }
+
+            // TESTE ALTERNATIVO: Apenas Shift + Seta Esquerda
+            if (event.shiftKey && !event.ctrlKey && (event.key === 'ArrowLeft' || event.keyCode === 37)) {
+                console.log('🧪 TESTE: Shift + ← detectado (sem Ctrl). Linha atual:', currentSelectedRowIndex);
+                event.preventDefault();
+                event.stopPropagation();
+                
+                if (currentSelectedRowIndex >= 0) {
+                    console.log('🧪 EXECUTANDO OUTDENT VIA TESTE...');
+                    outdentTask(currentSelectedRowIndex);
+                }
+                return;
+            }
+
+            // Funcionalidade Enter para edição (apenas se Gantt tem foco)
+            if (event.key === 'Enter' || event.keyCode === 13) {
+                if (currentSelectedRowIndex >= 0) {
+                    console.log('Enter detectado, iniciando edição da linha:', currentSelectedRowIndex);
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    try {
+                        if (ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
+                            ganttChart.treeGrid.editCell(currentSelectedRowIndex, 'TaskName');
+                            console.log('Edição iniciada via Enter para linha:', currentSelectedRowIndex);
+                            focusTaskNameField();
+                        }
+                    } catch (error) {
+                        console.log('Erro ao iniciar edição:', error);
+                    }
+                }
+                return;
+            }
+
+            // Funcionalidade seta para baixo - criar nova tarefa na última linha
+            if (event.key === 'ArrowDown' || event.keyCode === 40) {
+                console.log('Seta para baixo detectada. Linha atual:', currentSelectedRowIndex);
+
+                var isLast = isLastVisibleRow();
+                console.log('É última linha?', isLast);
+
+                if (currentSelectedRowIndex >= 0 && isLast) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    console.log('🎯 Última linha detectada, criando nova tarefa...');
+                    createNewTaskInEdit();
+                }
+                return;
+            }
+        });
+
+        // Event listener para clicks em linhas (manter no elemento Gantt)
         var ganttElement = document.getElementById('Gantt');
         if (ganttElement) {
-            ganttElement.addEventListener('keydown', function(event) {
+            ganttElement.addEventListener('click', function(event) {
+                var clickedRow = event.target.closest('.e-treegrid .e-row');
+                if (clickedRow) {
+                    var ariaRowIndex = clickedRow.getAttribute('aria-rowindex');
+                    if (ariaRowIndex !== null) {
+                        currentSelectedRowIndex = parseInt(ariaRowIndex);
+                        console.log('Clique na linha:', currentSelectedRowIndex);
+                    }
+                }
+            });
+
+            // Garantir que o elemento Gantt pode receber foco
+            ganttElement.setAttribute('tabindex', '0');
+            ganttElement.style.outline = 'none';
+            
+            console.log('Event listeners configurados');
+            console.log('Funcionalidade ativa: Pressione ↓ na última linha para criar nova tarefa');
+        }
+    }, 1000);
+}
                 // Funcionalidade Enter para edição
                 if (event.key === 'Enter' || event.keyCode === 13) {
                     // Verificar se já está em modo de edição
