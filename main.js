@@ -56,7 +56,7 @@ try {
         duration: 'Duration',
         progress: 'Progress',
         dependency: 'Predecessor',
-        child: 'subtasks',
+        child: 'subtasks'
     },
     allowSorting: true,
     allowSelection: true,
@@ -139,32 +139,6 @@ try {
         if (args.rowIndex === currentSelectedRowIndex) {
             currentSelectedRowIndex = -1;
             console.log('Linha desselecionada:', args.rowIndex);
-        }
-    },
-
-    actionBegin: function (args) {
-        // Processa predecessores antes de salvar
-        if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
-            var originalValue = args.data.Predecessor;
-
-            // Validar predecessores
-            var validation = validatePredecessors(originalValue, args.data.TaskID);
-            if (!validation.isValid) {
-                args.cancel = true;
-                alert('Erro nos predecessores: ' + validation.message);
-                return;
-            }
-
-            // Processar predecessores com regra FS
-            var processedPredecessors = parsePredecessors(originalValue);
-            args.data.Predecessor = processedPredecessors;
-
-            console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
-        }
-
-        // Respeitar links de predecessores durante validação
-        if (args.requestType === 'validateLinkedTask') {
-            args.validateMode = { respectLink: true };
         }
     },
 
@@ -855,116 +829,6 @@ function setupEnterKeyEditing() {
         }
     }, 1000);
 }
-                // Funcionalidade Enter para edição
-                if (event.key === 'Enter' || event.keyCode === 13) {
-                    // Verificar se já está em modo de edição
-                    var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
-                    if (isInEditMode) {
-                        return; // Deixar comportamento padrão se já editando
-                    }
-
-                    // Verificar se há linha selecionada
-                    if (currentSelectedRowIndex >= 0) {
-                        event.preventDefault();
-                        event.stopPropagation();
-
-                        // Iniciar edição usando treeGrid.editCell
-                        try {
-                            if (ganttChart && ganttChart.treeGrid && ganttChart.treeGrid.editCell) {
-                                ganttChart.treeGrid.editCell(currentSelectedRowIndex, 'TaskName');
-                                console.log('Edição iniciada via Enter para linha:', currentSelectedRowIndex);
-                                focusTaskNameField();
-                            }
-                        } catch (error) {
-                            console.log('Erro ao iniciar edição:', error);
-                        }
-                    }
-                }
-
-                // Funcionalidade seta para baixo - criar nova tarefa na última linha
-                if (event.key === 'ArrowDown' || event.keyCode === 40) {
-                    console.log('Seta para baixo detectada. Linha atual:', currentSelectedRowIndex);
-
-                    // Verificar se não está em modo de edição
-                    var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
-                    if (isInEditMode) {
-                        console.log('Em modo de edição, ignorando');
-                        return; // Deixar comportamento padrão se já editando
-                    }
-
-                    // Verificar se está na última linha visível
-                    var isLast = isLastVisibleRow();
-                    console.log('É última linha?', isLast);
-
-                    if (currentSelectedRowIndex >= 0 && isLast) {
-                        event.preventDefault();
-                        event.stopPropagation();
-
-                        console.log('🎯 Última linha detectada, criando nova tarefa...');
-                        createNewTaskInEdit();
-                    }
-                }
-
-                // Funcionalidade Ctrl + Shift + Seta Direita - mover tarefa como subtarefa da anterior
-                if (event.ctrlKey && event.shiftKey && (event.key === 'ArrowRight' || event.keyCode === 39)) {
-                    console.log('Ctrl + Shift + → detectado. Linha atual:', currentSelectedRowIndex);
-
-                    // Verificar se não está em modo de edição
-                    var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
-                    if (isInEditMode) {
-                        console.log('Em modo de edição, ignorando');
-                        return;
-                    }
-
-                    // Verificar se há linha selecionada e não é a primeira
-                    if (currentSelectedRowIndex > 0) {
-                        event.preventDefault();
-                        event.stopPropagation();
-
-                        console.log('🎯 Movendo tarefa como subtarefa...');
-                        moveTaskAsSubtask(currentSelectedRowIndex);
-                    } else {
-                        console.log('Não é possível mover: primeira linha ou nenhuma linha selecionada');
-                    }
-                }
-            });
-
-            // Event listener para clicks em linhas
-            ganttElement.addEventListener('click', function(event) {
-                var clickedRow = event.target.closest('.e-treegrid .e-row');
-                if (clickedRow) {
-                    var ariaRowIndex = clickedRow.getAttribute('aria-rowindex');
-                    if (ariaRowIndex !== null) {
-                        currentSelectedRowIndex = parseInt(ariaRowIndex);
-                        console.log('Clique na linha:', currentSelectedRowIndex);
-                    }
-                }
-
-                // TESTE ALTERNATIVO - detectar apenas Shift + Seta Esquerda (sem Ctrl)
-                if (event.shiftKey && !event.ctrlKey && (event.key === 'ArrowLeft' || event.keyCode === 37)) {
-                    console.log('🧪 TESTE: Shift + ← detectado (sem Ctrl). Linha atual:', currentSelectedRowIndex);
-                    
-                    // Verificar se não está em modo de edição
-                    var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
-                    if (isInEditMode) {
-                        console.log('Em modo de edição, ignorando teste');
-                        return;
-                    }
-
-                    if (currentSelectedRowIndex >= 0) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        console.log('🧪 EXECUTANDO OUTDENT VIA TESTE...');
-                        outdentTask(currentSelectedRowIndex);
-                    }
-                }
-            });
-
-            console.log('Event listeners configurados');
-            console.log('Funcionalidade ativa: Pressione ↓ na última linha para criar nova tarefa');
-        }
-    }, 1000);
-}
 
 // Função para mover tarefa atual como subtarefa da tarefa anterior
 function moveTaskAsSubtask(currentRowIndex) {
@@ -1140,6 +1004,43 @@ function findTaskInDataSource(taskId, dataSource) {
     }
     
     return null;
+}
+
+// Função para outdent (mover subtarefa para nível pai)
+function outdentTask(currentRowIndex) {
+    if (!ganttChart || !ganttChart.flatData || currentRowIndex < 0) {
+        console.log('Não é possível fazer outdent: dados não disponíveis');
+        return;
+    }
+
+    try {
+        // Usar o método nativo do Syncfusion para outdent
+        if (ganttChart.outdent) {
+            ganttChart.outdent();
+            
+            console.log('✅ Outdent executado usando método nativo');
+            
+            // Obter idioma atual para mensagens
+            var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+            
+            // Mostrar mensagem de sucesso
+            var successMsg = currentLanguage === 'en-US' ? 
+                'Task moved to parent level successfully!' :
+                currentLanguage === 'es-ES' ?
+                '¡Tarea movida al nivel padre con éxito!' :
+                'Tarefa movida para nível pai com sucesso!';
+            
+            setTimeout(function() {
+                alert(successMsg);
+            }, 100);
+            
+        } else {
+            console.log('Método outdent não disponível');
+        }
+
+    } catch (error) {
+        console.error('Erro ao executar outdent:', error);
+    }
 }
 
 // Adicionar o Gantt ao DOM
