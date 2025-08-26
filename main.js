@@ -160,7 +160,7 @@ try {
         console.log('ActionBegin:', args.requestType, args.data);
         
         // Processar predecessores para diferentes tipos de ação
-        if ((args.requestType === 'save' || args.requestType === 'beforeAdd' || args.requestType === 'beforeEdit') && args.data) {
+        if ((args.requestType === 'save' || args.requestType === 'beforeAdd' || args.requestType === 'beforeEdit' || args.requestType === 'cellSave') && args.data) {
             // Verificar se há campo Predecessor para processar
             if (args.data.hasOwnProperty('Predecessor') && args.data.Predecessor !== null) {
                 var originalValue = args.data.Predecessor || '';
@@ -191,12 +191,19 @@ try {
                 }
             }
         }
+        
+        // Evitar refresh desnecessário durante edição de predecessores
+        if (args.requestType === 'cellSave' && args.columnName === 'Predecessor') {
+            console.log('Salvando predecessor sem refresh:', args.data.Predecessor);
+        }
     },
 
     actionComplete: function (args) {
         // Log para acompanhar alterações de predecessores
         if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
             console.log('Predecessores salvos para tarefa', args.data.TaskID + ':', args.data.Predecessor);
+            // NÃO fazer refresh aqui - deixar o Syncfusion gerenciar
+            return;
         }
 
         // Detectar quando uma nova tarefa foi adicionada
@@ -248,12 +255,30 @@ try {
                 }
             }, 100);
         }
+        
+        // Log para outros tipos de ação sem interferir
+        if (args.requestType && args.requestType !== 'save') {
+            console.log('ActionComplete:', args.requestType);
+        }
     },
 
     // Evento para garantir que células sejam editáveis por duplo clique
     cellEdit: function (args) {
+        console.log('CellEdit iniciado para:', args.columnName, 'Valor atual:', args.value);
         // Permitir edição de todas as células editáveis
         return true;
+    },
+
+    // Evento para capturar quando uma célula é salva
+    cellSave: function (args) {
+        console.log('CellSave:', args.columnName, 'Valor:', args.value);
+        
+        // Para predecessores, processar o valor antes de salvar
+        if (args.columnName === 'Predecessor' && args.value) {
+            var processedValue = parsePredecessors(args.value);
+            console.log('Predecessor processado na célula:', args.value, '->', processedValue);
+            args.value = processedValue;
+        }
     },
 
     // Evento para capturar cliques nos botões da toolbar
@@ -298,12 +323,20 @@ try {
 // FUNÇÕES DE PREDECESSOR - MANTIDAS
 // Função para parsing de predecessores separados por vírgula e aplicação da regra FS
 function parsePredecessors(predecessorString) {
+    console.log('parsePredecessors entrada:', predecessorString);
+    
     if (!predecessorString || predecessorString.trim() === '') {
+        console.log('parsePredecessors: string vazia, retornando vazio');
         return '';
     }
 
-    // Remove espaços e quebra em vírgulas
-    var predecessorIds = predecessorString.split(',').map(function(id) { return id.trim(); }).filter(function(id) { return id !== ''; });
+    // Aceitar tanto vírgula quanto ponto e vírgula como separadores
+    var separators = /[,;]/;
+    var predecessorIds = predecessorString.split(separators)
+        .map(function(id) { return id.trim(); })
+        .filter(function(id) { return id !== ''; });
+    
+    console.log('parsePredecessors IDs encontrados:', predecessorIds);
 
     // Aplica a regra FS a cada predecessor se não estiver especificada
     var processedPredecessors = predecessorIds.map(function(id) {
@@ -312,16 +345,21 @@ function parsePredecessors(predecessorString) {
         if (numericId && !isNaN(numericId)) {
             // Se já contém uma regra (FS, SS, FF, SF), mantém como está
             if (id.match(/\d+(FS|SS|FF|SF)/)) {
+                console.log('parsePredecessors: regra já existe:', id);
                 return id;
             } else {
                 // Aplica a regra FS automaticamente
+                console.log('parsePredecessors: aplicando FS a:', numericId);
                 return numericId + 'FS';
             }
         }
+        console.log('parsePredecessors: ID inválido ignorado:', id);
         return null;
     }).filter(function(pred) { return pred !== null; });
 
-    return processedPredecessors.join(';');
+    var result = processedPredecessors.join(';');
+    console.log('parsePredecessors resultado final:', result);
+    return result;
 }
 
 // Função para validar se os predecessores existem
@@ -576,8 +614,12 @@ function restoreDefaultTasks() {
                 // Restaurar dados padrão
                 ganttChart.dataSource = getProjectDataByLocale(currentLanguage);
 
-                // Atualizar o componente
-                ganttChart.refresh();
+                // Atualizar o componente sem refresh completo
+                if (ganttChart.refreshColumns) {
+                    ganttChart.refreshColumns();
+                } else {
+                    ganttChart.refresh();
+                }
 
                 // Ajustar zoom após carregar dados
                 setTimeout(function() {
