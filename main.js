@@ -250,6 +250,37 @@ try {
                 console.log('Não é possível fazer outdent: nenhuma linha selecionada');
             }
         }
+    },
+
+    // Evento para controlar estado dos botões da toolbar
+    toolbarRender: function (args) {
+        // Manter todos os botões sempre visíveis
+        args.items.forEach(function(item) {
+            if (item.id === ganttChart.element.id + '_indent' || item.id === ganttChart.element.id + '_outdent') {
+                item.visible = true;
+            }
+        });
+    },
+
+    // Evento para atualizar estado dos botões baseado na seleção
+    rowSelected: function (args) {
+        if (args.rowIndex !== undefined) {
+            currentSelectedRowIndex = args.rowIndex;
+            console.log('Linha selecionada:', args.rowIndex);
+            
+            // Atualizar estado dos botões
+            updateToolbarButtonStates();
+        }
+    },
+
+    rowDeselected: function (args) {
+        if (args.rowIndex === currentSelectedRowIndex) {
+            currentSelectedRowIndex = -1;
+            console.log('Linha desselecionada:', args.rowIndex);
+            
+            // Atualizar estado dos botões
+            updateToolbarButtonStates();
+        }
     }
     });
 } catch (error) {
@@ -546,6 +577,44 @@ function restoreDefaultTasks() {
 
 // Variável para armazenar a linha atualmente selecionada
 var currentSelectedRowIndex = -1;
+
+// Função para atualizar estado dos botões da toolbar
+function updateToolbarButtonStates() {
+    if (!ganttChart || !ganttChart.element) return;
+    
+    try {
+        // Encontrar botões na toolbar
+        var indentButton = document.querySelector('#' + ganttChart.element.id + '_indent');
+        var outdentButton = document.querySelector('#' + ganttChart.element.id + '_outdent');
+        
+        if (indentButton) {
+            // Indent: desabilitar se for primeira linha ou nenhuma linha selecionada
+            var canIndent = currentSelectedRowIndex > 0;
+            indentButton.disabled = !canIndent;
+            indentButton.style.opacity = canIndent ? '1' : '0.5';
+            indentButton.style.cursor = canIndent ? 'pointer' : 'not-allowed';
+        }
+        
+        if (outdentButton) {
+            // Outdent: desabilitar se nenhuma linha selecionada ou se não é subtarefa
+            var canOutdent = currentSelectedRowIndex >= 0;
+            
+            // Verificar se a tarefa selecionada é uma subtarefa
+            if (canOutdent && ganttChart.flatData && ganttChart.flatData[currentSelectedRowIndex]) {
+                var selectedTask = ganttChart.flatData[currentSelectedRowIndex];
+                // Verificar se tem parent (é subtarefa)
+                canOutdent = selectedTask.parentItem != null;
+            }
+            
+            outdentButton.disabled = !canOutdent;
+            outdentButton.style.opacity = canOutdent ? '1' : '0.5';
+            outdentButton.style.cursor = canOutdent ? 'pointer' : 'not-allowed';
+        }
+        
+    } catch (error) {
+        console.log('Erro ao atualizar estado dos botões:', error);
+    }
+}
 
 
 // Função utilitária para focar no campo TaskName após iniciar ediç��o
@@ -1064,6 +1133,11 @@ if (ganttChart) {
 
                 console.log('Configurações de edição aplicadas');
             }
+            
+            // Atualizar estado inicial dos botões
+            setTimeout(function() {
+                updateToolbarButtonStates();
+            }, 500);
         }, 1500);
 
     } catch (error) {
