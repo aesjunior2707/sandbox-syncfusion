@@ -40,7 +40,7 @@ var ganttChart;
 try {
     // Verificar se as dependências estão carregadas
     if (!checkDependencies()) {
-        throw new Error('Dependências não carregadas. Verifique se todos os scripts foram carregados.');
+        throw new Error('Depend��ncias não carregadas. Verifique se todos os scripts foram carregados.');
     }
 
     ganttChart = new ej.gantt.Gantt({
@@ -102,7 +102,7 @@ try {
         { field: 'Duration', headerText: 'Duração', width: 80, textAlign: 'Center', allowEditing: true, editType: 'numericedit',
           edit: { params: { min: 1, max: 999, step: 1, format: 'n0' } } },
         { field: 'Progress', headerText: 'Prog.', width: 70, textAlign: 'Center', allowEditing: true },
-        { field: 'Predecessor', headerText: 'Predecessores', width: 120, allowEditing: true, valueAccessor: displayPredecessors }
+        { field: 'Predecessor', headerText: 'Pred.', width: 80, textAlign: 'Center', allowEditing: true, template: displayPredecessors }
     ],
 
     rowDrop: function (args) {
@@ -115,6 +115,8 @@ try {
         if (args.rowIndex !== undefined) {
             currentSelectedRowIndex = args.rowIndex;
             console.log('Linha selecionada:', args.rowIndex);
+            // Atualizar estado dos botões após seleção
+            setTimeout(updateToolbarButtonStates, 100);
         }
     },
 
@@ -122,6 +124,8 @@ try {
         if (args.rowIndex === currentSelectedRowIndex) {
             currentSelectedRowIndex = -1;
             console.log('Linha desselecionada:', args.rowIndex);
+            // Atualizar estado dos botões após desseleção
+            setTimeout(updateToolbarButtonStates, 100);
         }
     },
 
@@ -587,7 +591,7 @@ function updateToolbarButtonStates() {
 }
 
 
-// Função utilitária para focar no campo TaskName após iniciar edição
+// Função utilitária para focar no campo TaskName após iniciar ediç��o
 function focusTaskNameField() {
     setTimeout(function() {
         var taskNameInput = document.querySelector('.e-treegrid .e-rowcell input');
@@ -1103,6 +1107,9 @@ if (ganttChart) {
 
                 console.log('Configurações de edição aplicadas');
             }
+
+            // Atualizar estado inicial dos botões
+            setTimeout(updateToolbarButtonStates, 200);
         }, 1500);
 
     } catch (error) {
