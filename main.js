@@ -632,6 +632,16 @@ function restoreDefaultTasks() {
                 alert(msgs.restoreSuccess);
             }
         } catch (error) {
+            var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+            var msgs = getMessages(currentLanguage);
+            console.error('Erro ao restaurar dados:', error);
+            alert(msgs.restoreError + error.message);
+        }
+    } else {
+        var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+        var msgs = getMessages(currentLanguage);
+        console.error('Gantt Chart não está inicializado');
+        alert(msgs.ganttNotAvailable);
     }
 }
 
