@@ -753,27 +753,6 @@ function createNewTaskInEdit() {
 // Função para configurar evento Enter para edição e garantir duplo clique
 function setupEnterKeyEditing() {
     setTimeout(function() {
-        if (ganttChart && ganttChart.treeGrid) {
-            // Garantir que o TreeGrid permite edição
-            ganttChart.treeGrid.editSettings = {
-                allowEditing: true,
-                allowAdding: true,
-                allowDeleting: true,
-                mode: 'Cell'
-            };
-
-            // Garantir que colunas são editáveis
-            if (ganttChart.treeGrid.columns) {
-                ganttChart.treeGrid.columns.forEach(function(col) {
-                    if (col.field === 'TaskName' || col.field === 'Duration' || col.field === 'StartDate' || col.field === 'EndDate' || col.field === 'Progress' || col.field === 'Predecessor') {
-                        col.allowEditing = true;
-                    }
-                });
-            }
-
-            console.log('TreeGrid configurado para edição');
-        }
-
         // Adicionar event listener ao documento para capturar todas as teclas
         document.addEventListener('keydown', function(event) {
             console.log('Tecla detectada:', event.key, 'Ctrl:', event.ctrlKey, 'Shift:', event.shiftKey, 'Alt:', event.altKey);
