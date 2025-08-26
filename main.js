@@ -1093,6 +1093,7 @@ if (ganttChart) {
                 console.log('Funcionalidades ativas:');
                 console.log('- Pressione ↓ na última linha para criar nova tarefa');
                 console.log('- Pressione Ctrl+Shift+→ para mover tarefa como subtarefa da anterior');
+                console.log('- Pressione Ctrl+Shift+← para remover subtarefa (outdent)');
             }
         } catch (error) {
             console.error('Erro na função dataBound:', error);
