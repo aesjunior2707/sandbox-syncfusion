@@ -1,6 +1,3 @@
-// Aguardar o DOM estar completamente carregado
-document.addEventListener('DOMContentLoaded', function() {
-
 // Inicializar cultura padrão
 // Função para verificar se todas as dependências estão carregadas
 function checkDependencies() {
@@ -40,7 +37,6 @@ function displayPredecessors(field, data, column) {
 }
 
 var ganttChart;
-ganttChart = null;
 try {
     // Verificar se as dependências estão carregadas
     if (!checkDependencies()) {
@@ -264,7 +260,6 @@ try {
         });
     } catch (fallbackError) {
         console.error('Falha na reinicialização:', fallbackError);
-        ganttChart = null;
     }
 }
 
@@ -755,6 +750,27 @@ function createNewTaskInEdit() {
 // Função para configurar evento Enter para edição e garantir duplo clique
 function setupEnterKeyEditing() {
     setTimeout(function() {
+        if (ganttChart && ganttChart.treeGrid) {
+            // Garantir que o TreeGrid permite edição
+            ganttChart.treeGrid.editSettings = {
+                allowEditing: true,
+                allowAdding: true,
+                allowDeleting: true,
+                mode: 'Cell'
+            };
+
+            // Garantir que colunas são editáveis
+            if (ganttChart.treeGrid.columns) {
+                ganttChart.treeGrid.columns.forEach(function(col) {
+                    if (col.field === 'TaskName' || col.field === 'Duration' || col.field === 'StartDate' || col.field === 'EndDate' || col.field === 'Progress' || col.field === 'Predecessor') {
+                        col.allowEditing = true;
+                    }
+                });
+            }
+
+            console.log('TreeGrid configurado para edição');
+        }
+
         // Adicionar event listener ao documento para capturar todas as teclas
         document.addEventListener('keydown', function(event) {
             console.log('Tecla detectada:', event.key, 'Ctrl:', event.ctrlKey, 'Shift:', event.shiftKey, 'Alt:', event.altKey);
@@ -1056,7 +1072,7 @@ function outdentTask(currentRowIndex) {
 }
 
 // Adicionar o Gantt ao DOM
-if (ganttChart && typeof ganttChart.appendTo === 'function') {
+if (ganttChart) {
     try {
         ganttChart.appendTo('#Gantt');
         console.log('Gantt inicializado com sucesso');
@@ -1151,5 +1167,3 @@ if (ganttChart) {
         }
     };
 }
-
-}); // Fim do DOMContentLoaded
