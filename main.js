@@ -869,17 +869,6 @@ function moveTaskAsSubtask(currentRowIndex) {
             
             console.log('✅ Tarefa movida como subtarefa usando método nativo');
             
-            // Mostrar mensagem de sucesso
-            var successMsg = currentLanguage === 'en-US' ? 
-                'Task moved as subtask successfully!' :
-                currentLanguage === 'es-ES' ?
-                '¡Tarea movida como subtarea con éxito!' :
-                'Tarefa movida como subtarefa com sucesso!';
-            
-            setTimeout(function() {
-                alert(successMsg);
-            }, 100);
-            
         } else {
             // Fallback: método manual se indent não estiver disponível
             console.log('Método indent não disponível, usando método manual');
@@ -930,17 +919,6 @@ function moveTaskManually(currentTask, parentTask, currentLanguage) {
 
                     console.log('✅ Tarefa movida manualmente como subtarefa');
                     
-                    // Mostrar mensagem de sucesso
-                    var successMsg = currentLanguage === 'en-US' ? 
-                        'Task moved as subtask successfully!' :
-                        currentLanguage === 'es-ES' ?
-                        '¡Tarea movida como subtarea con éxito!' :
-                        'Tarefa movida como subtarefa com sucesso!';
-                    
-                    setTimeout(function() {
-                        alert(successMsg);
-                    }, 100);
-
                 } catch (expandError) {
                     console.log('Erro ao expandir tarefa pai:', expandError);
                 }
@@ -1019,20 +997,6 @@ function outdentTask(currentRowIndex) {
             ganttChart.outdent();
             
             console.log('✅ Outdent executado usando método nativo');
-            
-            // Obter idioma atual para mensagens
-            var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
-            
-            // Mostrar mensagem de sucesso
-            var successMsg = currentLanguage === 'en-US' ? 
-                'Task moved to parent level successfully!' :
-                currentLanguage === 'es-ES' ?
-                '¡Tarea movida al nivel padre con éxito!' :
-                'Tarefa movida para nível pai com sucesso!';
-            
-            setTimeout(function() {
-                alert(successMsg);
-            }, 100);
             
         } else {
             console.log('Método outdent não disponível');
