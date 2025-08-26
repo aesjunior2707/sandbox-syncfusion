@@ -785,6 +785,29 @@ function setupEnterKeyEditing() {
                         createNewTaskInEdit();
                     }
                 }
+
+                // Funcionalidade Ctrl + Shift + Seta Direita - mover tarefa como subtarefa da anterior
+                if (event.ctrlKey && event.shiftKey && (event.key === 'ArrowRight' || event.keyCode === 39)) {
+                    console.log('Ctrl + Shift + → detectado. Linha atual:', currentSelectedRowIndex);
+
+                    // Verificar se não está em modo de edição
+                    var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
+                    if (isInEditMode) {
+                        console.log('Em modo de edição, ignorando');
+                        return;
+                    }
+
+                    // Verificar se há linha selecionada e não é a primeira
+                    if (currentSelectedRowIndex > 0) {
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        console.log('🎯 Movendo tarefa como subtarefa...');
+                        moveTaskAsSubtask(currentSelectedRowIndex);
+                    } else {
+                        console.log('Não é possível mover: primeira linha ou nenhuma linha selecionada');
+                    }
+                }
             });
 
             // Event listener para clicks em linhas
@@ -805,6 +828,157 @@ function setupEnterKeyEditing() {
     }, 1000);
 }
 
+// Função para mover tarefa atual como subtarefa da tarefa anterior
+function moveTaskAsSubtask(currentRowIndex) {
+    if (!ganttChart || !ganttChart.flatData || currentRowIndex <= 0) {
+        console.log('Não é possível mover: dados não disponíveis ou primeira linha');
+        return;
+    }
+
+    try {
+        // Obter a tarefa atual e a tarefa anterior
+        var currentTask = ganttChart.flatData[currentRowIndex];
+        var previousTask = ganttChart.flatData[currentRowIndex - 1];
+
+        if (!currentTask || !previousTask) {
+            console.log('Tarefas não encontradas');
+            return;
+        }
+
+        console.log('Movendo tarefa:', currentTask.TaskName, 'como subtarefa de:', previousTask.TaskName);
+
+        // Obter idioma atual para mensagens
+        var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+        var msgs = getMessages(currentLanguage);
+
+        // Criar uma cópia da tarefa atual
+        var taskToMove = {
+            TaskID: currentTask.TaskID,
+            TaskName: currentTask.TaskName,
+            StartDate: currentTask.StartDate,
+            EndDate: currentTask.EndDate,
+            Duration: currentTask.Duration,
+            Progress: currentTask.Progress,
+            Predecessor: currentTask.Predecessor
+        };
+
+        // Remover a tarefa atual da posição original
+        ganttChart.deleteRecord(currentTask.TaskID);
+
+        // Aguardar um momento para a remoção ser processada
+        setTimeout(function() {
+            try {
+                // Encontrar a tarefa anterior no dataSource atualizado
+                var parentTask = findTaskInDataSource(previousTask.TaskID, ganttChart.dataSource);
+                
+                if (parentTask) {
+                    // Inicializar subtasks se não existir
+                    if (!parentTask.subtasks) {
+                        parentTask.subtasks = [];
+                    }
+
+                    // Adicionar a tarefa como subtarefa
+                    parentTask.subtasks.push(taskToMove);
+
+                    // Refresh do gantt para aplicar mudanças
+                    ganttChart.refresh();
+
+                    // Aguardar refresh e expandir a tarefa pai
+                    setTimeout(function() {
+                        try {
+                            // Expandir a tarefa pai para mostrar a nova subtarefa
+                            if (ganttChart.expandByID) {
+                                ganttChart.expandByID(previousTask.TaskID);
+                            }
+
+                            // Tentar selecionar a tarefa movida
+                            setTimeout(function() {
+                                try {
+                                    if (ganttChart.selectRow && ganttChart.flatData) {
+                                        // Encontrar o novo índice da tarefa movida
+                                        for (var i = 0; i < ganttChart.flatData.length; i++) {
+                                            if (ganttChart.flatData[i].TaskID === taskToMove.TaskID) {
+                                                ganttChart.selectRow(i);
+                                                currentSelectedRowIndex = i;
+                                                console.log('Tarefa movida selecionada na linha:', i);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                } catch (selectError) {
+                                    console.log('Erro ao selecionar tarefa movida:', selectError);
+                                }
+                            }, 200);
+
+                            console.log('✅ Tarefa movida como subtarefa com sucesso');
+                            
+                            // Mostrar mensagem de sucesso
+                            var successMsg = currentLanguage === 'en-US' ? 
+                                'Task moved as subtask successfully!' :
+                                currentLanguage === 'es-ES' ?
+                                '¡Tarea movida como subtarea con éxito!' :
+                                'Tarefa movida como subtarefa com sucesso!';
+                            
+                            // Usar setTimeout para não bloquear a interface
+                            setTimeout(function() {
+                                alert(successMsg);
+                            }, 100);
+
+                        } catch (expandError) {
+                            console.log('Erro ao expandir tarefa pai:', expandError);
+                        }
+                    }, 300);
+
+                } else {
+                    console.log('Tarefa pai não encontrada no dataSource');
+                    
+                    // Restaurar a tarefa removida se não conseguiu mover
+                    ganttChart.addRecord(taskToMove);
+                }
+
+            } catch (moveError) {
+                console.error('Erro ao mover tarefa:', moveError);
+                
+                // Tentar restaurar a tarefa removida
+                try {
+                    ganttChart.addRecord(taskToMove);
+                    console.log('Tarefa restaurada após erro');
+                } catch (restoreError) {
+                    console.error('Erro ao restaurar tarefa:', restoreError);
+                }
+            }
+        }, 200);
+
+    } catch (error) {
+        console.error('Erro geral ao mover tarefa como subtarefa:', error);
+    }
+}
+
+// Função auxiliar para encontrar uma tarefa no dataSource por ID
+function findTaskInDataSource(taskId, dataSource) {
+    if (!dataSource || !Array.isArray(dataSource)) {
+        return null;
+    }
+
+    for (var i = 0; i < dataSource.length; i++) {
+        var task = dataSource[i];
+        
+        // Verificar se é a tarefa procurada
+        if (task.TaskID === taskId) {
+            return task;
+        }
+        
+        // Buscar recursivamente nas subtarefas
+        if (task.subtasks && task.subtasks.length > 0) {
+            var found = findTaskInDataSource(taskId, task.subtasks);
+            if (found) {
+                return found;
+            }
+        }
+    }
+    
+    return null;
+}
 
 // Adicionar o Gantt ao DOM
 if (ganttChart) {
@@ -892,6 +1066,9 @@ if (ganttChart) {
                 }, 100);
 
                 console.log('Gantt carregado - edição habilitada');
+                console.log('Funcionalidades ativas:');
+                console.log('- Pressione ↓ na última linha para criar nova tarefa');
+                console.log('- Pressione Ctrl+Shift+→ para mover tarefa como subtarefa da anterior');
             }
         } catch (error) {
             console.error('Erro na função dataBound:', error);
