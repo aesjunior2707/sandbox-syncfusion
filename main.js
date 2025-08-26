@@ -633,6 +633,32 @@ function updateToolbarButtonStates() {
     }
 }
 
+// Event handler para cliques na toolbar
+function toolbarClick(args) {
+    console.log('Toolbar clicked:', args.item.id);
+    
+    if (args.item.id === 'Indent') {
+        // Verificar se pode fazer indent antes de executar
+        const selectedRecords = ganttChart.getSelectedRecords();
+        if (selectedRecords.length === 0 || ganttChart.selectedRowIndex <= 0) {
+            console.log('Indent não permitido: primeira linha ou sem seleção');
+            return;
+        }
+        
+        console.log('Executando Indent via toolbar');
+        indentTask();
+    } else if (args.item.id === 'Outdent') {
+        // Verificar se pode fazer outdent antes de executar
+        const selectedRecords = ganttChart.getSelectedRecords();
+        if (selectedRecords.length === 0 || !selectedRecords[0].parentItem) {
+            console.log('Outdent não permitido: não é subtarefa ou sem seleção');
+            return;
+        }
+        
+        console.log('Executando Outdent via toolbar');
+        outdentTask();
+    }
+}
 
 // Função utilitária para focar no campo TaskName após iniciar ediç��o
 function focusTaskNameField() {
