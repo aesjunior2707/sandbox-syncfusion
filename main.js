@@ -880,7 +880,7 @@ function setupEnterKeyEditing() {
             console.log('Tecla detectada:', event.key, 'Ctrl:', event.ctrlKey, 'Shift:', event.shiftKey, 'Alt:', event.altKey);
             
             // Verificar se não está em modo de edição
-            var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell');
+            var isInEditMode = document.querySelector('.e-treegrid .e-editedrow, .e-treegrid .e-editedbatchcell, .e-treegrid .e-inline-edit, .e-treegrid .e-editedcell, .e-treegrid td.e-editedcell, .e-treegrid input, .e-treegrid textarea');
             if (isInEditMode) {
                 console.log('Em modo de edição, ignorando atalhos');
                 return;
