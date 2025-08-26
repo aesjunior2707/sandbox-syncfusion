@@ -40,6 +40,7 @@ function displayPredecessors(field, data, column) {
 }
 
 var ganttChart;
+ganttChart = null;
 try {
     // Verificar se as dependências estão carregadas
     if (!checkDependencies()) {
@@ -263,6 +264,7 @@ try {
         });
     } catch (fallbackError) {
         console.error('Falha na reinicialização:', fallbackError);
+        ganttChart = null;
     }
 }
 
@@ -1054,7 +1056,7 @@ function outdentTask(currentRowIndex) {
 }
 
 // Adicionar o Gantt ao DOM
-if (ganttChart) {
+if (ganttChart && typeof ganttChart.appendTo === 'function') {
     try {
         ganttChart.appendTo('#Gantt');
         console.log('Gantt inicializado com sucesso');
