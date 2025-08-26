@@ -810,8 +810,6 @@ function setupEnterKeyEditing() {
                 }
             });
 
-                console.log('Tecla pressionada:', event.key, 'KeyCode:', event.keyCode, 'Ctrl:', event.ctrlKey, 'Shift:', event.shiftKey);
-                
             // Event listener para clicks em linhas
             ganttElement.addEventListener('click', function(event) {
                 var clickedRow = event.target.closest('.e-treegrid .e-row');
