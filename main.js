@@ -1,3 +1,6 @@
+// Aguardar o DOM estar completamente carregado
+document.addEventListener('DOMContentLoaded', function() {
+
 // Inicializar cultura padrão
 // Função para verificar se todas as dependências estão carregadas
 function checkDependencies() {
@@ -1167,3 +1170,5 @@ if (ganttChart) {
         }
     };
 }
+
+}); // Fim do DOMContentLoaded
