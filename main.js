@@ -29,9 +29,23 @@ try {
 
 // Função para exibir predecessores de forma amigável na coluna
 function displayPredecessors(field, data, column) {
+    console.log('displayPredecessors chamada:', field, data.Predecessor);
+    
     if (data.Predecessor) {
-        // Remove FS de cada predecessor para exibir apenas os IDs
-        return data.Predecessor.replace(/(\d+)FS/g, '$1').replace(/;/g, ', ');
+        try {
+            // Remove FS, SS, FF, SF de cada predecessor para exibir apenas os IDs
+            var displayValue = data.Predecessor
+                .replace(/(\d+)(FS|SS|FF|SF)/g, '$1')
+                .replace(/;/g, ', ')
+                .replace(/,\s*,/g, ',') // Remove vírgulas duplas
+                .trim();
+            
+            console.log('Predecessor exibido:', displayValue);
+            return displayValue;
+        } catch (error) {
+            console.error('Erro ao processar predecessor para exibição:', error);
+            return data.Predecessor || '';
+        }
     }
     return '';
 }
@@ -143,28 +157,39 @@ try {
     },
 
     actionBegin: function (args) {
-        // Processa predecessores antes de salvar
-        if (args.requestType === 'save' && args.data && args.data.Predecessor !== undefined) {
-            var originalValue = args.data.Predecessor;
+        console.log('ActionBegin:', args.requestType, args.data);
+        
+        // Processar predecessores para diferentes tipos de ação
+        if ((args.requestType === 'save' || args.requestType === 'beforeAdd' || args.requestType === 'beforeEdit') && args.data) {
+            // Verificar se há campo Predecessor para processar
+            if (args.data.hasOwnProperty('Predecessor') && args.data.Predecessor !== null) {
+                var originalValue = args.data.Predecessor || '';
+                console.log('Processando predecessores:', originalValue);
 
-            // Validar predecessores
-            var validation = validatePredecessors(originalValue, args.data.TaskID);
-            if (!validation.isValid) {
-                args.cancel = true;
-                alert('Erro nos predecessores: ' + validation.message);
-                return;
+                // Se não está vazio, validar e processar
+                if (originalValue.trim() !== '') {
+                    // Validar predecessores
+                    var validation = validatePredecessors(originalValue, args.data.TaskID);
+                    if (!validation.isValid) {
+                        args.cancel = true;
+                        var currentLanguage = document.getElementById('languageSelector').value || 'pt-BR';
+                        var errorMsg = currentLanguage === 'pt-BR' ? 'Erro nos predecessores: ' : 
+                                     currentLanguage === 'es-ES' ? 'Error en predecesores: ' : 
+                                     'Predecessor error: ';
+                        alert(errorMsg + validation.message);
+                        return;
+                    }
+
+                    // Processar predecessores com regra FS
+                    var processedPredecessors = parsePredecessors(originalValue);
+                    args.data.Predecessor = processedPredecessors;
+
+                    console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
+                } else {
+                    // Campo vazio, manter vazio
+                    args.data.Predecessor = '';
+                }
             }
-
-            // Processar predecessores com regra FS
-            var processedPredecessors = parsePredecessors(originalValue);
-            args.data.Predecessor = processedPredecessors;
-
-            console.log('Predecessores processados:', originalValue, '->', processedPredecessors);
-        }
-
-        // Respeitar links de predecessores durante validação
-        if (args.requestType === 'validateLinkedTask') {
-            args.validateMode = { respectLink: true };
         }
     },
 
@@ -301,12 +326,21 @@ function parsePredecessors(predecessorString) {
 
 // Função para validar se os predecessores existem
 function validatePredecessors(predecessorString, currentTaskId) {
+    console.log('validatePredecessors chamada:', predecessorString, 'para tarefa:', currentTaskId);
+    
     if (!predecessorString || predecessorString.trim() === '') {
         return { isValid: true, message: '' };
     }
 
-    var predecessorIds = predecessorString.split(',').map(function(id) { return id.trim().replace(/[^\d]/g, ''); });
+    // Aceitar tanto vírgula quanto ponto e vírgula como separadores
+    var separators = /[,;]/;
+    var predecessorIds = predecessorString.split(separators)
+        .map(function(id) { return id.trim().replace(/[^\d]/g, ''); })
+        .filter(function(id) { return id !== ''; });
+    
     var allTaskIds = getAllTaskIds();
+    console.log('IDs de tarefas disponíveis:', allTaskIds);
+    console.log('Predecessores para validar:', predecessorIds);
 
     for (var i = 0; i < predecessorIds.length; i++) {
         var predId = predecessorIds[i];
@@ -316,14 +350,16 @@ function validatePredecessors(predecessorString, currentTaskId) {
 
         // Verifica se o predecessor existe
         if (!allTaskIds.includes(numericPredId)) {
+            console.log('Predecessor não encontrado:', numericPredId);
             return {
                 isValid: false,
-                message: `Tarefa ${numericPredId} não existe.`
+                message: 'Tarefa ' + numericPredId + ' não existe.'
             };
         }
 
         // Verifica se não está tentando criar dependência circular
         if (numericPredId === currentTaskId) {
+            console.log('Dependência circular detectada:', numericPredId);
             return {
                 isValid: false,
                 message: 'Uma tarefa não pode ser predecessora de si mesma.'
@@ -331,23 +367,41 @@ function validatePredecessors(predecessorString, currentTaskId) {
         }
     }
 
+    console.log('Validação passou');
     return { isValid: true, message: '' };
 }
 
 // Função para obter todos os IDs de tarefas
 function getAllTaskIds() {
     const taskIds = [];
+    
+    if (!ganttChart || !ganttChart.dataSource) {
+        console.log('Gantt ou dataSource não disponível');
+        return taskIds;
+    }
 
     function extractIds(data) {
+        if (!data || !Array.isArray(data)) {
+            return;
+        }
+        
         for (const item of data) {
-            taskIds.push(item.TaskID);
+            if (item && item.TaskID) {
+                taskIds.push(item.TaskID);
+            }
             if (item.subtasks && item.subtasks.length > 0) {
                 extractIds(item.subtasks);
             }
         }
     }
 
-    extractIds(ganttChart.dataSource);
+    try {
+        extractIds(ganttChart.dataSource);
+        console.log('IDs extraídos:', taskIds);
+    } catch (error) {
+        console.error('Erro ao extrair IDs:', error);
+    }
+    
     return taskIds;
 }
 
